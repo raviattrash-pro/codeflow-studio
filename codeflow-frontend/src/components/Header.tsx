@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, GitBranch, Upload, Search, Package, Database, Code2, X } from 'lucide-react';
+import { Layers, GitBranch, Upload, Search, Package, Database, Bot, X } from 'lucide-react';
 import { ProjectNode } from '../types';
 
 interface HeaderProps {
@@ -7,6 +7,8 @@ interface HeaderProps {
   currentProjectId?: string | null;
   onOpenIngestModal: () => void;
   onOpenDependencies: () => void;
+  onOpenSqlExplorer: () => void;
+  onOpenAiAssistant: () => void;
   onExitProject: () => void;
   searchQuery: string;
   onSearchChange: (q: string) => void;
@@ -19,6 +21,8 @@ export const Header: React.FC<HeaderProps> = ({
   currentProjectId,
   onOpenIngestModal,
   onOpenDependencies,
+  onOpenSqlExplorer,
+  onOpenAiAssistant,
   onExitProject,
   searchQuery,
   onSearchChange,
@@ -26,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectSearchResult,
 }) => {
   return (
-    <header className="h-16 glass-panel border-b border-slate-800 px-6 flex items-center justify-between z-30 sticky top-0 relative">
+    <header className="h-16 glass-panel border-b border-slate-800 px-6 flex items-center justify-between z-30 sticky top-0 relative bg-slate-950/90 backdrop-blur-md">
       {/* Brand Logo & Title */}
       <div className="flex items-center space-x-3">
         <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
@@ -37,8 +41,8 @@ export const Header: React.FC<HeaderProps> = ({
             <h1 className="font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-slate-400">
               CodeFlow Studio
             </h1>
-            <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              v1.0 MVP
+            <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20">
+              v2.0 Upgrade
             </span>
           </div>
           <p className="text-xs text-slate-400">Google Maps for Source Code</p>
@@ -86,7 +90,23 @@ export const Header: React.FC<HeaderProps> = ({
               <GitBranch className="w-3.5 h-3.5 text-cyan-400" />
               <span className="font-mono text-slate-200">{currentProjectName}</span>
             </div>
-            
+
+            <button
+              onClick={onOpenSqlExplorer}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-xs font-semibold text-amber-300 transition-all"
+            >
+              <Database className="w-3.5 h-3.5" />
+              <span>SQL Explorer</span>
+            </button>
+
+            <button
+              onClick={onOpenAiAssistant}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-pink-600/30 to-purple-600/30 hover:from-pink-600/50 hover:to-purple-600/50 border border-pink-500/30 text-xs font-semibold text-pink-200 transition-all"
+            >
+              <Bot className="w-3.5 h-3.5" />
+              <span>AI Assistant</span>
+            </button>
+
             <button
               onClick={onExitProject}
               className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-xs font-medium text-red-400 transition-all"
@@ -97,13 +117,15 @@ export const Header: React.FC<HeaderProps> = ({
           </>
         )}
 
-        <button
-          onClick={onOpenDependencies}
-          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-200 transition-all"
-        >
-          <Package className="w-3.5 h-3.5 text-purple-400" />
-          <span>Dependencies</span>
-        </button>
+        {currentProjectId && (
+          <button
+            onClick={onOpenDependencies}
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-200 transition-all"
+          >
+            <Package className="w-3.5 h-3.5 text-purple-400" />
+            <span>Dependencies</span>
+          </button>
+        )}
 
         <button
           onClick={onOpenIngestModal}

@@ -7,6 +7,8 @@ import { InteractiveFlowExplorer } from './components/InteractiveFlowExplorer';
 import { NodeInspectorSidebar } from './components/NodeInspectorSidebar';
 import { MonacoViewerModal } from './components/MonacoViewerModal';
 import { DependencyExplorerModal } from './components/DependencyExplorerModal';
+import { SqlExplorerModal } from './components/SqlExplorerModal';
+import { AiAssistantModal } from './components/AiAssistantModal';
 import { Project, GraphData, NodeDetail, ProjectNode } from './types';
 import { Layers, Sparkles } from 'lucide-react';
 
@@ -19,7 +21,10 @@ export default function App() {
 
   const [isIngestModalOpen, setIsIngestModalOpen] = useState(false);
   const [isDependencyModalOpen, setIsDependencyModalOpen] = useState(false);
+  const [isSqlExplorerOpen, setIsSqlExplorerOpen] = useState(false);
+  const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false);
   const [viewingFilePath, setViewingFilePath] = useState<string | null>(null);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<ProjectNode[]>([]);
 
@@ -30,7 +35,8 @@ export default function App() {
     }
 
     const timer = setTimeout(() => {
-      axios.get<ProjectNode[]>(`/api/v1/projects/${currentProjectId}/search?q=${searchQuery}`)
+      axios
+        .get<ProjectNode[]>(`/api/v1/projects/${currentProjectId}/search?q=${searchQuery}`)
         .then((res) => setSearchResults(res.data))
         .catch(() => setSearchResults([]));
     }, 300);
@@ -49,6 +55,7 @@ export default function App() {
     setProject(null);
     setGraphData({ nodes: [], edges: [] });
     setSelectedNodeId(undefined);
+    setSelectedNodeDetail(null);
     setSearchQuery('');
     setSearchResults([]);
   };
@@ -89,12 +96,16 @@ export default function App() {
         currentProjectId={currentProjectId}
         onOpenIngestModal={() => setIsIngestModalOpen(true)}
         onOpenDependencies={() => setIsDependencyModalOpen(true)}
+        onOpenSqlExplorer={() => setIsSqlExplorerOpen(true)}
+        onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
         onExitProject={handleExitProject}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         searchResults={searchResults}
         onSelectSearchResult={handleSelectSearchResult}
       />
+
+      {/* Main Content Workspace */}
       <div className="flex-1 flex overflow-hidden">
         {!currentProjectId ? (
           /* Empty State Welcome Screen */
@@ -107,7 +118,7 @@ export default function App() {
               Interactive Execution Flow Explorer for Spring Boot & React
             </h2>
             <p className="text-sm text-slate-400 max-w-lg mt-3 leading-relaxed">
-              Step-by-step visual execution flow tracing with interactive playback, annotation breakdowns, and source code viewer.
+              Step-by-step visual execution flow tracing with interactive playback, annotation breakdowns, SQL Explorer, AI Assistant, and source code viewer.
             </p>
 
             <div className="mt-8 flex items-center space-x-4">
@@ -165,6 +176,18 @@ export default function App() {
         projectId={currentProjectId}
         isOpen={isDependencyModalOpen}
         onClose={() => setIsDependencyModalOpen(false)}
+      />
+
+      <SqlExplorerModal
+        projectId={currentProjectId}
+        isOpen={isSqlExplorerOpen}
+        onClose={() => setIsSqlExplorerOpen(false)}
+      />
+
+      <AiAssistantModal
+        projectId={currentProjectId}
+        isOpen={isAiAssistantOpen}
+        onClose={() => setIsAiAssistantOpen(false)}
       />
     </div>
   );
