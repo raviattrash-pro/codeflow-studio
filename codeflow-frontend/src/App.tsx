@@ -9,6 +9,8 @@ import { MonacoViewerModal } from './components/MonacoViewerModal';
 import { DependencyExplorerModal } from './components/DependencyExplorerModal';
 import { SqlExplorerModal } from './components/SqlExplorerModal';
 import { AiAssistantModal } from './components/AiAssistantModal';
+import { ErDiagramModal } from './components/ErDiagramModal';
+import { SecurityExplorerModal } from './components/SecurityExplorerModal';
 import { Project, GraphData, NodeDetail, ProjectNode } from './types';
 import { Layers, Sparkles } from 'lucide-react';
 
@@ -23,6 +25,8 @@ export default function App() {
   const [isDependencyModalOpen, setIsDependencyModalOpen] = useState(false);
   const [isSqlExplorerOpen, setIsSqlExplorerOpen] = useState(false);
   const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false);
+  const [isErDiagramOpen, setIsErDiagramOpen] = useState(false);
+  const [isSecurityFlowOpen, setIsSecurityFlowOpen] = useState(false);
   const [viewingFilePath, setViewingFilePath] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -58,6 +62,11 @@ export default function App() {
     setSelectedNodeDetail(null);
     setSearchQuery('');
     setSearchResults([]);
+  };
+
+  const handleExportMarkdown = () => {
+    if (!currentProjectId) return;
+    window.open(`/api/v1/projects/${currentProjectId}/export/markdown`, '_blank');
   };
 
   // Fetch project details & graph when project ID changes
@@ -98,6 +107,9 @@ export default function App() {
         onOpenDependencies={() => setIsDependencyModalOpen(true)}
         onOpenSqlExplorer={() => setIsSqlExplorerOpen(true)}
         onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
+        onOpenErDiagram={() => setIsErDiagramOpen(true)}
+        onOpenSecurityFlow={() => setIsSecurityFlowOpen(true)}
+        onExportMarkdown={handleExportMarkdown}
         onExitProject={handleExitProject}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -118,7 +130,7 @@ export default function App() {
               Interactive Execution Flow Explorer for Spring Boot & React
             </h2>
             <p className="text-sm text-slate-400 max-w-lg mt-3 leading-relaxed">
-              Step-by-step visual execution flow tracing with interactive playback, annotation breakdowns, SQL Explorer, AI Assistant, and source code viewer.
+              Step-by-step visual execution flow tracing with interactive playback, annotation breakdowns, ERD Explorer, Security Flow, AI Assistant, and source code viewer.
             </p>
 
             <div className="mt-8 flex items-center space-x-4">
@@ -188,6 +200,18 @@ export default function App() {
         projectId={currentProjectId}
         isOpen={isAiAssistantOpen}
         onClose={() => setIsAiAssistantOpen(false)}
+      />
+
+      <ErDiagramModal
+        projectId={currentProjectId}
+        isOpen={isErDiagramOpen}
+        onClose={() => setIsErDiagramOpen(false)}
+      />
+
+      <SecurityExplorerModal
+        projectId={currentProjectId}
+        isOpen={isSecurityFlowOpen}
+        onClose={() => setIsSecurityFlowOpen(false)}
       />
     </div>
   );

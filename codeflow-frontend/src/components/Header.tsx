@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, GitBranch, Upload, Search, Package, Database, Bot, X } from 'lucide-react';
+import { Layers, GitBranch, Upload, Search, Package, Database, Bot, ShieldCheck, Download, X } from 'lucide-react';
 import { ProjectNode } from '../types';
 
 interface HeaderProps {
@@ -9,6 +9,9 @@ interface HeaderProps {
   onOpenDependencies: () => void;
   onOpenSqlExplorer: () => void;
   onOpenAiAssistant: () => void;
+  onOpenErDiagram: () => void;
+  onOpenSecurityFlow: () => void;
+  onExportMarkdown: () => void;
   onExitProject: () => void;
   searchQuery: string;
   onSearchChange: (q: string) => void;
@@ -23,6 +26,9 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenDependencies,
   onOpenSqlExplorer,
   onOpenAiAssistant,
+  onOpenErDiagram,
+  onOpenSecurityFlow,
+  onExportMarkdown,
   onExitProject,
   searchQuery,
   onSearchChange,
@@ -42,7 +48,7 @@ export const Header: React.FC<HeaderProps> = ({
               CodeFlow Studio
             </h1>
             <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20">
-              v2.0 Upgrade
+              v2.0 Enterprise
             </span>
           </div>
           <p className="text-xs text-slate-400">Google Maps for Source Code</p>
@@ -50,7 +56,7 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Global Search Input */}
-      <div className="flex-1 max-w-md mx-8 relative">
+      <div className="flex-1 max-w-md mx-6 relative">
         <div className="relative">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -83,36 +89,56 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-2">
         {currentProjectName && (
           <>
-            <div className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/50 text-xs text-slate-300">
+            <div className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/50 text-xs text-slate-300">
               <GitBranch className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="font-mono text-slate-200">{currentProjectName}</span>
+              <span className="font-mono text-slate-200 truncate max-w-[100px]">{currentProjectName}</span>
             </div>
 
             <button
-              onClick={onOpenSqlExplorer}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-xs font-semibold text-amber-300 transition-all"
+              onClick={onOpenErDiagram}
+              className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-xs font-semibold text-amber-300 transition-all"
+              title="Database ER Diagram"
             >
               <Database className="w-3.5 h-3.5" />
-              <span>SQL Explorer</span>
+              <span>ERD</span>
+            </button>
+
+            <button
+              onClick={onOpenSecurityFlow}
+              className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-xs font-semibold text-purple-300 transition-all"
+              title="Security & JWT Flow"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Security</span>
             </button>
 
             <button
               onClick={onOpenAiAssistant}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-pink-600/30 to-purple-600/30 hover:from-pink-600/50 hover:to-purple-600/50 border border-pink-500/30 text-xs font-semibold text-pink-200 transition-all"
+              className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-pink-600/20 hover:bg-pink-600/30 border border-pink-500/30 text-xs font-semibold text-pink-200 transition-all"
+              title="AI Assistant"
             >
               <Bot className="w-3.5 h-3.5" />
-              <span>AI Assistant</span>
+              <span>AI</span>
+            </button>
+
+            <button
+              onClick={onExportMarkdown}
+              className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-xs font-semibold text-emerald-300 transition-all"
+              title="Export Architecture Documentation"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Export</span>
             </button>
 
             <button
               onClick={onExitProject}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-xs font-medium text-red-400 transition-all"
+              className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-xs font-medium text-red-400 transition-all"
             >
               <X className="w-3.5 h-3.5" />
-              <span>Exit Project</span>
+              <span>Exit</span>
             </button>
           </>
         )}
@@ -120,19 +146,19 @@ export const Header: React.FC<HeaderProps> = ({
         {currentProjectId && (
           <button
             onClick={onOpenDependencies}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-200 transition-all"
+            className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium text-slate-200 transition-all"
           >
             <Package className="w-3.5 h-3.5 text-purple-400" />
-            <span>Dependencies</span>
+            <span>Deps</span>
           </button>
         )}
 
         <button
           onClick={onOpenIngestModal}
-          className="flex items-center space-x-1.5 px-4 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-xs font-semibold text-white shadow-md shadow-indigo-600/30 transition-all"
+          className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-xs font-semibold text-white shadow-md shadow-indigo-600/30 transition-all"
         >
           <Upload className="w-3.5 h-3.5" />
-          <span>Import Project</span>
+          <span>Import</span>
         </button>
       </div>
     </header>
