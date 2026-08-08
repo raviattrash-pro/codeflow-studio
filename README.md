@@ -7,7 +7,7 @@ CodeFlow Studio is an enterprise-grade visual code comprehension application des
 
 ## 🎬 Live Product Demonstration
 
-<video src="docs/media/codeflow.mp4" controls="controls" width="100%" style="max-height: 500px; border-radius: 12px; border: 1px solid #30363d;"></video>
+https://github.com/raviattrash-pro/sturdy-enigma/raw/main/docs/media/codeflow.mp4
 
 > 💡 *Watch CodeFlow Studio in action: Tracing feature-segregated execution flows, dynamic endpoint parsing, claymorphic HLD architecture canvas, and interactive 5-mode File Tree Explorer.*
 
