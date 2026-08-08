@@ -96,7 +96,7 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-backdrop" onClick={onClose}>
       <div
         className="w-full max-w-xl glass-modal rounded-3xl p-6 shadow-2xl border border-slate-700/80"
         onClick={(e) => e.stopPropagation()}

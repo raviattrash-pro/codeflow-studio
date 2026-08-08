@@ -34,38 +34,198 @@ input:-webkit-autofill:active {
   caret-color: #f8fafc !important;
 }
 
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: rgba(6, 9, 18, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
 .glass-panel {
   background: var(--bg-card);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-card);
-}
-
-/* Modal backdrop fix to ensure complete centering and prevent top clipping */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  background-color: rgba(6, 9, 18, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  overflow-y: auto;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .glass-modal {
   background: rgba(18, 25, 43, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
   max-height: 90vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Claymorphism styles for HLD Canvas */
+.clay-card {
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 
+    4px 4px 8px rgba(0, 0, 0, 0.2),
+    -2px -2px 6px rgba(255, 255, 255, 0.02),
+    inset 1px 1px 5px rgba(255, 255, 255, 0.03),
+    inset -1px -1px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  border-radius: 16px;
+}
+
+.clay-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    6px 6px 12px rgba(0, 0, 0, 0.3),
+    -3px -3px 8px rgba(255, 255, 255, 0.03),
+    inset 1px 1px 6px rgba(255, 255, 255, 0.05),
+    inset -1px -1px 10px rgba(0, 0, 0, 0.2);
+}
+
+.clay-card.selected {
+  border-color: rgba(236, 72, 153, 0.4);
+  box-shadow: 
+    0 0 10px rgba(236, 72, 153, 0.2),
+    4px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.clay-panel {
+  backdrop-filter: blur(20px);
+  background: rgba(15, 23, 42, 0.85);
+  box-shadow: 
+    -10px 0 25px rgba(0, 0, 0, 0.5),
+    inset 1px 0 10px rgba(255, 255, 255, 0.03);
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@keyframes slideDownFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.tools-dropdown {
+  animation: slideDownFade 0.2s ease-out forwards;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  border-radius: 9999px;
+  border-width: 1px;
+  font-weight: 500;
+}
+
+.chip-indigo {
+  background-color: rgba(99, 102, 241, 0.1);
+  color: rgb(129, 140, 248);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.chip-cyan {
+  background-color: rgba(6, 182, 212, 0.1);
+  color: rgb(34, 211, 238);
+  border-color: rgba(6, 182, 212, 0.2);
+}
+
+.chip-emerald {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: rgb(52, 211, 153);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.chip-purple {
+  background-color: rgba(168, 85, 247, 0.1);
+  color: rgb(192, 132, 252);
+  border-color: rgba(168, 85, 247, 0.2);
+}
+
+.chip-amber {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: rgb(251, 191, 36);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.chip-green {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: rgb(74, 222, 128);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.tree-node {
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  transition: background-color 0.15s;
+}
+
+.tree-node:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.tree-node-icon {
+  margin-right: 0.5rem;
+  font-size: 1rem;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Gradients for Column Headers */
+.text-gradient-cyan {
+  background: linear-gradient(135deg, #22d3ee, #0284c7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.text-gradient-indigo {
+  background: linear-gradient(135deg, #818cf8, #4338ca);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.text-gradient-blue {
+  background: linear-gradient(135deg, #60a5fa, #1d4ed8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.text-gradient-purple {
+  background: linear-gradient(135deg, #c084fc, #7e22ce);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.text-gradient-amber {
+  background: linear-gradient(135deg, #fbbf24, #b45309);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.arrow-line {
+  background: repeating-linear-gradient(90deg, transparent, transparent 4px, currentColor 4px, currentColor 8px);
+}
+.arrow-line-vertical {
+  background: repeating-linear-gradient(180deg, transparent, transparent 4px, currentColor 4px, currentColor 8px);
 }
 
 /* Step Number Badges */
@@ -98,20 +258,8 @@ input:-webkit-autofill:active {
   border-color: rgba(236, 72, 153, 0.8) !important;
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+@media (max-width: 768px) {
+  .mobile-hidden {
+    display: none !important;
+  }
 }

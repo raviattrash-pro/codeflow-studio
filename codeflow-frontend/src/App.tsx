@@ -11,6 +11,7 @@ import { SqlExplorerModal } from './components/SqlExplorerModal';
 import { AiAssistantModal } from './components/AiAssistantModal';
 import { ErDiagramModal } from './components/ErDiagramModal';
 import { SecurityExplorerModal } from './components/SecurityExplorerModal';
+import { FileTreeModal } from './components/FileTreeModal';
 import { Project, GraphData, NodeDetail, ProjectNode } from './types';
 import { Layers, Sparkles } from 'lucide-react';
 
@@ -27,6 +28,7 @@ export default function App() {
   const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false);
   const [isErDiagramOpen, setIsErDiagramOpen] = useState(false);
   const [isSecurityFlowOpen, setIsSecurityFlowOpen] = useState(false);
+  const [isFileTreeOpen, setIsFileTreeOpen] = useState(false);
   const [viewingFilePath, setViewingFilePath] = useState<string | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -64,9 +66,23 @@ export default function App() {
     setSearchResults([]);
   };
 
-  const handleExportMarkdown = () => {
+  const handleExportMarkdown = async () => {
     if (!currentProjectId) return;
-    window.open(`/api/v1/projects/${currentProjectId}/export/markdown`, '_blank');
+    try {
+      const response = await axios.get(`/api/v1/projects/${currentProjectId}/export/markdown`, {
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${project?.name || 'architecture'}-export.md`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to export markdown:', err);
+    }
   };
 
   // Fetch project details & graph when project ID changes
@@ -109,6 +125,7 @@ export default function App() {
         onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
         onOpenErDiagram={() => setIsErDiagramOpen(true)}
         onOpenSecurityFlow={() => setIsSecurityFlowOpen(true)}
+        onOpenFileTree={() => setIsFileTreeOpen(true)}
         onExportMarkdown={handleExportMarkdown}
         onExitProject={handleExitProject}
         searchQuery={searchQuery}
@@ -212,6 +229,16 @@ export default function App() {
         projectId={currentProjectId}
         isOpen={isSecurityFlowOpen}
         onClose={() => setIsSecurityFlowOpen(false)}
+      />
+
+      <FileTreeModal
+        projectId={currentProjectId}
+        isOpen={isFileTreeOpen}
+        onClose={() => setIsFileTreeOpen(false)}
+        onViewCode={(path) => {
+          setIsFileTreeOpen(false);
+          setViewingFilePath(path);
+        }}
       />
     </div>
   );

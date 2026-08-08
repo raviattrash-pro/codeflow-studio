@@ -122,8 +122,11 @@ export const DependencyExplorerModal: React.FC<DependencyExplorerModalProps> = (
   } : null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-      <div className="w-full max-w-5xl bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+    <div className="modal-backdrop" onClick={onClose}>
+      <div
+        className="w-full max-w-5xl h-[85vh] max-h-[85vh] bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col my-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/90 shrink-0">
           <div className="flex items-center space-x-3">
@@ -144,7 +147,7 @@ export const DependencyExplorerModal: React.FC<DependencyExplorerModalProps> = (
         </div>
 
         {/* Content Layout */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 min-h-0 flex overflow-hidden">
           {/* Left Dependency List */}
           <div className="w-80 border-r border-slate-800 bg-slate-950 flex flex-col shrink-0">
             <div className="p-3 border-b border-slate-800">

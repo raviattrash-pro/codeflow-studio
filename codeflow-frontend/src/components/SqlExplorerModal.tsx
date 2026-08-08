@@ -51,10 +51,13 @@ export const SqlExplorerModal: React.FC<SqlExplorerModalProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-      <div className="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+    <div className="modal-backdrop" onClick={onClose}>
+      <div
+        className="w-full max-w-4xl h-[85vh] max-h-[85vh] bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col my-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/90">
+        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/90 shrink-0">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
               <Database className="w-5 h-5" />
@@ -81,7 +84,7 @@ export const SqlExplorerModal: React.FC<SqlExplorerModalProps> = ({
         </div>
 
         {/* Toolbar & Filter */}
-        <div className="px-6 py-3 border-b border-slate-800/80 bg-slate-950/50 flex items-center justify-between text-xs font-mono">
+        <div className="px-6 py-3 border-b border-slate-800/80 bg-slate-950/50 flex items-center justify-between text-xs font-mono shrink-0">
           <div className="flex items-center space-x-2">
             <Filter className="w-3.5 h-3.5 text-slate-400" />
             <span className="text-slate-400">Filter Query Type:</span>
@@ -106,7 +109,7 @@ export const SqlExplorerModal: React.FC<SqlExplorerModalProps> = ({
         </div>
 
         {/* Query Log List */}
-        <div className="flex-1 p-6 overflow-y-auto custom-scrollbar space-y-4">
+        <div className="flex-1 min-h-0 p-6 overflow-y-auto custom-scrollbar space-y-4">
           {filteredLogs.length === 0 ? (
             <div className="p-8 text-center text-slate-500 font-mono">No SQL queries captured for this project yet.</div>
           ) : (

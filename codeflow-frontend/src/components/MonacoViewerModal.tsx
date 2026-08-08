@@ -42,7 +42,7 @@ export const MonacoViewerModal: React.FC<MonacoViewerModalProps> = ({
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-backdrop" onClick={onClose}>
       <div
         className="w-full max-w-4xl glass-modal rounded-3xl overflow-hidden shadow-2xl border border-slate-700/80"
         onClick={(e) => e.stopPropagation()}

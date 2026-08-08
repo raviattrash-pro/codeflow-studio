@@ -40,10 +40,13 @@ export const SecurityExplorerModal: React.FC<SecurityExplorerModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-      <div className="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+    <div className="modal-backdrop" onClick={onClose}>
+      <div
+        className="w-full max-w-4xl h-[85vh] max-h-[85vh] bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col my-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/90">
+        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/90 shrink-0">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
               <ShieldCheck className="w-5 h-5" />
@@ -70,7 +73,7 @@ export const SecurityExplorerModal: React.FC<SecurityExplorerModalProps> = ({
         </div>
 
         {/* Pipeline Steps */}
-        <div className="flex-1 p-6 overflow-y-auto custom-scrollbar bg-slate-950/60 space-y-4">
+        <div className="flex-1 min-h-0 p-6 overflow-y-auto custom-scrollbar bg-slate-950/60 space-y-4">
           <div className="max-w-2xl mx-auto space-y-4">
             {data?.steps.map((step, idx) => (
               <div key={step.step} className="space-y-3">
