@@ -1,7 +1,10 @@
 # CodeFlow Studio 🚀 (v2.3.0)
-### *Google Maps for Source Code* — Interactive Execution Flow Explorer for Spring Boot & React
+> **Understand Spring Boot + React codebases visually — without reading hundreds of files.**
 
-CodeFlow Studio is an enterprise-grade visual code comprehension application designed to help developers instantly understand any Java Spring Boot + React project without manually reading hundreds of files.
+[![Version](https://img.shields.io/badge/version-2.3.0-indigo.svg)](file:///D:/Working/Projects/codeflow-studio/README.md)
+[![License](https://img.shields.io/badge/license-MIT-purple.svg)](file:///D:/Working/Projects/codeflow-studio/README.md)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2-green.svg)](https://spring.io/projects/spring-boot)
+[![React](https://img.shields.io/badge/React-18-blue.svg)](https://reactjs.org/)
 
 ---
 
@@ -13,46 +16,55 @@ CodeFlow Studio is an enterprise-grade visual code comprehension application des
 
 ---
 
-## 🌟 Key Features (v2.3.0 Release)
+## 💡 Problem → Solution
 
-- **📦 Feature-Segregated Execution Flow Explorer**:
-  - Automatically parses Spring `@RestController` endpoints from any imported codebase into dedicated **Feature Scenarios** (e.g., Auth Flow, File Management, Orders & Checkout).
-  - **Searchable Feature Dropdown**: Filter through 90+ endpoints instantly by controller name, URL path, or HTTP method (`GET`, `POST`, `PUT`, `DELETE`).
-  - **Per-Feature Architecture Diagrams**: Renders a dedicated 5-column architecture diagram and step timeline specific to the selected feature.
-
-- **🗺️ Claymorphic HLD Architecture Canvas & Step Inspector**:
-  - Visual 5-column architecture canvas (**Clients → API Gateway → Controllers → Services → DB & Cache**) with claymorphic cards and animated connection lines.
-  - **Full-Detail Slide-Over Inspector Drawer**: Clicking any box or step opens an always-expanded inspector drawer (`w-[450px]`) detailing:
-    - 📌 **Component Header & Source Code Link** (Direct access to Monaco Code Viewer)
-    - ⚡ **Purpose & Role in Architecture**
-    - 🔄 **Data Flow Execution Path** (Step-by-step inputs, validation, and SQL queries)
-    - ✨ **Framework Annotations & Internal Mechanics** (`@RestController`, `@Service`, `@Transactional`, `@Repository`, `@Entity`, etc.)
-    - 📚 **Interview Q&A Engine** (Curated questions and detailed answers)
-
-- **📁 Interactive File Tree Explorer (5 View Modes)**:
-  - Backend API `GET /api/v1/projects/{projectId}/file-tree` builds a nested AST file tree.
-  - **5 Visualization Modes**:
-    1. 📂 **Interactive File Tree** (Collapsible folder hierarchy with file size & line count)
-    2. 📝 **ASCII Tree** (Plain text copyable ASCII directory tree)
-    3. 🎨 **Emoji Tree** (Visually rich emoji file system view)
-    4. 🧜‍♂️ **Mermaid AST Diagram** (Flowchart diagram tree)
-    5. 🌌 **Galaxy 2D Canvas View** (Interactive 2D starfield particle view)
-
-- **⚡ Instant Repository Ingestion**:
-  - Import any project via **GitHub Repository URL** or **ZIP Upload**.
-  - Parses `pom.xml`, Java AST files, React components, Axios REST API calls, and database schema mappings.
-
-- **🛡️ Integrated Developer Suite**:
-  - **ER Diagram Explorer**: Visual entity relationship mapping.
-  - **Security Flow Explorer**: Step-by-step SecurityFilterChain and JWT token evaluation.
-  - **SQL Explorer**: Spring Data JPA query translation & HQL breakdown.
-  - **AI Assistant Modal**: Contextual code explanation & refactoring advice.
-  - **Dependency Explorer**: Breakdown of Maven starters & Spring transitive dependencies.
-  - **Export Markdown**: 1-click architectural documentation download (`architecture-export.md`).
+| ❌ The Problem | ✅ The CodeFlow Solution |
+| :--- | :--- |
+| Developers spend hours jumping between hundreds of files trying to figure out how a feature works. | **Instant Visual Mapping**: Import any repo and immediately see end-to-end execution flows from React UI buttons down to SQL queries. |
+| Onboarding new developers on large Spring Boot + React codebases takes weeks. | **Interactive AST Navigation**: Click any architectural node (Controller, Service, Repository, Table) to view code, execution paths, and interview explanations. |
+| Hard to spot hidden security risks or unoptimized database calls across layers. | **Deep Developer Suite**: Built-in SecurityFilterChain analyzer, ER Diagram builder, SQL query translator, and 5-mode File Tree AST visualizer. |
 
 ---
 
-## 🏗️ Architecture & Tech Stack
+## ✨ Core Features (v2.3.0 Release)
+
+### 1. ✨ Execution Flow Explorer
+- **Feature-Segregated Flow Scenarios**: Automatically groups Spring `@RestController` endpoints into real application features (e.g. Authentication Flow, File Management Flow, Orders & Checkout).
+- **Searchable Endpoint Selector**: Filter through 90+ endpoints instantly by controller name, URL path, or HTTP method (`GET`, `POST`, `PUT`, `DELETE`).
+- **Claymorphic HLD Canvas**: 5-column architectural layout (**Clients → API Gateway → Controllers → Services → DB & Cache**) with animated data flow connections.
+- **Always-Expanded Inspector Drawer**: Slide-over panel (`w-[450px]`) featuring:
+  - 📌 **Component Header & Direct Code Link**
+  - ⚡ **Purpose & Role in Architecture**
+  - 🔄 **Data Flow Execution Path** (Step-by-step inputs, validation, and SQL queries)
+  - ✨ **Framework Annotations & Internal Mechanics** (`@RestController`, `@Service`, `@Transactional`, `@Repository`, `@Entity`)
+  - 📚 **Interview Q&A Engine** (Curated questions & comprehensive technical answers)
+
+### 2. 🔐 Security Flow Analysis
+- Visualizes the active Spring Security filter chain order (`CorsFilter`, `CsrfFilter`, `JwtAuthenticationFilter`, `UserDetailsService`, `SecurityContextHolder`).
+- Step-by-step token verification, header extraction, and authority evaluation breakdown.
+
+### 3. 🗄️ ER Diagram Explorer
+- Automatically extracts `@Entity` relationships (`@OneToMany`, `@ManyToOne`, `@ManyToMany`, `@OneToOne`).
+- Renders clean entity cards with table names, column data types, primary keys, and foreign keys.
+
+### 4. 📦 Dependency Explorer
+- Parses `pom.xml` to extract Maven starters, Spring dependencies, and transitive packages.
+- Explains internal Spring mechanics, auto-configuration classes, and common annotations for each starter.
+
+### 5. 🧠 AI Assistant
+- Contextual code analysis assistant for architectural explanations, refactoring recommendations, and interview prep.
+
+### 6. 📁 Codebase & File Tree Explorer (5 View Modes)
+- AST-built directory tree (`GET /api/v1/projects/{projectId}/file-tree`) supporting **5 visualization modes**:
+  1. 📂 **Interactive File Tree**: Collapsible directory tree with line counts & file sizes.
+  2. 📝 **ASCII Tree**: Copyable text directory tree for documentation.
+  3. 🎨 **Emoji Tree**: Visual emoji icon file system tree.
+  4. 🧜‍♂️ **Mermaid AST Diagram**: Flowchart AST diagram.
+  5. 🌌 **Galaxy 2D Canvas View**: Interactive 2D starfield particle visualization.
+
+---
+
+## 🏗️ Architecture
 
 ```
    ┌─────────────────────────────────────────────────────────────┐
@@ -69,12 +81,22 @@ CodeFlow Studio is an enterprise-grade visual code comprehension application des
                                   ▼
    ┌─────────────────────────────────────────────────────────────┐
    │                    PostgreSQL / H2 Database                 │
-   └──────────────────────────────┬──────────────────────────────┘
+   └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🚀 Quick Start Guide
+## 🛠️ Engineering Highlights
+
+- **AST Parsing Engine**: Custom Java AST parsing powered by `JavaParser` & `Maven Model Parser` to dissect annotations, method signatures, DTOs, and JPA models without compiling code.
+- **Automated Repository Ingestion**: Built-in `JGit` wrapper for fast GitHub URL cloning and ZIP archive extraction with ephemeral workspace auto-cleanup.
+- **Dynamic Relationship Engine**: 5-tier bidirectional relationship mapping (React Axios Call ➔ Controller ➔ Service ➔ Repository ➔ DB Table).
+- **Claymorphic Visual UI**: Modern glassmorphic & claymorphic UI system built with TailwindCSS, custom CSS 3D box-shadows, and smooth micro-animations.
+- **Zero-Log Security & Privacy**: Ephemeral disk workspace cleanup ensures cloned source files are analyzed in memory and immediately discarded.
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
 - **Node.js 18+** & **npm**
@@ -85,7 +107,7 @@ CodeFlow Studio is an enterprise-grade visual code comprehension application des
 cd codeflow-backend
 mvn clean spring-boot:run
 ```
-*Backend runs on `http://localhost:8080`*
+*Backend server runs on `http://localhost:8080`*
 
 ### 2. Frontend Setup (React + Vite)
 ```bash
@@ -93,11 +115,28 @@ cd codeflow-frontend
 npm install
 npm run dev
 ```
-*Frontend runs on `http://localhost:3000`*
+*Frontend client runs on `http://localhost:3000`*
 
 ---
 
-## 📋 Release Versions & Branch Structure
+## 🗺️ Product Roadmap (v1.0 to v10.0)
+
+| Version | Release Stage | Core Capabilities & Scope |
+| :--- | :--- | :--- |
+| **v1.0 (Current v2.3.0)** | **MVP Release** | Spring Boot + React + Maven parsing, GitHub URL & ZIP ingestion, Feature-Segregated Flow Explorer, Claymorphic HLD Canvas, ERD, Security Flow, Dependency Explorer, 5-mode File Tree Explorer, Monaco Viewer. |
+| **v2.0** | **Runtime Tracing** | Bytecode execution tracing engine using `ByteBuddy` & `OpenTelemetry` to record live Controller ➔ Service ➔ Repository execution. |
+| **v3.0** | **Execution Replay** | Player controls (Play, Pause, Step Forward/Backward, 1x/2x/3x Speed) allowing developers to watch live HTTP requests travel through the code like a video playback. |
+| **v4.0** | **SQL Explorer** | Automated SQL query capture, execution time breakdown, rows returned, and Hibernate dirty-checking analyzer. |
+| **v5.0** | **React Runtime Explorer** | Virtual DOM reconciliation tracer, React state mutation visualization, and Axios request/response interrupter. |
+| **v6.0** | **AI Explanations** | Integrated RAG engine powered by `Spring AI` (Gemini / OpenAI / Ollama) for automated architecture document generation and code Q&A. |
+| **v7.0** | **VS Code Extension** | Native IDE side-panel extension for direct visual execution flow exploration inside VS Code. |
+| **v8.0** | **Chrome Extension** | Browser extension for GitHub repository pages to view interactive flow maps directly on github.com. |
+| **v9.0** | **Team Collaboration** | Multi-user shared workspaces, live architectural annotations, and team review comments. |
+| **v10.0** | **Enterprise Edition** | Local Desktop Application (Electron / Tauri) with 100% offline analysis (zero cloud code uploads) and custom enterprise parser plugins (Python, Node.js, .NET). |
+
+---
+
+## 📋 Release Branches
 
 - **`main`**: Latest production release (`v2.3.0`).
 - **`v2.3-prd-features`**: Feature-Segregated Flow Explorer, Dynamic Endpoint Parser, File Tree Modal (5 View Modes), Claymorphic HLD Canvas, and modal layout bounds fixes.
