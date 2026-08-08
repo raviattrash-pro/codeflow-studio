@@ -7,7 +7,7 @@ CodeFlow Studio is an enterprise-grade visual code comprehension application des
 
 ## 🎬 Live Product Demonstration
 
-https://github.com/raviattrash-pro/sturdy-enigma/raw/main/docs/media/codeflow.mp4
+![CodeFlow Studio Live Demo](docs/media/codeflow.gif)
 
 > 💡 *Watch CodeFlow Studio in action: Tracing feature-segregated execution flows, dynamic endpoint parsing, claymorphic HLD architecture canvas, and interactive 5-mode File Tree Explorer.*
 
@@ -69,7 +69,7 @@ https://github.com/raviattrash-pro/sturdy-enigma/raw/main/docs/media/codeflow.mp
                                   ▼
    ┌─────────────────────────────────────────────────────────────┐
    │                    PostgreSQL / H2 Database                 │
-   └─────────────────────────────────────────────────────────────┘
+   └──────────────────────────────┬──────────────────────────────┘
 ```
 
 ---
