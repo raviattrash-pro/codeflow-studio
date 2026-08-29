@@ -13,7 +13,7 @@
 
     <groupId>com.codeflow</groupId>
     <artifactId>codeflow-backend</artifactId>
-    <version>2.3.0</version>
+    <version>3.0.0</version>
     <name>codeflow-backend</name>
     <description>Visual Code Intelligence Engine for Java Spring Boot + React Projects</description>
 

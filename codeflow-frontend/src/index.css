@@ -263,3 +263,232 @@ input:-webkit-autofill:active {
     display: none !important;
   }
 }
+
+/* 4 Theme View System */
+[data-theme="NIGHT"] {
+  --bg-main: #0c101d;
+  --bg-surface: #0f172a;
+  --text-main: #f8fafc;
+}
+
+[data-theme="NORMAL"] {
+  --bg-main: #f8fafc;
+  --bg-surface: #ffffff;
+  --text-main: #0f172a;
+}
+[data-theme="NORMAL"] body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Image 1: Neumorphism Soft Light Mode */
+[data-theme="NEUMORPHIC"] {
+  --bg-main: #e0e5ec;
+  --bg-surface: #e0e5ec;
+  --text-main: #2d3748;
+}
+[data-theme="NEUMORPHIC"] body {
+  background-color: #e0e5ec !important;
+  color: #2d3748 !important;
+}
+
+.neu-card {
+  background: #e0e5ec !important;
+  box-shadow: 9px 9px 18px #a3b1c6, -9px -9px 18px #ffffff !important;
+  border-radius: 24px !important;
+  border: 1px solid rgba(255,255,255,0.6) !important;
+}
+
+.neu-inset {
+  background: #e0e5ec !important;
+  box-shadow: inset 6px 6px 12px #a3b1c6, inset -6px -6px 12px #ffffff !important;
+  border-radius: 9999px !important;
+}
+
+.neu-button {
+  background: #e0e5ec !important;
+  box-shadow: 6px 6px 12px #a3b1c6, -6px -6px 12px #ffffff !important;
+  border-radius: 16px !important;
+  color: #2d3748 !important;
+  transition: all 0.2s ease;
+}
+.neu-button:active {
+  box-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff !important;
+}
+
+/* Image 2: Glassmorphism Glossy Gel Mode */
+[data-theme="GLASSMORPHISM"] {
+  --bg-main: #eef2f6;
+  --bg-surface: rgba(255, 255, 255, 0.7);
+  --text-main: #1e293b;
+}
+[data-theme="GLASSMORPHISM"] body {
+  background-color: #eef2f6 !important;
+  color: #1e293b !important;
+}
+
+.glass-gel-card {
+  background: rgba(255, 255, 255, 0.65) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 10px 30px rgba(31, 38, 135, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  border-radius: 24px !important;
+}
+
+.glass-gel-pill {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.85), rgba(37, 99, 235, 0.9)) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.8) !important;
+  border-radius: 9999px !important;
+  color: #ffffff !important;
+}
+
+/* ─────────────────────────────────────────────────────────── */
+/* DEEP THEME SYSTEM OVERRIDES FOR ALL MODALS & TOOLS           */
+/* ─────────────────────────────────────────────────────────── */
+
+/* 1. NORMAL THEME OVERRIDES FOR MODALS */
+[data-theme="NORMAL"] .modal-backdrop {
+  background: rgba(15, 23, 42, 0.45) !important;
+  backdrop-filter: blur(8px) !important;
+}
+[data-theme="NORMAL"] .modal-backdrop > div {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.2) !important;
+}
+[data-theme="NORMAL"] .modal-backdrop div {
+  background-color: transparent;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+[data-theme="NORMAL"] .modal-backdrop .bg-slate-900,
+[data-theme="NORMAL"] .modal-backdrop .bg-slate-950,
+[data-theme="NORMAL"] .modal-backdrop .bg-\[\#080b13\],
+[data-theme="NORMAL"] .modal-backdrop .bg-\[\#0f172a\],
+[data-theme="NORMAL"] .modal-backdrop .bg-\[\#0b0f19\],
+[data-theme="NORMAL"] .modal-backdrop .bg-\[\#0a0d16\] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+[data-theme="NORMAL"] .modal-backdrop text,
+[data-theme="NORMAL"] .modal-backdrop h3,
+[data-theme="NORMAL"] .modal-backdrop h4,
+[data-theme="NORMAL"] .modal-backdrop p,
+[data-theme="NORMAL"] .modal-backdrop span:not(.chip),
+[data-theme="NORMAL"] .modal-backdrop code,
+[data-theme="NORMAL"] .modal-backdrop pre {
+  color: #0f172a !important;
+}
+[data-theme="NORMAL"] .modal-backdrop input {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* 2. NEUMORPHIC LIGHT OVERRIDES FOR MODALS (IMAGE 1) */
+[data-theme="NEUMORPHIC"] .modal-backdrop {
+  background: rgba(224, 229, 236, 0.75) !important;
+  backdrop-filter: blur(12px) !important;
+}
+[data-theme="NEUMORPHIC"] .modal-backdrop > div {
+  background-color: #e0e5ec !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  color: #2d3748 !important;
+  box-shadow: 14px 14px 28px #a3b1c6, -14px -14px 28px #ffffff !important;
+  border-radius: 28px !important;
+}
+[data-theme="NEUMORPHIC"] .modal-backdrop div {
+  border-color: #c0cbdc;
+  color: #2d3748;
+}
+[data-theme="NEUMORPHIC"] .modal-backdrop .bg-slate-900,
+[data-theme="NEUMORPHIC"] .modal-backdrop .bg-slate-950,
+[data-theme="NEUMORPHIC"] .modal-backdrop .bg-\[\#080b13\],
+[data-theme="NEUMORPHIC"] .modal-backdrop .bg-\[\#0f172a\],
+[data-theme="NEUMORPHIC"] .modal-backdrop .bg-\[\#0b0f19\],
+[data-theme="NEUMORPHIC"] .modal-backdrop .bg-\[\#0a0d16\] {
+  background-color: #e0e5ec !important;
+  box-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff !important;
+  border-color: rgba(255,255,255,0.6) !important;
+  color: #2d3748 !important;
+  border-radius: 16px;
+}
+[data-theme="NEUMORPHIC"] .modal-backdrop button {
+  background-color: #e0e5ec !important;
+  color: #2d3748 !important;
+  box-shadow: 4px 4px 8px #a3b1c6, -4px -4px 8px #ffffff !important;
+  border-radius: 12px !important;
+  border: none !important;
+}
+[data-theme="NEUMORPHIC"] .modal-backdrop text,
+[data-theme="NEUMORPHIC"] .modal-backdrop h3,
+[data-theme="NEUMORPHIC"] .modal-backdrop h4,
+[data-theme="NEUMORPHIC"] .modal-backdrop p,
+[data-theme="NEUMORPHIC"] .modal-backdrop span,
+[data-theme="NEUMORPHIC"] .modal-backdrop code,
+[data-theme="NEUMORPHIC"] .modal-backdrop pre {
+  color: #2d3748 !important;
+}
+
+/* 3. GLASSMORPHISM GEL OVERRIDES FOR MODALS (IMAGE 2) */
+[data-theme="GLASSMORPHISM"] .modal-backdrop {
+  background: rgba(238, 242, 246, 0.65) !important;
+  backdrop-filter: blur(20px) !important;
+}
+[data-theme="GLASSMORPHISM"] .modal-backdrop > div {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(25px) !important;
+  -webkit-backdrop-filter: blur(25px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.95) !important;
+  color: #0f172a !important;
+  box-shadow: 0 20px 60px rgba(31, 38, 135, 0.18), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+  border-radius: 28px !important;
+}
+[data-theme="GLASSMORPHISM"] .modal-backdrop div {
+  border-color: rgba(255, 255, 255, 0.8);
+  color: #0f172a;
+}
+[data-theme="GLASSMORPHISM"] .modal-backdrop .bg-slate-900,
+[data-theme="GLASSMORPHISM"] .modal-backdrop .bg-slate-950,
+[data-theme="GLASSMORPHISM"] .modal-backdrop .bg-\[\#080b13\],
+[data-theme="GLASSMORPHISM"] .modal-backdrop .bg-\[\#0f172a\],
+[data-theme="GLASSMORPHISM"] .modal-backdrop .bg-\[\#0b0f19\],
+[data-theme="GLASSMORPHISM"] .modal-backdrop .bg-\[\#0a0d16\] {
+  background-color: rgba(255, 255, 255, 0.65) !important;
+  backdrop-filter: blur(15px) !important;
+  border-color: rgba(255, 255, 255, 0.9) !important;
+  color: #0f172a !important;
+  box-shadow: 0 8px 25px rgba(31, 38, 135, 0.08) !important;
+}
+/* Custom Styling for Trace Range Slider Thumb Across All Themes */
+.trace-slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ec4899 !important;
+  border: 3px solid #ffffff !important;
+  box-shadow: 0 0 12px rgba(236, 72, 153, 0.9), 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+  cursor: pointer;
+  position: relative;
+  z-index: 30;
+}
+.trace-slider-input::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ec4899 !important;
+  border: 3px solid #ffffff !important;
+  box-shadow: 0 0 12px rgba(236, 72, 153, 0.9), 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+  cursor: pointer;
+  position: relative;
+  z-index: 30;
+}
+
+

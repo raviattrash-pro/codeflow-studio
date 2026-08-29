@@ -11,11 +11,14 @@ import {
   Tag, ChevronRight, Package, Box, Search, ChevronDown, Filter, X
 } from 'lucide-react';
 
+import { ThemeMode } from './Header';
+
 interface InteractiveFlowExplorerProps {
   graphData: GraphData;
   onSelectNode: (nodeId: string) => void;
   selectedNodeId?: string;
   onViewCode?: (filePath: string) => void;
+  currentTheme?: ThemeMode;
 }
 
 export interface FlowStep {
@@ -75,6 +78,7 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
   onSelectNode,
   selectedNodeId,
   onViewCode,
+  currentTheme = 'NIGHT',
 }) => {
   const [viewMode, setViewMode] = useState<'HLD_DIAGRAM' | 'STEP_TIMELINE'>('HLD_DIAGRAM');
   const [activeFeatureId, setActiveFeatureId] = useState<string>('');
@@ -360,55 +364,114 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
     return 'bg-purple-500/20 text-purple-300 border-purple-500/40';
   };
 
+  const getToolbarBg = () => {
+    switch (currentTheme) {
+      case 'NEUMORPHIC': return 'bg-[#e0e5ec] border-b border-[#c0cbdc] text-[#2d3748]';
+      case 'GLASSMORPHISM': return 'bg-white/70 backdrop-blur-md border-b border-white/80 text-slate-900';
+      case 'NORMAL': return 'bg-white border-b border-slate-200 text-slate-900';
+      default: return 'bg-[#0a0e1a] border-b border-slate-800 text-slate-100';
+    }
+  };
+
+  const getDropdownBtnStyle = () => {
+    switch (currentTheme) {
+      case 'NEUMORPHIC': return 'bg-[#e0e5ec] text-[#2d3748] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] border border-white/80';
+      case 'GLASSMORPHISM': return 'bg-white/80 backdrop-blur-md text-slate-900 border border-white shadow-xs';
+      case 'NORMAL': return 'bg-slate-100 text-slate-800 border border-slate-300';
+      default: return 'bg-slate-900 border border-slate-700/80 text-white shadow-lg';
+    }
+  };
+
+  const getDropdownMenuStyle = () => {
+    switch (currentTheme) {
+      case 'NEUMORPHIC': return 'bg-[#e0e5ec] text-[#2d3748] border-[#c0cbdc] shadow-[14px_14px_28px_#a3b1c6,-14px_-14px_28px_#ffffff]';
+      case 'GLASSMORPHISM': return 'bg-white text-slate-900 border-slate-200 shadow-2xl';
+      case 'NORMAL': return 'bg-white text-slate-900 border-slate-200 shadow-2xl';
+      default: return 'bg-[#0b0f19] text-slate-100 border-slate-700 shadow-2xl';
+    }
+  };
+
+  const getDropdownItemBg = (isSel: boolean) => {
+    if (isSel) {
+      return currentTheme === 'NEUMORPHIC' ? '#d0d7e2' : currentTheme === 'NIGHT' ? '#1f1329' : '#f1f5f9';
+    }
+    return currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : currentTheme === 'NIGHT' ? '#0b0f19' : '#ffffff';
+  };
+
   return (
-    <div className="flex-1 flex flex-col bg-slate-950 overflow-hidden relative">
+    <div className={`flex-1 flex flex-col overflow-hidden relative ${
+      currentTheme === 'NEUMORPHIC' ? 'bg-[#e0e5ec] text-[#2d3748]' :
+      currentTheme === 'GLASSMORPHISM' ? 'bg-[#eef2f6] text-slate-900' :
+      currentTheme === 'NORMAL' ? 'bg-[#f8fafc] text-slate-900' :
+      'bg-slate-950 text-slate-100'
+    }`}>
       {/* ─── SLEEK UNIFIED CONTROL TOOLBAR ─── */}
-      <div className="h-14 bg-[#0a0e1a] border-b border-slate-800 px-4 flex items-center justify-between z-50 shrink-0 relative">
+      <div className={`h-14 px-4 flex items-center justify-between z-50 shrink-0 relative ${getToolbarBg()}`}>
         {/* Left: Feature Search Dropdown & Top Quick Chips */}
         <div className="flex items-center space-x-3 flex-1 min-w-0" ref={dropdownRef}>
           {/* Main Feature Dropdown Button */}
           <div className="relative">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center space-x-2.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 text-xs font-mono text-white shadow-lg hover:border-pink-500/50 transition-all"
+              className={`flex items-center space-x-2.5 px-3 py-1.5 rounded-xl text-xs font-mono transition-all ${getDropdownBtnStyle()}`}
             >
               <span className="text-base select-none">{activeFeature?.icon}</span>
               <div className="flex items-center space-x-2 truncate">
-                <span className="font-bold text-slate-100">{activeFeature?.name}</span>
+                <span className="font-bold">{activeFeature?.name}</span>
                 <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded border ${getMethodBadge(activeFeature?.httpMethod || 'GET')}`}>
                   {activeFeature?.httpMethod}
                 </span>
-                <span className="text-[10px] text-slate-400 font-mono truncate max-w-[160px] hidden md:inline">
+                <span className="text-[10px] opacity-70 font-mono truncate max-w-[160px] hidden md:inline">
                   {activeFeature?.endpoint}
                 </span>
               </div>
-              <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isDropdownOpen ? 'rotate-180 text-pink-400' : ''}`} />
+              <ChevronDown className={`w-3.5 h-3.5 opacity-60 transition-transform ${isDropdownOpen ? 'rotate-180 text-pink-500' : ''}`} />
             </button>
 
-            {/* 100% SOLID OPAQUE Dropdown Menu with Highest Z-Index (z-[9999]) */}
+            {/* 100% Solid Opaque Dropdown Menu */}
             {isDropdownOpen && (
               <div
-                className="absolute left-0 top-full mt-2 w-96 rounded-2xl shadow-[0_25px_70px_rgba(0,0,0,1)] border border-slate-700 overflow-hidden z-[9999] flex flex-col max-h-96 tools-dropdown"
-                style={{ backgroundColor: '#0b0f19', opacity: 1 }}
+                className={`absolute left-0 top-full mt-2 w-96 rounded-2xl border overflow-hidden z-[9999] flex flex-col max-h-96 tools-dropdown ${getDropdownMenuStyle()}`}
+                style={{
+                  backgroundColor: currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : currentTheme === 'NIGHT' ? '#0b0f19' : '#ffffff',
+                  opacity: 1,
+                  zIndex: 999999,
+                }}
               >
                 {/* Search Bar */}
-                <div className="p-3 border-b border-slate-800 flex items-center justify-between" style={{ backgroundColor: '#070a12' }}>
+                <div
+                  className="p-3 border-b flex items-center justify-between"
+                  style={{
+                    backgroundColor: currentTheme === 'NEUMORPHIC' ? '#d8e0ec' : currentTheme === 'NIGHT' ? '#070a12' : '#f8fafc',
+                    opacity: 1,
+                  }}
+                >
                   <div className="relative flex-1">
-                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 opacity-50" />
                     <input
                       type="text"
                       placeholder={`Search ${featureScenarios.length} feature flows...`}
                       value={featureSearch}
                       onChange={(e) => setFeatureSearch(e.target.value)}
-                      className="w-full border border-slate-700/60 rounded-xl pl-8 pr-3 py-1 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-pink-500 font-mono"
-                      style={{ backgroundColor: '#0f172a' }}
+                      className="w-full border rounded-xl pl-8 pr-3 py-1 text-xs focus:outline-none font-mono"
+                      style={{
+                        backgroundColor: currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : currentTheme === 'NORMAL' ? '#ffffff' : '#0f172a',
+                        color: currentTheme === 'NIGHT' ? '#f8fafc' : '#0f172a',
+                        opacity: 1,
+                      }}
                     />
                   </div>
-                  <span className="text-[10px] text-slate-500 font-mono ml-2">{filteredScenarios.length} endpoints</span>
+                  <span className="text-[10px] opacity-60 font-mono ml-2">{filteredScenarios.length} endpoints</span>
                 </div>
 
                 {/* Scenarios List */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar divide-y divide-slate-800/80" style={{ backgroundColor: '#0b0f19' }}>
+                <div
+                  className="flex-1 overflow-y-auto custom-scrollbar divide-y divide-slate-500/20"
+                  style={{
+                    backgroundColor: currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : currentTheme === 'NIGHT' ? '#0b0f19' : '#ffffff',
+                    opacity: 1,
+                  }}
+                >
                   {filteredScenarios.map((feat) => {
                     const isSel = feat.id === activeFeature?.id;
                     return (
@@ -419,27 +482,30 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
                           setIsDropdownOpen(false);
                         }}
                         className={`w-full text-left p-3 flex items-start space-x-3 transition-colors font-mono ${
-                          isSel ? 'border-l-4 border-pink-500' : 'hover:bg-slate-800/80'
+                          isSel ? 'border-l-4 border-pink-500 font-bold' : ''
                         }`}
-                        style={{ backgroundColor: isSel ? '#1f1329' : '#0b0f19' }}
+                        style={{
+                          backgroundColor: getDropdownItemBg(isSel),
+                          opacity: 1,
+                        }}
                       >
                         <span className="text-lg mt-0.5 select-none">{feat.icon}</span>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-0.5">
-                            <span className={`text-xs font-bold ${isSel ? 'text-pink-300' : 'text-slate-100'}`}>
+                            <span className="text-xs font-bold">
                               {feat.name}
                             </span>
                             <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded border ${getMethodBadge(feat.httpMethod)}`}>
                               {feat.httpMethod}
                             </span>
                           </div>
-                          <p className="text-[10px] text-slate-400 truncate font-mono">{feat.endpoint}</p>
+                          <p className="text-[10px] opacity-70 truncate font-mono">{feat.endpoint}</p>
                         </div>
                       </button>
                     );
                   })}
                   {filteredScenarios.length === 0 && (
-                    <div className="p-6 text-center text-slate-500 text-xs font-mono">No matching feature flows found.</div>
+                    <div className="p-6 text-center opacity-50 text-xs font-mono">No matching feature flows found.</div>
                   )}
                 </div>
               </div>
@@ -456,7 +522,11 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
                   onClick={() => setActiveFeatureId(feat.id)}
                   className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-xl text-xs font-mono border transition-all ${
                     isSel
-                      ? 'bg-slate-800 border-pink-500/60 text-white font-bold shadow-md'
+                      ? 'border-pink-500 text-pink-500 font-bold shadow-md bg-pink-500/10'
+                      : currentTheme === 'NEUMORPHIC'
+                      ? 'bg-[#e0e5ec] text-[#2d3748] shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-white/60'
+                      : currentTheme === 'NORMAL'
+                      ? 'bg-slate-100 text-slate-800 border-slate-300'
                       : 'bg-slate-900/80 border-slate-800 text-slate-400 hover:text-slate-200'
                   }`}
                 >
@@ -469,7 +539,7 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
             {featureScenarios.length > 3 && (
               <button
                 onClick={() => setIsDropdownOpen(true)}
-                className="px-2.5 py-1 rounded-xl text-[10px] font-mono text-pink-400 bg-pink-500/10 border border-pink-500/30 hover:bg-pink-500/20 transition-all shrink-0"
+                className="px-2.5 py-1 rounded-xl text-[10px] font-mono text-pink-500 bg-pink-500/10 border border-pink-500/30 hover:bg-pink-500/20 transition-all shrink-0 font-bold"
               >
                 +{featureScenarios.length - 3} More
               </button>
@@ -480,13 +550,18 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
         {/* Right: View Mode Segmented Control & Playback */}
         <div className="flex items-center space-x-3 shrink-0 ml-4">
           {/* Mode Switcher Segmented Control */}
-          <div className="flex items-center space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+          <div className={`flex items-center space-x-1 p-1 rounded-xl border ${
+            currentTheme === 'NEUMORPHIC' ? 'bg-[#e0e5ec] border-[#c0cbdc] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff]' :
+            currentTheme === 'GLASSMORPHISM' ? 'bg-white/80 border-white text-slate-900' :
+            currentTheme === 'NORMAL' ? 'bg-slate-100 border-slate-300 text-slate-900' :
+            'bg-slate-900 border-slate-800'
+          }`}>
             <button
               onClick={() => setViewMode('HLD_DIAGRAM')}
               className={`flex items-center space-x-1.5 px-3 py-1 rounded-lg text-xs font-semibold font-mono transition-all ${
                 viewMode === 'HLD_DIAGRAM'
                   ? 'bg-pink-600 text-white shadow-md shadow-pink-600/30 font-bold'
-                  : 'text-slate-400 hover:text-white'
+                  : 'opacity-70 hover:opacity-100'
               }`}
             >
               <Workflow className="w-3.5 h-3.5" />
@@ -498,7 +573,7 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
               className={`flex items-center space-x-1.5 px-3 py-1 rounded-lg text-xs font-semibold font-mono transition-all ${
                 viewMode === 'STEP_TIMELINE'
                   ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30 font-bold'
-                  : 'text-slate-400 hover:text-white'
+                  : 'opacity-70 hover:opacity-100'
               }`}
             >
               <Layers className="w-3.5 h-3.5" />
@@ -516,10 +591,15 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
               <span>{isPlaying ? 'Pause' : 'Play Flow'}</span>
             </button>
 
-            <div className="hidden sm:flex items-center space-x-1 text-xs font-mono bg-slate-900 px-2.5 py-1.5 rounded-xl border border-slate-800">
-              <span className="font-bold text-pink-400">{currentStepIndex + 1}</span>
-              <span className="text-slate-600">/</span>
-              <span className="text-slate-400">{activeSteps.length}</span>
+            <div className={`hidden sm:flex items-center space-x-1 text-xs font-mono px-2.5 py-1.5 rounded-xl border ${
+              currentTheme === 'NEUMORPHIC' ? 'bg-[#e0e5ec] border-[#c0cbdc] text-[#2d3748]' :
+              currentTheme === 'GLASSMORPHISM' ? 'bg-white/80 border-white text-slate-900' :
+              currentTheme === 'NORMAL' ? 'bg-white border-slate-300 text-slate-900' :
+              'bg-slate-900 border-slate-800 text-slate-300'
+            }`}>
+              <span className="font-bold text-pink-500">{currentStepIndex + 1}</span>
+              <span className="opacity-40">/</span>
+              <span className="opacity-70">{activeSteps.length}</span>
             </div>
           </div>
         </div>
@@ -533,6 +613,7 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
           activeStepIndex={currentStepIndex}
           onSelectStep={(i) => setCurrentStepIndex(i)}
           onViewCode={onViewCode}
+          currentTheme={currentTheme}
         />
       ) : (
         <div className="flex-1 flex overflow-hidden">

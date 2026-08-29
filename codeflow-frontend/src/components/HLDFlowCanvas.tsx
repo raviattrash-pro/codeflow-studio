@@ -4,6 +4,7 @@ import { FlowStep } from './InteractiveFlowExplorer';
 import { getAnnotationDetails } from '../utils/annotationDictionary';
 import { getInterviewQuestionsForNode } from '../utils/interviewQuestions';
 import { X, Sparkles, BookOpen, Code2, ArrowRight, ArrowDown, Zap, FileCode } from 'lucide-react';
+import { ThemeMode } from './Header';
 
 interface HLDFlowCanvasProps {
   graphData: GraphData;
@@ -11,6 +12,7 @@ interface HLDFlowCanvasProps {
   activeStepIndex: number;
   onSelectStep: (index: number) => void;
   onViewCode?: (filePath: string) => void;
+  currentTheme?: ThemeMode;
 }
 
 interface BoxNode {
@@ -35,7 +37,7 @@ interface Arrow {
 }
 
 export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
-  graphData, flowSteps, activeStepIndex, onSelectStep, onViewCode,
+  graphData, flowSteps, activeStepIndex, onSelectStep, onViewCode, currentTheme = 'NIGHT',
 }) => {
   const [selectedBox, setSelectedBox] = useState<BoxNode | null>(null);
 
@@ -47,106 +49,117 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
 
   const boxes: BoxNode[] = [];
 
+  // Column 0: Clients
   fe.slice(0, 3).forEach((n, i) => boxes.push({
     id: n.id, label: n.data.label, sub: 'React Component',
-    icon: '📱', col: '#22d3ee', bg: '#083344',
+    icon: '📱', col: '#0284c7', bg: '#083344',
     row: i, colIdx: 0, nodeType: 'REACT_COMPONENT',
     annotations: n.data.annotations, filePath: n.data.filePath,
   }));
   if (fe.length === 0) boxes.push({
     id: 'fe_placeholder', label: 'React Client', sub: 'Browser SPA',
-    icon: '📱', col: '#22d3ee', bg: '#083344',
-    row: 1, colIdx: 0, nodeType: 'REACT_COMPONENT', annotations: '',
+    icon: '📱', col: '#0284c7', bg: '#083344',
+    row: 0, colIdx: 0, nodeType: 'REACT_COMPONENT', annotations: '',
   });
 
+  // Column 1: API Gateway & Security
   boxes.push({
     id: 'api_gw', label: 'API Gateway', sub: 'Spring Security + JWT',
-    icon: '🛡️', col: '#818cf8', bg: '#1e1b4b',
+    icon: '🛡️', col: '#4f46e5', bg: '#1e1b4b',
     row: 0, colIdx: 1, nodeType: 'SPRING_CONTROLLER',
-    annotations: '@RestController, @RequestMapping, @CrossOrigin',
-  });
-  boxes.push({
-    id: 'load_bal', label: 'Load Balancer', sub: 'DispatcherServlet Handler',
-    icon: '⚖️', col: '#a78bfa', bg: '#2e1065',
-    row: 1, colIdx: 1, nodeType: 'SPRING_CONTROLLER',
-    annotations: '@RestController, @Valid',
+    annotations: '@RestController, @RequestMapping, CorsFilter, JwtAuthenticationFilter',
   });
 
+  // Column 2: Controllers
   ctrl.slice(0, 4).forEach((n, i) => boxes.push({
-    id: n.id, label: n.data.label,
-    sub: `${n.data.httpMethod || 'REST'} ${n.data.endpointPath || ''}`.trim(),
-    icon: '⚡', col: '#818cf8', bg: '#312e81',
+    id: n.id, label: n.data.label, sub: n.data.endpointPath || '@RestController',
+    icon: '⚡', col: '#2563eb', bg: '#1e3a8a',
     row: i, colIdx: 2, nodeType: 'SPRING_CONTROLLER',
-    annotations: n.data.annotations || '@RestController, @PostMapping, @RequestBody, @Valid',
-    filePath: n.data.filePath,
+    annotations: n.data.annotations, filePath: n.data.filePath,
   }));
+  if (ctrl.length === 0) boxes.push({
+    id: 'ctrl_placeholder', label: 'MainController', sub: '/api/v1/resource',
+    icon: '⚡', col: '#2563eb', bg: '#1e3a8a',
+    row: 0, colIdx: 2, nodeType: 'SPRING_CONTROLLER', annotations: '',
+  });
 
+  // Column 3: Services
   svc.slice(0, 4).forEach((n, i) => boxes.push({
-    id: n.id, label: n.data.label, sub: '@Service Business Engine',
-    icon: '🛠️', col: '#c084fc', bg: '#3b0764',
+    id: n.id, label: n.data.label, sub: '@Service + @Transactional',
+    icon: '🛠️', col: '#9333ea', bg: '#3b0764',
     row: i, colIdx: 3, nodeType: 'SPRING_SERVICE',
-    annotations: n.data.annotations || '@Service, @Transactional, @Autowired',
-    filePath: n.data.filePath,
+    annotations: n.data.annotations, filePath: n.data.filePath,
   }));
+  if (svc.length === 0) boxes.push({
+    id: 'svc_placeholder', label: 'BusinessService', sub: '@Service',
+    icon: '🛠️', col: '#9333ea', bg: '#3b0764',
+    row: 0, colIdx: 3, nodeType: 'SPRING_SERVICE', annotations: '',
+  });
 
-  boxes.push({
-    id: 'redis', label: 'Redis Cache', sub: 'In-Memory L1 Cache',
-    icon: '⚡', col: '#f87171', bg: '#450a0a',
-    row: 0, colIdx: 4, nodeType: 'DB_TABLE', annotations: '@Entity, @Cacheable',
-  });
-  boxes.push({
-    id: 'pg', label: db[0]?.data.label || 'PostgreSQL DB', sub: 'Relational Store',
-    icon: '🗄️', col: '#fbbf24', bg: '#451a03',
-    row: 1, colIdx: 4, nodeType: 'DB_TABLE',
-    annotations: db[0]?.data.annotations || '@Entity, @Table, @Id',
-    filePath: db[0]?.data.filePath,
-  });
-  repo.slice(0, 2).forEach((n, i) => boxes.push({
-    id: n.id, label: n.data.label, sub: '@Repository Spring Data JPA',
-    icon: '📦', col: '#34d399', bg: '#064e3b',
-    row: 2 + i, colIdx: 4, nodeType: 'SPRING_REPOSITORY',
-    annotations: n.data.annotations || '@Repository, @Autowired',
-    filePath: n.data.filePath,
+  // Column 4: DB & Cache
+  db.slice(0, 3).forEach((n, i) => boxes.push({
+    id: n.id, label: n.data.label, sub: n.data.nodeType === 'SPRING_REPOSITORY' ? 'JpaRepository' : '@Entity Table',
+    icon: n.data.nodeType === 'SPRING_REPOSITORY' ? '⚡' : '🗄️',
+    col: '#d97706', bg: '#451a03',
+    row: i, colIdx: 4, nodeType: n.data.nodeType,
+    annotations: n.data.annotations, filePath: n.data.filePath,
   }));
+  if (db.length === 0) boxes.push({
+    id: 'db_placeholder', label: 'AppDatabase', sub: 'JpaRepository / PostgreSQL',
+    icon: '🗄️', col: '#d97706', bg: '#451a03',
+    row: 0, colIdx: 4, nodeType: 'DB_TABLE', annotations: '',
+  });
 
+  // Clean 100% Linear End-to-End Pipeline Arrows
   const arrows: Arrow[] = [];
-  const feIds = boxes.filter((b) => b.colIdx === 0).map((b) => b.id);
-  feIds.forEach((fid, i) => arrows.push({ fromId: fid, toId: 'api_gw', label: ['GET Data', 'POST Form', 'Admin Req'][i] || 'Request', step: i + 1 }));
-  arrows.push({ fromId: 'api_gw', toId: 'load_bal', label: 'Route', step: feIds.length + 1 });
+  
+  // Step 1: Client -> API Gateway
+  const firstFe = boxes.find((b) => b.colIdx === 0);
+  const gw = boxes.find((b) => b.id === 'api_gw');
+  if (firstFe && gw) {
+    arrows.push({ fromId: firstFe.id, toId: gw.id, label: 'HTTP Request', step: 1 });
+  }
 
-  const ctrlBoxes = boxes.filter((b) => b.colIdx === 2);
-  if (ctrlBoxes[0]) arrows.push({ fromId: 'load_bal', toId: ctrlBoxes[0].id, label: 'Dispatch', step: feIds.length + 2 });
+  // Step 2: API Gateway -> First Controller
+  const firstCtrl = boxes.find((b) => b.colIdx === 2);
+  if (gw && firstCtrl) {
+    arrows.push({ fromId: gw.id, toId: firstCtrl.id, label: 'Filter & Dispatch', step: 2 });
+  }
 
-  const svcBoxes = boxes.filter((b) => b.colIdx === 3);
-  if (ctrlBoxes[0] && svcBoxes[0]) arrows.push({ fromId: ctrlBoxes[0].id, toId: svcBoxes[0].id, label: 'Invoke Service', step: feIds.length + 3 });
-  if (svcBoxes[0]) {
-    arrows.push({ fromId: svcBoxes[0].id, toId: 'redis', label: 'Cache Read', step: feIds.length + 4 });
-    arrows.push({ fromId: svcBoxes[0].id, toId: 'pg', label: 'DB Write', step: feIds.length + 5 });
+  // Step 3: Controller -> First Service
+  const firstSvc = boxes.find((b) => b.colIdx === 3);
+  if (firstCtrl && firstSvc) {
+    arrows.push({ fromId: firstCtrl.id, toId: firstSvc.id, label: 'Invoke Service', step: 3 });
+  }
+
+  // Step 4: Service -> First DB/Repository
+  const firstDb = boxes.find((b) => b.colIdx === 4);
+  if (firstSvc && firstDb) {
+    arrows.push({ fromId: firstSvc.id, toId: firstDb.id, label: 'SQL Query', step: 4 });
   }
 
   const colLabels = ['Clients', 'API Gateway', 'Controllers', 'Services', 'DB & Cache'];
 
-  // Helper for Data Flow steps per component type
   const getDataFlowSteps = (nodeType: string) => {
     if (nodeType === 'REACT_COMPONENT') {
       return [
-        '1. User triggers event handler (onClick/onSubmit) in React UI component.',
-        '2. Local state updates with useState/useReducer hook.',
-        '3. Form payload serialized to JSON and sent via Axios HTTP REST call.',
+        '1. User triggers browser event (onClick / onSubmit) in React UI component.',
+        '2. Axios HTTP client serializes state payload into JSON DTO.',
+        '3. Asynchronous fetch request sent over TLS connection to Spring Boot API gateway.',
       ];
     }
     if (nodeType === 'SPRING_CONTROLLER') {
       return [
-        '1. DispatcherServlet inspects request URL and delegates to @RestController handler method.',
-        '2. Jackson ObjectMapper deserializes request JSON payload into Java DTO object.',
-        '3. @Valid triggers Bean Validation constraints. Invokes @Service business methods and returns ResponseEntity<T> JSON.',
+        '1. Spring DispatcherServlet receives incoming HTTP request and resolves HandlerMapping.',
+        '2. Controller method invoked with @RequestBody parameter binding and @Valid DTO bean validation.',
+        '3. Business delegation call routed to @Service layer.',
       ];
     }
     if (nodeType === 'SPRING_SERVICE') {
       return [
-        '1. PlatformTransactionManager opens a @Transactional boundary.',
-        '2. Applies core business rules, security policies, and domain calculations.',
-        '3. Invokes @Repository operations. On completion, TransactionInterceptor commits ACID transaction.',
+        '1. Spring AOP proxy intercepts invocation to manage @Transactional boundary.',
+        '2. Business validation and domain calculations executed.',
+        '3. Data persistence delegation passed to JpaRepository / Hibernate session.',
       ];
     }
     if (nodeType === 'SPRING_REPOSITORY') {
@@ -167,8 +180,57 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
   const selQA = selectedBox ? getInterviewQuestionsForNode(selectedBox.nodeType) : [];
   const selDataFlow = selectedBox ? getDataFlowSteps(selectedBox.nodeType) : [];
 
+  const getCanvasBg = () => {
+    switch (currentTheme) {
+      case 'NEUMORPHIC': return 'bg-[#e0e5ec] text-[#2d3748]';
+      case 'GLASSMORPHISM': return 'bg-[#eef2f6] text-slate-900';
+      case 'NORMAL': return 'bg-[#f8fafc] text-slate-900';
+      default: return 'bg-[#0a0f1c] text-slate-100';
+    }
+  };
+
+  const getCardStyle = (b: BoxNode, isSel: boolean) => {
+    if (currentTheme === 'NEUMORPHIC') {
+      return {
+        backgroundColor: '#e0e5ec',
+        boxShadow: isSel
+          ? 'inset 6px 6px 12px #a3b1c6, inset -6px -6px 12px #ffffff'
+          : '9px 9px 18px #a3b1c6, -9px -9px 18px #ffffff',
+        border: '1px solid rgba(255, 255, 255, 0.7)',
+        color: '#2d3748',
+        borderRadius: '24px',
+      };
+    }
+    if (currentTheme === 'GLASSMORPHISM') {
+      return {
+        backgroundColor: 'rgba(255, 255, 255, 0.65)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        boxShadow: '0 10px 30px rgba(31, 38, 135, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
+        border: '1px solid rgba(255, 255, 255, 0.8)',
+        color: '#0f172a',
+        borderRadius: '24px',
+      };
+    }
+    if (currentTheme === 'NORMAL') {
+      return {
+        backgroundColor: '#ffffff',
+        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04)',
+        border: `2px solid ${b.col}44`,
+        color: '#0f172a',
+        borderRadius: '24px',
+      };
+    }
+    return {
+      backgroundColor: `${b.bg}CC`,
+      border: `1px solid ${b.col}33`,
+      color: '#ffffff',
+    };
+  };
+
   return (
-    <div className="flex-1 flex overflow-hidden bg-[#0a0f1c] relative">
+    <div className={`flex-1 flex overflow-hidden relative ${getCanvasBg()}`}>
+      {/* Main 5-Column Canvas Workspace */}
       <div className="flex-1 overflow-auto custom-scrollbar p-4 md:p-8">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-16 min-w-[300px] md:min-w-[1100px] h-full items-start">
           {colLabels.map((lbl, ci) => {
@@ -177,7 +239,13 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
             return (
               <div key={ci} className="flex flex-col gap-6 md:gap-10 items-center w-full relative">
                 <div className="text-center mb-2">
-                  <h2 className="font-bold uppercase tracking-widest text-sm font-mono text-white" style={{ color: boxes.find((b) => b.colIdx === ci)?.col || 'white' }}>
+                  <h2
+                    className={`font-bold uppercase tracking-widest text-sm font-mono ${
+                      currentTheme === 'NEUMORPHIC' ? 'text-[#2d3748]' :
+                      currentTheme === 'NORMAL' || currentTheme === 'GLASSMORPHISM' ? 'text-slate-900 font-extrabold' :
+                      'text-white'
+                    }`}
+                  >
                     {lbl}
                   </h2>
                 </div>
@@ -185,63 +253,73 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 {colBoxes.map((b) => {
                   const isSel = selectedBox?.id === b.id;
                   const outgoingArrows = arrows.filter((a) => a.fromId === b.id);
+                  const cardStyle = getCardStyle(b, isSel);
 
                   return (
                     <div
                       key={b.id}
                       onClick={() => setSelectedBox(isSel ? null : b)}
-                      className={`relative w-full p-6 md:p-8 cursor-pointer flex flex-col items-center justify-center text-center clay-card ${isSel ? 'selected' : ''}`}
-                      style={{
-                        backgroundColor: `${b.bg}CC`,
-                        borderColor: `${b.col}33`,
-                      }}
+                      className={`relative w-full max-w-[220px] mx-auto p-6 md:p-8 cursor-pointer flex flex-col items-center justify-center text-center transition-all ${
+                        currentTheme === 'NIGHT' ? 'clay-card' : 'hover:-translate-y-1'
+                      } ${isSel ? 'selected ring-2 ring-indigo-500' : ''}`}
+                      style={cardStyle}
                     >
                       <div className="text-5xl md:text-6xl mb-4 drop-shadow-lg">{b.icon}</div>
-                      <div className="font-mono text-sm md:text-base font-bold mb-2" style={{ color: b.col }}>
+                      <div
+                        className={`font-mono text-sm md:text-base font-bold mb-2 ${
+                          currentTheme === 'NIGHT' ? '' : 'text-slate-900 font-extrabold'
+                        }`}
+                        style={{ color: currentTheme === 'NIGHT' ? b.col : undefined }}
+                      >
                         {b.label.length > 20 ? b.label.slice(0, 20) + '…' : b.label}
                       </div>
-                      <div className="inline-block px-2 py-0.5 rounded-full border text-[10px] md:text-xs font-mono opacity-90" style={{ color: b.col, borderColor: b.col + '66', backgroundColor: b.col + '15' }}>
+
+                      <div
+                        className={`inline-block px-3 py-1 rounded-full text-[10px] md:text-xs font-mono font-bold ${
+                          currentTheme === 'NEUMORPHIC' ? 'shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff] bg-[#e0e5ec] text-[#2d3748]' :
+                          currentTheme === 'GLASSMORPHISM' ? 'glass-gel-pill' :
+                          currentTheme === 'NORMAL' ? 'bg-slate-100 text-slate-800 border border-slate-300' :
+                          'opacity-90'
+                        }`}
+                        style={currentTheme === 'NIGHT' ? { color: b.col, borderColor: b.col + '66', backgroundColor: b.col + '15' } : undefined}
+                      >
                         {b.nodeType.replace('SPRING_', '').replace('_', ' ')}
                       </div>
 
-                      {/* Connection Arrows */}
+                      {/* Connection Arrows & Centered Step Badges */}
                       <div className="hidden md:block">
                         {outgoingArrows.map((arr, i) => {
                           const isActive = arr.step !== undefined && arr.step - 1 === activeStepIndex;
-                          const toBox = boxes.find((bx) => bx.id === arr.toId);
-                          const isDown = toBox?.colIdx === b.colIdx;
 
-                          if (isDown) {
-                            return (
-                              <div key={i} className="absolute top-full left-1/2 -translate-x-1/2 flex flex-col items-center z-10 pointer-events-none" style={{ height: '40px' }}>
-                                <div className={`w-0.5 h-full ${isActive ? 'bg-pink-500' : 'arrow-line-vertical text-slate-500/50'}`} />
-                                {arr.step && (
-                                  <div className="absolute top-1/2 -translate-y-1/2">
-                                    <div className={`text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full ${isActive ? 'bg-pink-500 text-white shadow-[0_0_12px_rgba(236,72,153,0.8)]' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}>
-                                      {arr.step}
-                                    </div>
+                          const getStepBadgeStyle = () => {
+                            if (isActive) {
+                              return 'bg-gradient-to-r from-pink-500 to-indigo-600 text-white shadow-[0_0_15px_rgba(236,72,153,0.8)] scale-110 border border-white';
+                            }
+                            if (currentTheme === 'NEUMORPHIC') {
+                              return 'bg-[#e0e5ec] text-[#2d3748] shadow-[4px_4px_8px_#a3b1c6,-4px_-4px_8px_#ffffff] border border-white/80';
+                            }
+                            if (currentTheme === 'GLASSMORPHISM') {
+                              return 'bg-white/90 backdrop-blur-md text-slate-900 border border-white shadow-md';
+                            }
+                            if (currentTheme === 'NORMAL') {
+                              return 'bg-white text-slate-900 border border-slate-300 shadow-md';
+                            }
+                            return 'bg-slate-900 text-slate-200 border border-slate-700 shadow-md';
+                          };
+
+                          return (
+                            <div key={i} className="absolute top-1/2 left-full -translate-y-1/2 flex items-center z-20 pointer-events-none" style={{ width: '64px' }}>
+                              <div className={`flex-1 h-0.5 ${isActive ? 'bg-pink-500 shadow-[0_0_8px_#ec4899]' : 'arrow-line text-slate-400/60'}`} />
+                              <div className={`w-2 h-2 ${isActive ? 'border-pink-500' : 'border-slate-400/60'} border-t-2 border-r-2 transform rotate-45 -ml-1`} />
+                              {arr.step && (
+                                <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
+                                  <div className={`w-6 h-6 rounded-full flex items-center justify-center font-mono text-[11px] font-bold ${getStepBadgeStyle()}`}>
+                                    {arr.step}
                                   </div>
-                                )}
-                              </div>
-                            );
-                          } else {
-                            return (
-                              <div key={i} className="absolute top-1/2 left-full -translate-y-1/2 flex items-center z-10 pointer-events-none" style={{ width: '64px' }}>
-                                <div className={`flex-1 h-0.5 ${isActive ? 'bg-pink-500' : 'arrow-line text-slate-500/50'}`} />
-                                <div className={`w-2 h-2 ${isActive ? 'border-pink-500' : 'border-slate-500/50'} border-t-2 border-r-2 transform rotate-45 -ml-1`} />
-                                {arr.step && (
-                                  <div className="absolute left-1/2 -translate-x-1/2 -top-3">
-                                    <div className={`text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full ${isActive ? 'bg-pink-500 text-white shadow-[0_0_12px_rgba(236,72,153,0.8)]' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}>
-                                      {arr.step}
-                                    </div>
-                                  </div>
-                                )}
-                                <div className={`absolute left-1/2 -translate-x-1/2 top-3.5 whitespace-nowrap text-[9px] font-mono font-bold ${isActive ? 'text-pink-400' : 'text-slate-500'}`}>
-                                  {arr.label}
                                 </div>
-                              </div>
-                            );
-                          }
+                              )}
+                            </div>
+                          );
                         })}
                       </div>
                     </div>
@@ -253,141 +331,78 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
         </div>
       </div>
 
-      {/* ─── SLEEK FLOATING INSPECTOR SIDE DRAWER (Fixed 450px Right Drawer) ─── */}
+      {/* Non-Colliding Side-by-Side Inspector Drawer Panel */}
       {selectedBox && (
         <div
-          className="fixed top-36 right-4 bottom-4 w-[450px] max-w-[90vw] rounded-3xl border border-slate-700/80 shadow-[0_25px_80px_rgba(0,0,0,0.95)] z-40 overflow-hidden flex flex-col animate-fadeIn"
-          style={{ backgroundColor: '#0f172a' }}
+          className={`w-96 shrink-0 border-l h-full overflow-y-auto custom-scrollbar p-6 space-y-6 z-30 transition-all ${
+            currentTheme === 'NEUMORPHIC' ? 'bg-[#e0e5ec] border-[#c0cbdc] text-[#2d3748] shadow-[inset_4px_4px_8px_#a3b1c6]' :
+            currentTheme === 'GLASSMORPHISM' ? 'bg-white/90 backdrop-blur-2xl border-white text-slate-900 shadow-xl' :
+            currentTheme === 'NORMAL' ? 'bg-white border-slate-200 text-slate-900 shadow-xl' :
+            'bg-[#0f172a] border-slate-800 text-slate-100 shadow-2xl'
+          }`}
         >
-          {/* Drawer Header */}
-          <div className="p-5 border-b border-slate-800 flex items-start justify-between shrink-0" style={{ backgroundColor: '#0a0e1a' }}>
+          <div className="flex items-center justify-between border-b pb-4">
             <div className="flex items-center space-x-3">
-              <div
-                className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-lg border"
-                style={{ backgroundColor: selectedBox.bg, borderColor: selectedBox.col + '44' }}
-              >
-                {selectedBox.icon}
-              </div>
+              <span className="text-3xl">{selectedBox.icon}</span>
               <div>
-                <div className="flex items-center space-x-2">
-                  <span
-                    className="px-2 py-0.5 text-[10px] font-bold font-mono rounded-full border"
-                    style={{ color: selectedBox.col, borderColor: selectedBox.col + '44', backgroundColor: selectedBox.col + '20' }}
-                  >
-                    {selectedBox.nodeType.replace('SPRING_', '').replace('_', ' ')}
-                  </span>
-                </div>
-                <h3 className="text-base font-bold text-white mt-1 font-mono">{selectedBox.label}</h3>
-                <p className="text-xs text-slate-400 font-mono">{selectedBox.sub}</p>
+                <h3 className="font-bold text-base font-mono">{selectedBox.label}</h3>
+                <span className="text-xs font-mono opacity-70">{selectedBox.sub}</span>
               </div>
             </div>
-
-            <button
-              onClick={() => setSelectedBox(null)}
-              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
-            >
-              <X className="w-4 h-4" />
+            <button onClick={() => setSelectedBox(null)} className="p-1.5 rounded-xl hover:bg-slate-500/10">
+              <X className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Drawer Body Scroll Area */}
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-5 bg-[#0f172a]">
-            {/* File Path & Source Viewer Button */}
-            {selectedBox.filePath && (
-              <div className="p-3 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-                <code className="text-[10px] text-slate-300 font-mono break-all">{selectedBox.filePath}</code>
-                {onViewCode && (
-                  <button
-                    onClick={() => onViewCode(selectedBox.filePath!)}
-                    className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 text-[10px] font-bold font-mono hover:bg-indigo-600/40 transition-all shrink-0 ml-3"
-                  >
-                    <FileCode className="w-3.5 h-3.5" />
-                    <span>View Code</span>
-                  </button>
-                )}
-              </div>
-            )}
-
-            {/* 1. Purpose & Role */}
-            <div className="p-4 rounded-2xl bg-indigo-950/30 border border-indigo-500/20">
-              <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2 flex items-center space-x-1.5 font-mono">
-                <Zap className="w-3.5 h-3.5" />
-                <span>Purpose & Role in Architecture</span>
-              </h4>
-              <p className="text-xs text-slate-200 leading-relaxed font-mono">
-                {selectedBox.nodeType === 'REACT_COMPONENT' &&
-                  'React UI component that renders the user interface, handles user events (onClick, onChange, onSubmit), manages local state with useState/useReducer hooks, and triggers API calls via Axios/Fetch to the Spring Boot backend.'}
-                {selectedBox.nodeType === 'SPRING_CONTROLLER' &&
-                  'REST API endpoint handler. Receives incoming HTTP requests from the client, validates request parameters and body using @Valid annotations, delegates business logic to @Service beans, and returns ResponseEntity<T> JSON responses.'}
-                {selectedBox.nodeType === 'SPRING_SERVICE' &&
-                  'Core business logic engine. Enforces domain rules, performs data transformations, coordinates multiple repository calls within @Transactional boundaries (ensuring ACID guarantees), and applies cross-cutting concerns like caching and security.'}
-                {selectedBox.nodeType === 'SPRING_REPOSITORY' &&
-                  'Data Access Object (DAO) layer. Extends JpaRepository<T, ID> to provide CRUD operations, custom JPQL/HQL queries, pagination support, and automatic SQL generation from method names (e.g., findByUsername). Handles connection pooling via HikariCP.'}
-                {selectedBox.nodeType === 'DB_TABLE' &&
-                  'Persistent storage layer. Maps Java @Entity classes to relational database tables. Hibernate ORM generates DDL schema, manages dirty checking, first-level cache (L1), and optimistic locking.'}
-              </p>
-            </div>
-
-            {/* 2. Data Flow Through Component (ALWAYS EXPANDED) */}
-            <div className="p-4 rounded-2xl bg-cyan-950/20 border border-cyan-500/20">
-              <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-3 flex items-center space-x-1.5 font-mono">
-                <ArrowRight className="w-3.5 h-3.5" />
-                <span>Data Flow Execution Path</span>
-              </h4>
-              <div className="space-y-2.5">
-                {selDataFlow.map((stepStr, i) => (
-                  <div key={i} className="flex items-start space-x-2 text-xs text-slate-200 font-mono">
-                    <ArrowDown className="w-3.5 h-3.5 text-cyan-400 mt-0.5 shrink-0" />
-                    <span>{stepStr}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 3. Framework Annotations & Mechanics (ALWAYS EXPANDED) */}
-            {selAnnotations.length > 0 && (
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-purple-400 uppercase tracking-wider flex items-center space-x-1.5 font-mono">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Framework Annotations & Internal Mechanics</span>
-                </h4>
-                <div className="space-y-3">
-                  {selAnnotations.map((ann, i) => (
-                    <div key={i} className="p-3.5 rounded-2xl bg-slate-900 border border-purple-500/20 space-y-2">
-                      <span className="font-mono text-xs font-bold text-pink-400 px-2 py-0.5 rounded-lg bg-pink-500/10 border border-pink-500/20 inline-block">
-                        {ann.name}
-                      </span>
-                      <p className="text-xs text-slate-200 leading-relaxed">{ann.whyUsed}</p>
-                      <p className="text-[11px] text-purple-300/90 font-mono pt-2 border-t border-slate-800">
-                        ⚙️ <span className="text-slate-400 font-semibold">Under the hood:</span> {ann.internalWorking}
-                      </p>
-                    </div>
-                  ))}
+          <div>
+            <h4 className="text-xs font-mono font-bold uppercase tracking-wider mb-2 flex items-center space-x-1.5 text-indigo-500">
+              <Zap className="w-4 h-4" /><span>Data Flow Execution Path</span>
+            </h4>
+            <div className="space-y-2">
+              {selDataFlow.map((st, i) => (
+                <div key={i} className="text-xs font-mono p-3 rounded-xl border bg-slate-500/5 leading-relaxed">
+                  {st}
                 </div>
-              </div>
-            )}
-
-            {/* 4. Interview Q&A (ALWAYS EXPANDED) */}
-            {selQA.length > 0 && (
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center space-x-1.5 font-mono">
-                  <BookOpen className="w-3.5 h-3.5" />
-                  <span>Interview Questions & Detailed Answers</span>
-                </h4>
-                <div className="space-y-3">
-                  {selQA.map((qa, i) => (
-                    <div key={i} className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 font-mono">
-                      <p className="text-xs font-bold text-amber-300 leading-relaxed">Q: {qa.question}</p>
-                      <p className="text-xs text-slate-300 leading-relaxed pt-2 border-t border-slate-800">
-                        <span className="font-bold text-emerald-400">Answer: </span>
-                        {qa.answer}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+              ))}
+            </div>
           </div>
+
+          <div>
+            <h4 className="text-xs font-mono font-bold uppercase tracking-wider mb-2 flex items-center space-x-1.5 text-purple-500">
+              <Sparkles className="w-4 h-4" /><span>Framework Annotations</span>
+            </h4>
+            <div className="space-y-2">
+              {selAnnotations.map((ann, i) => (
+                <div key={i} className="p-3 rounded-xl border bg-slate-500/5 space-y-1">
+                  <span className="text-xs font-mono font-bold text-pink-500 block">{ann.name}</span>
+                  <p className="text-xs opacity-80">{ann.whyUsed}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-xs font-mono font-bold uppercase tracking-wider mb-2 flex items-center space-x-1.5 text-amber-500">
+              <BookOpen className="w-4 h-4" /><span>Interview Questions & Answers</span>
+            </h4>
+            <div className="space-y-3">
+              {selQA.map((qa, i) => (
+                <div key={i} className="p-3 rounded-xl border bg-slate-500/5 space-y-1.5">
+                  <span className="text-xs font-mono font-bold block">{qa.question}</span>
+                  <p className="text-xs opacity-80 leading-relaxed">{qa.answer}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {selectedBox.filePath && onViewCode && (
+            <button
+              onClick={() => onViewCode(selectedBox.filePath!)}
+              className="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-mono font-bold text-xs flex items-center justify-center space-x-2 shadow-lg"
+            >
+              <FileCode className="w-4 h-4" /><span>Inspect Source Code</span>
+            </button>
+          )}
         </div>
       )}
     </div>
