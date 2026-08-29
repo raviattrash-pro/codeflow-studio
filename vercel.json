@@ -1,0 +1,11 @@
+{
+  "buildCommand": "cd codeflow-frontend && npm install && npm run build",
+  "outputDirectory": "codeflow-frontend/dist",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
