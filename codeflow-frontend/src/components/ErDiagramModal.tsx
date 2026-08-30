@@ -88,7 +88,7 @@ export const ErDiagramModal: React.FC<ErDiagramModalProps> = ({
         <div className="flex-1 min-h-0 p-6 overflow-auto custom-scrollbar bg-slate-950/60 space-y-6">
           {/* Entity Tables Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(data?.tables || []).map((table) => (
+            {(Array.isArray(data?.tables) ? data.tables : []).map((table) => (
               <div
                 key={table.id}
                 className="rounded-2xl border border-amber-500/30 bg-slate-900 shadow-xl overflow-hidden font-mono"

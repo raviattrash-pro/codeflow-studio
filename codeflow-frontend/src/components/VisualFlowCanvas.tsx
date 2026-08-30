@@ -16,7 +16,7 @@ export const VisualFlowCanvas: React.FC<VisualFlowCanvasProps> = ({
   const [zoom, setZoom] = useState(1);
   const [filterLayer, setFilterLayer] = useState<'ALL' | 'FRONTEND' | 'BACKEND' | 'DATABASE'>('ALL');
 
-  const filteredNodes = (graphData.nodes || []).filter(
+  const filteredNodes = (Array.isArray(graphData.nodes) ? graphData.nodes : []).filter(
     (n) => filterLayer === 'ALL' || n.data.layer === filterLayer
   );
 

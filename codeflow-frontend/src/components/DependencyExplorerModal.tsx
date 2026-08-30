@@ -94,7 +94,7 @@ export const DependencyExplorerModal: React.FC<DependencyExplorerModalProps> = (
     axios
       .get<ProjectDependency[]>(`/api/v1/projects/${projectId}/dependencies`)
       .then((res) => {
-        setDependencies(res.data || []);
+        setDependencies(Array.isArray(res.data) ? res.data : []);
         if (res.data && res.data.length > 0) setSelectedDep(res.data[0]);
       })
       .catch(() => setDependencies([]));
@@ -102,7 +102,7 @@ export const DependencyExplorerModal: React.FC<DependencyExplorerModalProps> = (
 
   if (!isOpen) return null;
 
-  const filteredDeps = (dependencies || []).filter(
+  const filteredDeps = (Array.isArray(dependencies) ? dependencies : []).filter(
     (d) =>
       (d.artifactId || '').toLowerCase().includes((filter || '').toLowerCase()) ||
       (d.groupId || '').toLowerCase().includes((filter || '').toLowerCase())

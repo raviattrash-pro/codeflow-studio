@@ -41,11 +41,11 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
 }) => {
   const [selectedBox, setSelectedBox] = useState<BoxNode | null>(null);
 
-  const fe = (graphData.nodes || []).filter((n) => n.data.layer === 'FRONTEND');
-  const ctrl = (graphData.nodes || []).filter((n) => n.data.nodeType === 'SPRING_CONTROLLER');
-  const svc = (graphData.nodes || []).filter((n) => n.data.nodeType === 'SPRING_SERVICE');
-  const repo = (graphData.nodes || []).filter((n) => n.data.nodeType === 'SPRING_REPOSITORY');
-  const db = (graphData.nodes || []).filter((n) => n.data.layer === 'DATABASE');
+  const fe = (Array.isArray(graphData.nodes) ? graphData.nodes : []).filter((n) => n.data.layer === 'FRONTEND');
+  const ctrl = (Array.isArray(graphData.nodes) ? graphData.nodes : []).filter((n) => n.data.nodeType === 'SPRING_CONTROLLER');
+  const svc = (Array.isArray(graphData.nodes) ? graphData.nodes : []).filter((n) => n.data.nodeType === 'SPRING_SERVICE');
+  const repo = (Array.isArray(graphData.nodes) ? graphData.nodes : []).filter((n) => n.data.nodeType === 'SPRING_REPOSITORY');
+  const db = (Array.isArray(graphData.nodes) ? graphData.nodes : []).filter((n) => n.data.layer === 'DATABASE');
 
   const boxes: BoxNode[] = [];
 

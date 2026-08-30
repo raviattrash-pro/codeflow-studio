@@ -105,8 +105,8 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
 
   // Dynamically extract Feature Scenarios directly from parsed codebase graph
   const featureScenarios: FeatureScenario[] = useMemo(() => {
-    const nodes = graphData.nodes || [];
-    const edges = graphData.edges || [];
+    const nodes = Array.isArray(graphData.nodes) ? graphData.nodes : [];
+    const edges = Array.isArray(graphData.edges) ? graphData.edges : [];
 
     const controllers = nodes.filter((n) => n.data.nodeType === 'SPRING_CONTROLLER');
     const services = nodes.filter((n) => n.data.nodeType === 'SPRING_SERVICE');
