@@ -94,18 +94,18 @@ export const DependencyExplorerModal: React.FC<DependencyExplorerModalProps> = (
     axios
       .get<ProjectDependency[]>(`/api/v1/projects/${projectId}/dependencies`)
       .then((res) => {
-        setDependencies(res.data);
-        if (res.data.length > 0) setSelectedDep(res.data[0]);
+        setDependencies(res.data || []);
+        if (res.data && res.data.length > 0) setSelectedDep(res.data[0]);
       })
       .catch(() => setDependencies([]));
   }, [projectId, isOpen]);
 
   if (!isOpen) return null;
 
-  const filteredDeps = dependencies.filter(
+  const filteredDeps = (dependencies || []).filter(
     (d) =>
-      d.artifactId.toLowerCase().includes(filter.toLowerCase()) ||
-      d.groupId?.toLowerCase().includes(filter.toLowerCase())
+      (d.artifactId || '').toLowerCase().includes((filter || '').toLowerCase()) ||
+      (d.groupId || '').toLowerCase().includes((filter || '').toLowerCase())
   );
 
   const activeMeta = selectedDep ? STARTER_METADATA[selectedDep.artifactId] || {

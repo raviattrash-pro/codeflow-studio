@@ -112,7 +112,7 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
                 <p className="text-xs text-slate-300 leading-relaxed font-sans">{response.explanation}</p>
               </div>
 
-              {response.keyComponents && (
+              {Array.isArray(response.keyComponents) && (
                 <div className="p-4 rounded-2xl bg-indigo-950/20 border border-indigo-500/20 space-y-2">
                   <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider block font-mono">
                     Key Architectural Components

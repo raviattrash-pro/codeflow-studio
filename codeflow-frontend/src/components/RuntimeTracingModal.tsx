@@ -51,8 +51,8 @@ export const RuntimeTracingModal: React.FC<RuntimeTracingModalProps> = ({
     axios
       .get<ExecutionTrace[]>(`/api/v1/projects/${projectId}/traces`)
       .then((res) => {
-        setTraces(res.data);
-        if (res.data.length > 0) {
+        setTraces(res.data || []);
+        if (res.data && res.data.length > 0) {
           selectTrace(res.data[0]);
         }
       })
@@ -176,7 +176,7 @@ export const RuntimeTracingModal: React.FC<RuntimeTracingModalProps> = ({
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
             </div>
 
-            {traces.map((trace) => {
+            {(traces || []).map((trace) => {
               const isSel = selectedTrace?.id === trace.id;
               const methodCol = trace.httpMethod === 'POST' ? 'text-green-400 border-green-500/40 bg-green-500/10' :
                                 trace.httpMethod === 'DELETE' ? 'text-red-400 border-red-500/40 bg-red-500/10' :
@@ -487,7 +487,7 @@ export const RuntimeTracingModal: React.FC<RuntimeTracingModalProps> = ({
                         <div className="p-4 rounded-xl bg-[#080b13] border border-slate-800 space-y-2">
                           <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Generated Hibernate SQL Query:</span>
                           <pre className="text-xs text-amber-300 bg-slate-900/80 p-3.5 rounded-xl border border-slate-800/80 font-mono overflow-x-auto">
-{`SELECT t1.id, t1.label, t1.layer FROM ${activeStep.component.toLowerCase().replace(/[^a-z]/g, '_')} t1 WHERE t1.status = 'ACTIVE' LIMIT 1;`}
+{`SELECT t1.id, t1.label, t1.layer FROM ${(activeStep.component || '').toLowerCase().replace(/[^a-z]/g, '_')} t1 WHERE t1.status = 'ACTIVE' LIMIT 1;`}
                           </pre>
                         </div>
                       )}

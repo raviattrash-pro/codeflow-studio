@@ -51,6 +51,7 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
         .get<FileTreeResponse>(`/api/v1/projects/${projectId}/file-tree`)
         .then((res) => {
           const root = res.data;
+          if (!root) return;
           const children = root.children || [root];
           setTreeData(children);
           if (root.stats) {
@@ -90,6 +91,7 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
   };
 
   const getIcon = (name: string, type: 'folder' | 'file') => {
+    if (!name) return '📄';
     if (type === 'folder') return '📁';
     if (name.endsWith('.java')) return '☕';
     if (name.endsWith('.tsx') || name.endsWith('.jsx')) return '⚛️';
@@ -108,12 +110,12 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
     return nodes.reduce((acc: TreeNode[], node) => {
       const fullPath = currentPath ? `${currentPath}/${node.name}` : node.name;
       if (node.type === 'file') {
-        if (node.name.toLowerCase().includes(lowerTerm) || fullPath.toLowerCase().includes(lowerTerm)) {
+        if ((node.name || '').toLowerCase().includes(lowerTerm) || fullPath.toLowerCase().includes(lowerTerm)) {
           acc.push(node);
         }
       } else if (node.type === 'folder' && node.children) {
         const filteredChildren = filterTree(node.children, term, fullPath);
-        if (filteredChildren.length > 0 || node.name.toLowerCase().includes(lowerTerm)) {
+        if (filteredChildren.length > 0 || (node.name || '').toLowerCase().includes(lowerTerm)) {
           acc.push({ ...node, children: filteredChildren });
         }
       }

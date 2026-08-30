@@ -34,7 +34,7 @@ export const SqlExplorerModal: React.FC<SqlExplorerModalProps> = ({
 
     axios
       .get<SqlQueryLog[]>(`/api/v1/projects/${projectId}/sql`)
-      .then((res) => setLogs(res.data))
+      .then((res) => setLogs(res.data || []))
       .catch(() => setLogs([]));
   }, [isOpen, projectId]);
 
@@ -46,8 +46,8 @@ export const SqlExplorerModal: React.FC<SqlExplorerModalProps> = ({
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const filteredLogs = logs.filter(
-    (l) => filterType === 'ALL' || l.queryType.toUpperCase() === filterType
+  const filteredLogs = (logs || []).filter(
+    (l) => filterType === 'ALL' || (l.queryType || '').toUpperCase() === filterType
   );
 
   return (

@@ -137,9 +137,9 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
         const prefix = rawLabel.replace('Controller', '').toLowerCase();
 
         // Match associated service, repo, db by name similarity or fallback index
-        const matchedSvc = services.find((s) => s.data.label.toLowerCase().includes(prefix)) || services[idx % Math.max(1, services.length)];
-        const matchedRepo = repos.find((r) => r.data.label.toLowerCase().includes(prefix)) || repos[idx % Math.max(1, repos.length)];
-        const matchedDb = dbTables.find((d) => d.data.label.toLowerCase().includes(prefix)) || dbTables[idx % Math.max(1, dbTables.length)];
+        const matchedSvc = services.find((s) => (s.data.label || '').toLowerCase().includes(prefix)) || services[idx % Math.max(1, services.length)];
+        const matchedRepo = repos.find((r) => (r.data.label || '').toLowerCase().includes(prefix)) || repos[idx % Math.max(1, repos.length)];
+        const matchedDb = dbTables.find((d) => (d.data.label || '').toLowerCase().includes(prefix)) || dbTables[idx % Math.max(1, dbTables.length)];
         const matchedFe = feComponents[idx % Math.max(1, feComponents.length)];
 
         const httpMethod = (ctrl.data.httpMethod || 'GET').toUpperCase();
@@ -305,9 +305,9 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
     const term = featureSearch.toLowerCase();
     return featureScenarios.filter(
       (f) =>
-        f.name.toLowerCase().includes(term) ||
-        f.endpoint.toLowerCase().includes(term) ||
-        f.httpMethod.toLowerCase().includes(term)
+        (f.name || '').toLowerCase().includes(term) ||
+        (f.endpoint || '').toLowerCase().includes(term) ||
+        (f.httpMethod || '').toLowerCase().includes(term)
     );
   }, [featureScenarios, featureSearch]);
 

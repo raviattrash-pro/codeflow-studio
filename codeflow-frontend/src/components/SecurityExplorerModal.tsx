@@ -75,7 +75,7 @@ export const SecurityExplorerModal: React.FC<SecurityExplorerModalProps> = ({
         {/* Pipeline Steps */}
         <div className="flex-1 min-h-0 p-6 overflow-y-auto custom-scrollbar bg-slate-950/60 space-y-4">
           <div className="max-w-2xl mx-auto space-y-4">
-            {data?.steps.map((step, idx) => (
+            {(data?.steps || []).map((step, idx) => (
               <div key={step.step} className="space-y-3">
                 <div className="p-4 rounded-2xl bg-slate-900 border border-purple-500/30 shadow-lg space-y-2 font-mono">
                   <div className="flex items-center justify-between">
@@ -92,7 +92,7 @@ export const SecurityExplorerModal: React.FC<SecurityExplorerModalProps> = ({
                   <p className="text-xs text-slate-300 font-sans leading-relaxed">{step.description}</p>
                 </div>
 
-                {idx < data.steps.length - 1 && (
+                {idx < (data?.steps?.length || 0) - 1 && (
                   <div className="flex justify-center">
                     <ArrowDown className="w-4 h-4 text-purple-400 animate-bounce" />
                   </div>
