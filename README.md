@@ -1,10 +1,12 @@
-# CodeFlow Studio 🚀 (v3.0.0 Release)
+# CodeFlow Studio 🚀 (v4.1.0 Release)
 > **Understand Spring Boot + React codebases visually — without reading hundreds of files.**
 
-[![Version](https://img.shields.io/badge/version-3.0.0-indigo.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-4.1.0-indigo.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2-green.svg)](https://spring.io/projects/spring-boot)
-[![React](https://img.shields.io/badge/React-18-blue.svg)](https://reactjs.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2%2B-green.svg)](https://spring.io/projects/spring-boot)
+[![React](https://img.shields.io/badge/React-19.2-blue.svg)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8.2-purple.svg)](https://vite.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-7.0-blue.svg)](https://www.typescriptlang.org/)
 
 ---
 
@@ -22,61 +24,62 @@
 | :--- | :--- |
 | Developers spend hours jumping between hundreds of files trying to figure out how a feature works. | **Instant Visual Mapping**: Import any repo and immediately see end-to-end execution flows from React UI buttons down to SQL queries. |
 | Onboarding new developers on large Spring Boot + React codebases takes weeks. | **Interactive AST Navigation**: Click any architectural node (Controller, Service, Repository, Table) to view code, execution paths, and interview explanations. |
-| Hard to spot hidden security risks or unoptimized database calls across layers. | **Deep Developer Suite**: Built-in Runtime Tracing Replay Engine, SecurityFilterChain analyzer, ER Diagram builder, SQL query translator, and 5-mode File Tree AST visualizer. |
+| Hard to spot hidden security risks, slow queries, or latency spikes across layers. | **Deep Developer & Telemetry Suite**: Built-in API Metrics Dashboard, Request/Response Sequence Tracer, 24h Latency Heatmap, Runtime Tracing Replay, SecurityFilterChain analyzer, ER Diagram builder, SQL query translator, and 5-mode File Tree AST visualizer. |
 
 ---
 
-## ✨ Today's New Features (v3.0.0 Major Upgrade)
+## ✨ What's New in v4.1.0 (Full-Stack Visualizations Release)
 
-### 1. ⚡ Runtime Tracing & Execution Replay Engine (NEW in v3.0.0)
-- **Interactive Player Controls**: Replay captured HTTP requests with Play ▶️, Pause ⏸️, Skip Backward ⏪, Skip Forward ⏩, Reset 🔄, and Speed controls (**1x, 2x, 3x, 5x**).
-- **High-Contrast Interactive Scrubber**: Draggable glowing pink range slider knob (`#ec4899`) with neon progress bar, 100% visible and responsive in all themes.
-- **Live Telemetry Gauge Bar**: Real-time telemetry monitoring displaying P95 latency (`42ms`), HTTP status (`200 OK`), active worker thread (`http-nio-8080`), and database query counter (`1 SELECT, 1 UPDATE`).
-- **5-Column Pipeline & Multi-Tab Inspector**: Clickable pipeline step cards fitting 100% cleanly without container overflow, paired with a 3-tab inspector (Execution Action, Payload DTO, and Hibernate SQL Query).
+### 1. 🎯 API Metrics & Telemetry Dashboard (NEW)
+- **Live Endpoint Telemetry**: Real-time response time monitoring, P95/P99 latency bars, 24h throughput counts, and SLA status indicators.
+- **Search & Method Filtering**: Instantly search by path or controller, filter by HTTP verbs (`ALL`, `GET`, `POST`, `PUT`, `DELETE`), and sort by P95 latency, volume, or error rate.
+- **Summary KPI Bar**: Tracks total endpoints, average P95 response times against SLA targets (<300ms), 24h invocation volumes, and global availability error rates.
 
-### 2. 🎨 4 Theme View Options System (Full-App Transformation)
+### 2. 🔀 Full-Stack Request/Response Sequence Flow Diagram (NEW)
+- **7-Swimlane Architectural Tracer**: Maps requests across `User Browser` ➔ `React 19 SPA` ➔ `API Gateway` ➔ `OrderController` ➔ `OrderService` ➔ `OrderRepository` ➔ `PostgreSQL 16`.
+- **Directional Animated Connectors**: Visualizes outbound HTTP requests, internal Spring AOP proxy transaction boundaries, JDBC query dispatches, and return/hydration flows.
+- **VCR Playback Engine**: Step-by-step interactive player with Play/Pause, Step Forward/Back, and Reset controls.
+- **Hop Payload & Framework Context Inspector**: Expandable inspection drawer exposing transmission payloads, DTO schemas, and Spring/JVM internal mechanics at each hop.
+
+### 3. 🔥 24-Hour Latency Distribution Heatmap (NEW)
+- **Temporal Heatmap Matrix**: 24-hour UTC quantile matrix across all REST API endpoints.
+- **Color-Graded Spectrum**: Visual latency gradient from Cyan (`<100ms`) to Red (`>600ms Critical`) with pulsing alerts on high-latency bottleneck slots.
+- **Interactive Tooltips & Drawers**: Hover or click any time slot cell to inspect peak RPS, exact P95 execution duration, hourly volume, and error counts.
+
+---
+
+## ⚡ Next-Gen Tech Stack Upgrade (v4.0.0 Core)
+
+- ⚛️ **React 19 (`19.2.8`)**: Powered by React 19 Fiber architecture with optimized concurrent rendering.
+- ⚡ **Vite 8 (`8.2.2`)**: Rolldown Rust-based bundler achieving production builds in **430ms** (2.7x faster).
+- 🟦 **TypeScript 7 (`7.0.2`)**: Go-based compiler rewrite with instantaneous type validation.
+- 🎨 **Lucide React 1.x (`1.41.0`)**: Modern ESM/CJS tree-shakeable icon suite.
+- 🛡️ **Zero Vulnerabilities**: 100% clean `npm audit` across all dependencies.
+
+---
+
+## 🎨 4 Theme View Options System
+
 - 🌑 **Night View (Midnight Dark)**: Default high-contrast dark theme with neon cyan, purple, and pink accents.
 - ☀️ **Normal View (Clean Slate)**: Crisp light theme (`#ffffff`), dark slate text (`#0f172a`), and clear borders.
 - 🧼 **Neumorphic Soft View (Soft Light Mode)**: True 3D Neumorphism design system (`#e0e5ec`, extruded soft shadows `9px 9px 18px #a3b1c6, -9px -9px 18px #ffffff`, inset pill tags).
 - 🧊 **Glassmorphism Gel View (Glossy Gel Mode)**: Translucent frosted glass paneling (`backdrop-filter: blur(20px)`), glossy blue gel pill badges with top reflection rims.
-- **100% Dynamic UI Transformation**: Headers, Dashboard Chips, HLD Architectural Cards, Control Toolbars, and 100% of Tool Modals dynamically adapt to your selected theme.
-
-### 3. 📐 100% Linear 5-Column Architectural Pipeline
-- **Straight End-to-End Pipeline**: Perfect 5-column layout (**CLIENTS ➔ API GATEWAY ➔ CONTROLLERS ➔ SERVICES ➔ DB & CACHE**).
-- **Sleek Centered Step Badges**: Numbered step circles `(1)`, `(2)`, `(3)`, `(4)`, `(5)` centered directly on connection lines with zero card text collision.
-
-### 4. 🚪 Non-Colliding Side-by-Side Inspector Drawer
-- Converted floating overlays into a dedicated right-hand column (`w-96 shrink-0`), allowing the 5-column HLD diagram to flex smoothly on the left without any card blocking or text bleed-through.
-
-### 5. 🎮 One-Click Instant Interactive Demo Mode
-- **Zero-Setup Demo Loader**: Click **"🎮 Launch Interactive Demo Flow"** on the welcome screen or header to instantly test a fully populated 5-column microservice (`E-Commerce Store Microservice`).
-
-### 6. 🛡️ Solid Non-Transparent Dropdown Panels & Text Contrast Audit
-- Enforced solid background panels for Theme View, Tools, and Feature Search dropdown menus (`opacity: 1`, `zIndex: 999999`) with high-contrast text rendering.
 
 ---
 
 ## 🛠️ Complete Feature Suite
 
-### 1. ✨ Execution Flow Explorer
-- **Feature-Segregated Flow Scenarios**: Automatically groups Spring `@RestController` endpoints into real application features (e.g. Authentication Flow, Cart Checkout, Payment Processing).
-- **Searchable Endpoint Selector**: Filter through endpoints instantly by controller name, URL path, or HTTP method (`GET`, `POST`, `PUT`, `DELETE`).
-- **Always-Expanded Inspector Drawer**: Slide-over panel featuring Data Flow Execution Paths, Framework Annotations (`@RestController`, `@Service`, `@Transactional`), and Interview Q&A Engine.
-
-### 2. 🔐 Security Flow Analysis
-- Visualizes Spring Security filter chain order (`CorsFilter`, `CsrfFilter`, `JwtAuthenticationFilter`, `UserDetailsService`, `SecurityContextHolder`).
-
-### 3. 🗄️ ER Diagram Explorer
-- Automatically extracts `@Entity` relationships (`@OneToMany`, `@ManyToOne`, `@ManyToMany`, `@OneToOne`) with column data types and primary/foreign keys.
-
-### 4. 📦 Dependency Explorer
-- Parses `pom.xml` to extract Maven starters, Spring dependencies, and transitive packages.
-
-### 5. 🧠 AI Assistant
-- Contextual code analysis assistant for architectural explanations, refactoring recommendations, and interview prep.
-
-### 6. 📁 Codebase & File Tree Explorer (5 View Modes)
-- Directory tree supporting 5 visualization modes: Interactive File Tree, ASCII Tree, Emoji Tree, Mermaid AST Diagram, and Galaxy 2D Canvas View.
+1. **✨ Execution Flow Explorer**: Feature-segregated execution scenarios with linear 5-column HLD diagram and side-by-side inspector drawer.
+2. **🎯 API Metrics Dashboard**: Real-time latency distributions, throughput analytics, and endpoint status monitors.
+3. **🔀 Sequence Diagram**: 7-Swimlane request/response lifecycle flow with interactive playback.
+4. **🔥 Latency Heatmap**: 24-hour temporal quantile heatmap matrix for bottleneck discovery.
+5. **⚡ Runtime Tracing Replay**: Interactive VCR-style execution player with scrubber and live telemetry gauge bar.
+6. **🔐 Security Flow Analysis**: Spring Security filter chain order visualizer (`CorsFilter`, `CsrfFilter`, `JwtAuthenticationFilter`).
+7. **🗄️ ER Diagram Explorer**: `@Entity` relationship graph with column data types and foreign key constraints.
+8. **📦 Dependency Explorer**: `pom.xml` Maven starter analyzer with auto-configuration mechanics.
+9. **🧠 AI Assistant**: Contextual code analysis assistant for architectural reviews and interview prep.
+10. **📁 Codebase & File Tree Explorer**: 5 visualization modes: Interactive File Tree, ASCII Tree, Emoji Tree, Mermaid AST Diagram, and Galaxy 2D Canvas View.
+11. **📄 Markdown Documentation Exporter**: 1-click generation and download of architectural specifications.
 
 ---
 
@@ -84,20 +87,20 @@
 
 ```
    ┌─────────────────────────────────────────────────────────────┐
-   │                    React 18 + TypeScript                    │
-   │       TailwindCSS • Lucide Icons • Monaco Editor            │
+   │                    React 19 + TypeScript 7                  │
+   │       TailwindCSS • Lucide Icons • Vite 8 (Rolldown)        │
    └──────────────────────────────┬──────────────────────────────┘
                                   │ REST API
                                   ▼
    ┌─────────────────────────────────────────────────────────────┐
-   │                Spring Boot 3.2 (Java 21)                    │
+   │                Spring Boot 3.2+ (Java 21)                   │
    │  JavaParser • JGit • Maven Model Parser • Spring Data JPA   │
    └──────────────────────────────┬──────────────────────────────┘
                                   │ Persistence
                                   ▼
    ┌─────────────────────────────────────────────────────────────┐
    │                    PostgreSQL / H2 Database                 │
-   └──────────────────────────────┬──────────────────────────────┘
+   └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -115,7 +118,7 @@ mvn clean spring-boot:run
 ```
 *Backend server runs on `http://localhost:8080`*
 
-### 2. Frontend Setup (React + Vite)
+### 2. Frontend Setup (React 19 + Vite 8)
 ```bash
 cd codeflow-frontend
 npm install
@@ -131,21 +134,18 @@ npm run dev
 | :--- | :--- | :--- |
 | **v1.0** | **MVP Release** | Spring Boot + React + Maven parsing, GitHub URL & ZIP ingestion, ERD, Security Flow, Dependency Explorer. |
 | **v2.0** | **AST & Feature Flow** | Feature-Segregated Flow Explorer, Claymorphic HLD Canvas, 5-mode File Tree Explorer, Monaco Viewer. |
-| **v3.0 (Current v3.0.0)** | **Runtime Tracing & 4-Theme UI** | Live Controller ➔ Service ➔ Repository ➔ DB execution tracing, interactive replay player (Play/Pause/Step/Speed), 4 Theme View Options, linear HLD layout, side drawer inspector, and one-click demo mode. |
-| **v4.0** | **SQL Explorer** | Automated SQL query capture, execution time breakdown, rows returned, and Hibernate dirty-checking analyzer. |
+| **v3.0** | **Runtime Tracing & 4-Theme UI** | Live Controller ➔ Service ➔ Repository ➔ DB execution tracing, interactive replay player, 4 Theme Views, linear HLD layout. |
+| **v4.0** | **React 19 + Vite 8 Core** | Major platform upgrade to React 19, Vite 8 (Rolldown), TypeScript 7, Lucide React 1.x. |
+| **v4.1 (Current)** | **Full-Stack Visualizations** | API Metrics Dashboard, 7-Swimlane Sequence Flow Diagram, 24-Hour Latency Heatmap, Opaque Modal Theme Isolation. |
 | **v5.0** | **React Runtime Explorer** | Virtual DOM reconciliation tracer, React state mutation visualization, and Axios request/response interrupter. |
-| **v6.0** | **AI Explanations** | Integrated RAG engine powered by `Spring AI` (Gemini / OpenAI / Ollama) for automated architecture document generation and code Q&A. |
+| **v6.0** | **AI Explanations** | Integrated RAG engine powered by `Spring AI` (Gemini / OpenAI / Ollama) for automated architecture document generation. |
 | **v7.0** | **VS Code Extension** | Native IDE side-panel extension for direct visual execution flow exploration inside VS Code. |
 | **v8.0** | **Chrome Extension** | Browser extension for GitHub repository pages to view interactive flow maps directly on github.com. |
 | **v9.0** | **Team Collaboration** | Multi-user shared workspaces, live architectural annotations, and team review comments. |
-| **v10.0** | **Enterprise Edition** | Local Desktop Application (Electron / Tauri) with 100% offline analysis (zero cloud code uploads) and custom enterprise parser plugins (Python, Node.js, .NET). |
+| **v10.0** | **Enterprise Edition** | Local Desktop Application (Electron / Tauri) with 100% offline analysis (zero cloud code uploads) and custom enterprise parser plugins. |
 
 ---
 
-## 📋 Release Branches
+## 📋 License
 
-- **`main`**: Production release (`v3.0.0`).
-- **`v3.0-runtime-tracing`**: Latest v3.0.0 release featuring Runtime Tracing & Execution Replay Engine, 4 Theme View System, linear HLD canvas, side-by-side inspector drawer, and one-click interactive demo mode.
-- **`v2.3-prd-features`**: Feature-Segregated Flow Explorer, Dynamic Endpoint Parser, File Tree Modal (5 View Modes), Claymorphic HLD Canvas, and modal layout bounds fixes.
-- **`v2.2-prd-enrichments`**: ERD Modal scrolling, solid modal backdrops, compact header dropdowns, and Blob markdown exporter.
-- **`v2.1-prd-features`**: AI Assistant, Security Flow Explorer, and SQL Query Translator.
+MIT License © 2026 CodeFlow Studio Team.
