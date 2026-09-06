@@ -14,6 +14,9 @@ import { ErDiagramModal } from './components/ErDiagramModal';
 import { SecurityExplorerModal } from './components/SecurityExplorerModal';
 import { FileTreeModal } from './components/FileTreeModal';
 import { RuntimeTracingModal } from './components/RuntimeTracingModal';
+import { ApiMetricsDashboardModal } from './components/ApiMetricsDashboardModal';
+import { SequenceDiagramModal } from './components/SequenceDiagramModal';
+import { LatencyHeatmapModal } from './components/LatencyHeatmapModal';
 import { Project, GraphData, NodeDetail, ProjectNode } from './types';
 import { DEMO_PROJECT_DATA, DEMO_GRAPH_DATA } from './utils/demoData';
 
@@ -32,6 +35,9 @@ export default function App() {
   const [isSecurityFlowOpen, setIsSecurityFlowOpen] = useState(false);
   const [isFileTreeOpen, setIsFileTreeOpen] = useState(false);
   const [isRuntimeTracingOpen, setIsRuntimeTracingOpen] = useState(false);
+  const [isApiMetricsOpen, setIsApiMetricsOpen] = useState(false);
+  const [isSequenceDiagramOpen, setIsSequenceDiagramOpen] = useState(false);
+  const [isLatencyHeatmapOpen, setIsLatencyHeatmapOpen] = useState(false);
   const [viewingFilePath, setViewingFilePath] = useState<string | null>(null);
 
   const [currentTheme, setCurrentTheme] = useState<ThemeMode>('NIGHT');
@@ -155,6 +161,9 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
         onOpenSecurityFlow={() => setIsSecurityFlowOpen(true)}
         onOpenFileTree={() => setIsFileTreeOpen(true)}
         onOpenRuntimeTracing={() => setIsRuntimeTracingOpen(true)}
+        onOpenApiMetrics={() => setIsApiMetricsOpen(true)}
+        onOpenSequenceDiagram={() => setIsSequenceDiagramOpen(true)}
+        onOpenLatencyHeatmap={() => setIsLatencyHeatmapOpen(true)}
         onExportMarkdown={handleExportMarkdown}
         onExitProject={handleExitProject}
         searchQuery={searchQuery}
@@ -285,6 +294,24 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
         projectId={currentProjectId}
         isOpen={isRuntimeTracingOpen}
         onClose={() => setIsRuntimeTracingOpen(false)}
+        currentTheme={currentTheme}
+      />
+
+      <ApiMetricsDashboardModal
+        isOpen={isApiMetricsOpen}
+        onClose={() => setIsApiMetricsOpen(false)}
+        currentTheme={currentTheme}
+      />
+
+      <SequenceDiagramModal
+        isOpen={isSequenceDiagramOpen}
+        onClose={() => setIsSequenceDiagramOpen(false)}
+        currentTheme={currentTheme}
+      />
+
+      <LatencyHeatmapModal
+        isOpen={isLatencyHeatmapOpen}
+        onClose={() => setIsLatencyHeatmapOpen(false)}
         currentTheme={currentTheme}
       />
     </div>

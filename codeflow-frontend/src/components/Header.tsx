@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Layers, Search, Database, ShieldCheck, Bot, Package, Download, X, FolderTree, Menu, Import, LogOut, ChevronDown, Activity, Moon, Sun, Sparkles, Box } from 'lucide-react';
+import { Layers, Search, Database, ShieldCheck, Bot, Package, Download, X, FolderTree, Menu, Import, LogOut, ChevronDown, Activity, Moon, Sun, Sparkles, Box, BarChart2, Flame, Zap } from 'lucide-react';
 import { ProjectNode } from '../types';
 
 export type ThemeMode = 'NIGHT' | 'NORMAL' | 'NEUMORPHIC' | 'GLASSMORPHISM';
@@ -16,6 +16,9 @@ interface HeaderProps {
   onOpenSecurityFlow: () => void;
   onOpenFileTree: () => void;
   onOpenRuntimeTracing?: () => void;
+  onOpenApiMetrics?: () => void;
+  onOpenSequenceDiagram?: () => void;
+  onOpenLatencyHeatmap?: () => void;
   onExportMarkdown: () => void;
   onExitProject: () => void;
   searchQuery: string;
@@ -38,6 +41,9 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSecurityFlow,
   onOpenFileTree,
   onOpenRuntimeTracing,
+  onOpenApiMetrics,
+  onOpenSequenceDiagram,
+  onOpenLatencyHeatmap,
   onExportMarkdown,
   onExitProject,
   searchQuery,
@@ -253,6 +259,10 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <button onClick={() => { onOpenRuntimeTracing?.(); setIsToolsOpen(false); }} className="w-full text-left px-4 py-2.5 hover:bg-slate-500/10 flex items-center space-x-2.5 text-xs text-cyan-400 font-bold transition-colors"><Activity className="w-4 h-4 animate-pulse" /><span>Runtime Tracing (v3.0)</span></button>
                 <div className="border-t border-slate-500/20 my-1"></div>
+                <button onClick={() => { onOpenApiMetrics?.(); setIsToolsOpen(false); }} className="w-full text-left px-4 py-2.5 hover:bg-slate-500/10 flex items-center space-x-2.5 text-xs text-indigo-400 font-bold transition-colors"><BarChart2 className="w-4 h-4" /><span>API Metrics Dashboard</span></button>
+                <button onClick={() => { onOpenSequenceDiagram?.(); setIsToolsOpen(false); }} className="w-full text-left px-4 py-2.5 hover:bg-slate-500/10 flex items-center space-x-2.5 text-xs text-pink-400 font-bold transition-colors"><Zap className="w-4 h-4" /><span>Sequence Diagram</span></button>
+                <button onClick={() => { onOpenLatencyHeatmap?.(); setIsToolsOpen(false); }} className="w-full text-left px-4 py-2.5 hover:bg-slate-500/10 flex items-center space-x-2.5 text-xs text-amber-400 font-bold transition-colors"><Flame className="w-4 h-4" /><span>Latency Heatmap</span></button>
+                <div className="border-t border-slate-500/20 my-1"></div>
                 <button onClick={() => { onOpenErDiagram(); setIsToolsOpen(false); }} className="w-full text-left px-4 py-2.5 hover:bg-slate-500/10 flex items-center space-x-2.5 text-xs text-amber-500 font-medium transition-colors"><Database className="w-4 h-4" /><span>ER Diagram</span></button>
                 <button onClick={() => { onOpenSecurityFlow(); setIsToolsOpen(false); }} className="w-full text-left px-4 py-2.5 hover:bg-slate-500/10 flex items-center space-x-2.5 text-xs text-purple-500 font-medium transition-colors"><ShieldCheck className="w-4 h-4" /><span>Security</span></button>
                 <button onClick={() => { onOpenAiAssistant(); setIsToolsOpen(false); }} className="w-full text-left px-4 py-2.5 hover:bg-slate-500/10 flex items-center space-x-2.5 text-xs text-pink-500 font-medium transition-colors"><Bot className="w-4 h-4" /><span>AI Assistant</span></button>
@@ -305,6 +315,9 @@ export const Header: React.FC<HeaderProps> = ({
           {currentProjectId && (
             <>
               <button onClick={() => { onOpenRuntimeTracing?.(); setIsMobileMenuOpen(false); }} className="flex items-center space-x-2 text-cyan-400 p-2 font-bold"><Activity className="w-4 h-4" /><span>Runtime Tracing (v3.0)</span></button>
+              <button onClick={() => { onOpenApiMetrics?.(); setIsMobileMenuOpen(false); }} className="flex items-center space-x-2 text-indigo-400 p-2 font-bold"><BarChart2 className="w-4 h-4" /><span>API Metrics Dashboard</span></button>
+              <button onClick={() => { onOpenSequenceDiagram?.(); setIsMobileMenuOpen(false); }} className="flex items-center space-x-2 text-pink-400 p-2 font-bold"><Zap className="w-4 h-4" /><span>Sequence Diagram</span></button>
+              <button onClick={() => { onOpenLatencyHeatmap?.(); setIsMobileMenuOpen(false); }} className="flex items-center space-x-2 text-amber-400 p-2 font-bold"><Flame className="w-4 h-4" /><span>Latency Heatmap</span></button>
               <button onClick={() => { onOpenErDiagram(); setIsMobileMenuOpen(false); }} className="flex items-center space-x-2 text-amber-500 p-2 font-medium"><Database className="w-4 h-4" /><span>ER Diagram</span></button>
               <button onClick={() => { onOpenSecurityFlow(); setIsMobileMenuOpen(false); }} className="flex items-center space-x-2 text-purple-500 p-2 font-medium"><ShieldCheck className="w-4 h-4" /><span>Security</span></button>
               <button onClick={() => { onOpenAiAssistant(); setIsMobileMenuOpen(false); }} className="flex items-center space-x-2 text-pink-500 p-2 font-medium"><Bot className="w-4 h-4" /><span>AI Assistant</span></button>
