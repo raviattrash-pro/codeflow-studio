@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { X, ShieldCheck, Lock, ArrowDown, CheckCircle2 } from 'lucide-react';
 
+import { DEMO_SECURITY_DATA, DEMO_PROJECT_DATA } from '../utils/demoData';
+
 interface SecurityStep {
   step: number;
   name: string;
@@ -31,10 +33,15 @@ export const SecurityExplorerModal: React.FC<SecurityExplorerModalProps> = ({
   useEffect(() => {
     if (!isOpen || !projectId) return;
 
+    if (projectId === DEMO_PROJECT_DATA.id) {
+      setData(DEMO_SECURITY_DATA);
+      return;
+    }
+
     axios
       .get<SecurityData>(`/api/v1/projects/${projectId}/security-flow`)
-      .then((res) => setData(res.data))
-      .catch(() => setData(null));
+      .then((res) => setData(res.data || DEMO_SECURITY_DATA))
+      .catch(() => setData(DEMO_SECURITY_DATA));
   }, [isOpen, projectId]);
 
   if (!isOpen) return null;

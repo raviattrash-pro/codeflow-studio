@@ -109,7 +109,10 @@ export const LatencyHeatmapModal: React.FC<LatencyHeatmapModalProps> = ({
         <div className="flex-1 overflow-auto p-4 md:p-6 custom-scrollbar flex flex-col bg-[#090d16]">
           <div className="min-w-[850px] space-y-3">
             {/* Hours Header Row */}
-            <div className="grid grid-cols-[220px_repeat(24,1fr)] gap-1.5 items-center pb-2 border-b border-slate-800 font-mono text-[10px] text-slate-400 text-center">
+            <div
+              className="items-center pb-2 border-b border-slate-800 font-mono text-[10px] text-slate-400 text-center"
+              style={{ display: 'grid', gridTemplateColumns: '220px repeat(24, minmax(24px, 1fr))', gap: '6px' }}
+            >
               <div className="text-left font-bold pl-2">Endpoint Target</div>
               {Array.from({ length: 24 }).map((_, hour) => (
                 <div key={hour} className="truncate">
@@ -127,11 +130,12 @@ export const LatencyHeatmapModal: React.FC<LatencyHeatmapModalProps> = ({
                 <div
                   key={metric.id}
                   onClick={() => setSelectedMetricId(isSelected ? null : metric.id)}
-                  className={`grid grid-cols-[220px_repeat(24,1fr)] gap-1.5 items-center p-2 rounded-2xl border transition-all cursor-pointer ${
+                  className={`items-center p-2 rounded-2xl border transition-all cursor-pointer ${
                     isSelected
                       ? 'bg-[#1e293b] border-amber-500 shadow-lg'
                       : 'bg-[#111827] border-slate-800 hover:border-slate-700'
                   }`}
+                  style={{ display: 'grid', gridTemplateColumns: '220px repeat(24, minmax(24px, 1fr))', gap: '6px' }}
                 >
                   {/* Left Label */}
                   <div className="pr-3 truncate">

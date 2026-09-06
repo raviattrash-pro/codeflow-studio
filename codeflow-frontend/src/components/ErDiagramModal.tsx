@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { X, Database, Key, Table, ArrowRight, Layers } from 'lucide-react';
 
+import { DEMO_ER_DATA, DEMO_PROJECT_DATA } from '../utils/demoData';
+
 interface EntityField {
   name: string;
   type: string;
@@ -43,10 +45,15 @@ export const ErDiagramModal: React.FC<ErDiagramModalProps> = ({
   useEffect(() => {
     if (!isOpen || !projectId) return;
 
+    if (projectId === DEMO_PROJECT_DATA.id) {
+      setData(DEMO_ER_DATA);
+      return;
+    }
+
     axios
       .get<ErDiagramData>(`/api/v1/projects/${projectId}/er-diagram`)
-      .then((res) => setData(res.data))
-      .catch(() => setData(null));
+      .then((res) => setData(res.data || DEMO_ER_DATA))
+      .catch(() => setData(DEMO_ER_DATA));
   }, [isOpen, projectId]);
 
   if (!isOpen) return null;

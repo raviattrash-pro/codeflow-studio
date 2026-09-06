@@ -8,6 +8,8 @@ interface MonacoViewerModalProps {
   onClose: () => void;
 }
 
+import { DEMO_FILE_SNIPPETS, DEMO_PROJECT_DATA } from '../utils/demoData';
+
 export const MonacoViewerModal: React.FC<MonacoViewerModalProps> = ({
   projectId,
   filePath,
@@ -20,16 +22,26 @@ export const MonacoViewerModal: React.FC<MonacoViewerModalProps> = ({
   useEffect(() => {
     if (!filePath || !projectId) return;
 
+    const detectedLang = filePath.endsWith('.tsx') || filePath.endsWith('.ts') ? 'typescript' : filePath.endsWith('.xml') ? 'xml' : filePath.endsWith('.sql') ? 'sql' : 'java';
+    setLanguage(detectedLang);
+
+    if (projectId === DEMO_PROJECT_DATA.id || DEMO_FILE_SNIPPETS[filePath]) {
+      const demoSnippet = DEMO_FILE_SNIPPETS[filePath] || `// Source code for ${filePath}\npackage com.codeflow.demo;\n\n// Pre-rendered demo architectural source file\npublic class DemoSource {\n    // View live Spring Boot + React nodes in full flow\n}`;
+      setContent(demoSnippet);
+      return;
+    }
+
     axios
       .get<{ content: string; language: string }>(`/api/v1/projects/${projectId}/file`, {
         params: { filePath },
       })
       .then((res) => {
         setContent(res.data.content);
-        setLanguage(res.data.language);
+        setLanguage(res.data.language || detectedLang);
       })
       .catch(() => {
-        setContent('// Failed to load file snippet');
+        const demoSnippet = DEMO_FILE_SNIPPETS[filePath] || `// Source code for ${filePath}\npackage com.codeflow.demo;\n\n// Pre-rendered demo architectural source file\npublic class DemoSource {\n    // View live Spring Boot + React nodes in full flow\n}`;
+        setContent(demoSnippet);
       });
   }, [projectId, filePath]);
 

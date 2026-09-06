@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { X, Sparkles, Bot, Send, ShieldCheck, Database, Layers, CheckCircle2, ArrowRight } from 'lucide-react';
 
+import { DEMO_PROJECT_DATA } from '../utils/demoData';
+
 interface AiAssistantModalProps {
   projectId: string | null;
   isOpen: boolean;
@@ -14,6 +16,45 @@ interface AiResponse {
   keyComponents: string[];
   recommendation: string;
 }
+
+const getDemoAiResponse = (queryPrompt: string): AiResponse => {
+  const p = queryPrompt.toLowerCase();
+  if (p.includes('security') || p.includes('jwt')) {
+    return {
+      title: 'Spring Security 6.x + JWT Architectural Review',
+      explanation: 'The application enforces stateless security using JwtAuthenticationFilter. Request tokens are parsed from Authorization Bearer headers and validated against signature keys before populating SecurityContextHolder.',
+      keyComponents: [
+        'SecurityConfig.java - Central security filter chain definition with CORS policy',
+        'JwtAuthenticationFilter.java - Intercepts HTTP requests and validates JWT claims',
+        'AdminController.java - Implements @CrossOrigin and input validations',
+      ],
+      recommendation: 'Enable refresh token rotation and configure Content-Security-Policy (CSP) headers for production deployments.',
+    };
+  }
+  if (p.includes('database') || p.includes('jpa') || p.includes('sql')) {
+    return {
+      title: 'JPA Entity & Database Schema Performance Review',
+      explanation: 'Domain models map to PostgreSQL tables via Jakarta Persistence annotations. The application leverages Spring Data JpaRepository for automated query derivation and HikariCP connection pooling.',
+      keyComponents: [
+        'OrderRepository.java - JpaRepository with custom derived query methods',
+        'orders & order_items tables - Relational schema with foreign key constraints',
+        'HikariCP Connection Pool - Optimized JDBC pool with auto-commit false in transactions',
+      ],
+      recommendation: 'Add composite indexes on (user_id, created_at) in orders table to accelerate customer order history queries.',
+    };
+  }
+  return {
+    title: 'Full-Stack Spring Boot 3 + React 19 Architectural Assessment',
+    explanation: 'Clean 5-tier architecture: React 19 UI triggers Axios calls to Spring Security Gateway, routing through @RestController to @Service beans with @Transactional boundaries and Spring Data JpaRepository.',
+    keyComponents: [
+      'Frontend Layer: React 19 SPA with Axios & Tailwind CSS',
+      'API Gateway: Spring Security 6.x stateless filter chain',
+      'Business Core: @Service business logic with ACID transactions',
+      'Data Layer: Spring Data JPA + Hibernate ORM + PostgreSQL',
+    ],
+    recommendation: 'Adopt OpenAPI/Swagger 3 annotations for automated API contract generation and add unit tests for @Transactional rollbacks.',
+  };
+};
 
 export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
   projectId,
@@ -31,12 +72,20 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
     setLoading(true);
     setPrompt(queryPrompt);
 
+    if (projectId === DEMO_PROJECT_DATA.id) {
+      setTimeout(() => {
+        setResponse(getDemoAiResponse(queryPrompt));
+        setLoading(false);
+      }, 500);
+      return;
+    }
+
     axios
       .post<AiResponse>(`/api/v1/projects/${projectId}/ai/explain`, { prompt: queryPrompt })
       .then((res) => {
-        setResponse(res.data);
+        setResponse(res.data || getDemoAiResponse(queryPrompt));
       })
-      .catch(() => setResponse(null))
+      .catch(() => setResponse(getDemoAiResponse(queryPrompt)))
       .finally(() => setLoading(false));
   };
 

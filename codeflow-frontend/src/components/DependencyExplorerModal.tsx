@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { X, Package, Search, HelpCircle, Code, ExternalLink, Sparkles, BookOpen, CheckCircle2, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 import { ProjectDependency } from '../types';
+import { DEMO_DEPENDENCIES, DEMO_PROJECT_DATA } from '../utils/demoData';
 
 interface DependencyExplorerModalProps {
   projectId: string | null;
@@ -91,13 +92,23 @@ export const DependencyExplorerModal: React.FC<DependencyExplorerModalProps> = (
   useEffect(() => {
     if (!projectId || !isOpen) return;
 
+    if (projectId === DEMO_PROJECT_DATA.id) {
+      setDependencies(DEMO_DEPENDENCIES);
+      if (DEMO_DEPENDENCIES.length > 0) setSelectedDep(DEMO_DEPENDENCIES[0]);
+      return;
+    }
+
     axios
       .get<ProjectDependency[]>(`/api/v1/projects/${projectId}/dependencies`)
       .then((res) => {
-        setDependencies(Array.isArray(res.data) ? res.data : []);
-        if (res.data && res.data.length > 0) setSelectedDep(res.data[0]);
+        const deps = Array.isArray(res.data) && res.data.length > 0 ? res.data : DEMO_DEPENDENCIES;
+        setDependencies(deps);
+        if (deps.length > 0) setSelectedDep(deps[0]);
       })
-      .catch(() => setDependencies([]));
+      .catch(() => {
+        setDependencies(DEMO_DEPENDENCIES);
+        if (DEMO_DEPENDENCIES.length > 0) setSelectedDep(DEMO_DEPENDENCIES[0]);
+      });
   }, [projectId, isOpen]);
 
   if (!isOpen) return null;

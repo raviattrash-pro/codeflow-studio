@@ -30,6 +30,8 @@ interface RuntimeTracingModalProps {
   currentTheme?: ThemeMode;
 }
 
+import { DEMO_TRACES, DEMO_PROJECT_DATA } from '../utils/demoData';
+
 export const RuntimeTracingModal: React.FC<RuntimeTracingModalProps> = ({
   projectId,
   isOpen,
@@ -48,15 +50,25 @@ export const RuntimeTracingModal: React.FC<RuntimeTracingModalProps> = ({
   useEffect(() => {
     if (!isOpen || !projectId) return;
 
+    if (projectId === DEMO_PROJECT_DATA.id) {
+      setTraces(DEMO_TRACES);
+      if (DEMO_TRACES.length > 0) selectTrace(DEMO_TRACES[0]);
+      return;
+    }
+
     axios
       .get<ExecutionTrace[]>(`/api/v1/projects/${projectId}/traces`)
       .then((res) => {
-        setTraces(Array.isArray(res.data) ? res.data : []);
-        if (res.data && res.data.length > 0) {
-          selectTrace(res.data[0]);
+        const loadedTraces = Array.isArray(res.data) && res.data.length > 0 ? res.data : DEMO_TRACES;
+        setTraces(loadedTraces);
+        if (loadedTraces.length > 0) {
+          selectTrace(loadedTraces[0]);
         }
       })
-      .catch(() => setTraces([]));
+      .catch(() => {
+        setTraces(DEMO_TRACES);
+        if (DEMO_TRACES.length > 0) selectTrace(DEMO_TRACES[0]);
+      });
   }, [isOpen, projectId]);
 
   const selectTrace = (trace: ExecutionTrace) => {

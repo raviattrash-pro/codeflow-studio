@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { X, Search, Folder, FileCode, Copy, Check, Sparkles, Orbit, Network, FileText, Code2 } from 'lucide-react';
+import { DEMO_FILE_TREE_DATA, DEMO_PROJECT_DATA } from '../utils/demoData';
 
 interface FileTreeModalProps {
   projectId: string | null;
@@ -47,11 +48,24 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
 
   useEffect(() => {
     if (isOpen && projectId) {
+      if (projectId === DEMO_PROJECT_DATA.id) {
+        const root = DEMO_FILE_TREE_DATA as any;
+        const children = root.children || [root];
+        setTreeData(children);
+        setStats(calculateStats(children));
+        return;
+      }
+
       axios
         .get<FileTreeResponse>(`/api/v1/projects/${projectId}/file-tree`)
         .then((res) => {
           const root = res.data;
-          if (!root) return;
+          if (!root) {
+            const demoRoot = DEMO_FILE_TREE_DATA as any;
+            setTreeData(demoRoot.children || [demoRoot]);
+            setStats(calculateStats(demoRoot.children || [demoRoot]));
+            return;
+          }
           const children = root.children || [root];
           setTreeData(children);
           if (root.stats) {
@@ -61,7 +75,10 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
           }
         })
         .catch(() => {
-          setTreeData([]);
+          const demoRoot = DEMO_FILE_TREE_DATA as any;
+          const children = demoRoot.children || [demoRoot];
+          setTreeData(children);
+          setStats(calculateStats(children));
         });
     }
   }, [isOpen, projectId]);

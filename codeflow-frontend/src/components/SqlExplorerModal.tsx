@@ -2,16 +2,18 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { X, Database, Clock, Terminal, Copy, Check, Filter } from 'lucide-react';
 
+import { DEMO_SQL_LOGS, DEMO_PROJECT_DATA } from '../utils/demoData';
+
 interface SqlQueryLog {
   id: string;
-  projectId: string;
+  projectId?: string;
   repositoryName: string;
   targetTable: string;
   sqlQuery: string;
   queryType: string;
   executionTimeMs: number;
   rowsReturned: number;
-  timestamp: string;
+  timestamp?: string;
 }
 
 interface SqlExplorerModalProps {
@@ -29,13 +31,30 @@ export const SqlExplorerModal: React.FC<SqlExplorerModalProps> = ({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<string>('ALL');
 
+  const formattedDemoLogs: SqlQueryLog[] = DEMO_SQL_LOGS.map((s) => ({
+    id: s.id,
+    projectId: DEMO_PROJECT_DATA.id,
+    repositoryName: s.repository,
+    targetTable: s.targetTable,
+    sqlQuery: s.sql,
+    queryType: s.queryType,
+    executionTimeMs: s.durationMs,
+    rowsReturned: s.rowCount,
+    timestamp: new Date().toISOString(),
+  }));
+
   useEffect(() => {
     if (!isOpen || !projectId) return;
 
+    if (projectId === DEMO_PROJECT_DATA.id) {
+      setLogs(formattedDemoLogs);
+      return;
+    }
+
     axios
       .get<SqlQueryLog[]>(`/api/v1/projects/${projectId}/sql`)
-      .then((res) => setLogs(Array.isArray(res.data) ? res.data : []))
-      .catch(() => setLogs([]));
+      .then((res) => setLogs(Array.isArray(res.data) && res.data.length > 0 ? res.data : formattedDemoLogs))
+      .catch(() => setLogs(formattedDemoLogs));
   }, [isOpen, projectId]);
 
   if (!isOpen) return null;
