@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Github, Upload, X, Loader2 } from 'lucide-react';
+import { GitBranch, Upload, X, Loader2 } from 'lucide-react';
 import axios from 'axios';
 import { Project } from '../types';
 
@@ -126,7 +126,7 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
                 : 'text-slate-400 hover:text-white'
             }`}
           >
-            <Github className="w-4 h-4" />
+            <GitBranch className="w-4 h-4" />
             <span>Public GitHub Repo</span>
           </button>
 
@@ -165,7 +165,7 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
               disabled={isLoading}
               className="w-full flex items-center justify-center space-x-2 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-xs font-bold text-white shadow-lg shadow-indigo-600/30 transition-all disabled:opacity-50"
             >
-              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Github className="w-4 h-4" />}
+              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <GitBranch className="w-4 h-4" />}
               <span>{isLoading ? 'Analyzing Project...' : 'Start Visual Analysis'}</span>
             </button>
           </form>
