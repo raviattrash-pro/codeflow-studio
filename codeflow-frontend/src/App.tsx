@@ -740,7 +740,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
           /* ========================================================================= */
           /* BESPOKE HANDCRAFTED LANDING STUDIO (Emil Kowalski + Impeccable + Taste)    */
           /* ========================================================================= */
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 flex flex-col items-center bg-[#070a12] relative blueprint-grid">
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-3.5 sm:p-8 flex flex-col items-center bg-[#070a12] text-slate-100 relative blueprint-grid" style={{ backgroundColor: "#070a12", color: "#f1f5f9" }}>
             {/* Top Atmospheric Radial Glow */}
             <div className="absolute top-0 inset-x-0 h-[480px] bg-[radial-gradient(ellipse_at_top,rgba(236,72,153,0.14),rgba(99,102,241,0.18),transparent_75%)] pointer-events-none" />
 
@@ -751,8 +751,8 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
             </div>
 
             {/* 2. Hero Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-center max-w-5xl tracking-tight leading-[1.12] mb-4">
-              <span className="bg-clip-text text-transparent bg-gradient-to-b from-white via-slate-100 to-slate-400">
+            <h1 className="text-2xl sm:text-5xl lg:text-6xl font-extrabold text-center max-w-5xl tracking-tight leading-[1.15] mb-4">
+              <span className="text-white drop-shadow-sm">
                 Observe, Replay &amp; Master Real Code Execution.
               </span>
               <br />
@@ -785,6 +785,49 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                 <span>Import Repository / ZIP</span>
                 <span className="keycap ml-1">I</span>
               </button>
+            </div>
+
+            {/* Mobile 1-Tap Quick Launch Tools Grid */}
+            <div className="w-full sm:hidden mb-8">
+              <div className="flex items-center justify-between mb-2.5 px-1">
+                <span className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
+                  ⚡ All 11 Visual Tools (1-Tap Launch)
+                </span>
+                <span className="text-[10px] font-mono text-emerald-400 font-bold">● 100% Offline</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { title: 'Runtime Tracing', icon: Activity, key: 'tracing', col: 'text-cyan-400', badge: 'v4.2' },
+                  { title: 'API Metrics', icon: BarChart2, key: 'metrics', col: 'text-indigo-400', badge: 'P95' },
+                  { title: 'Sequence Tracer', icon: Zap, key: 'sequence', col: 'text-pink-400', badge: '7-Hop' },
+                  { title: '24h Heatmap', icon: Flame, key: 'heatmap', col: 'text-amber-400', badge: 'Matrix' },
+                  { title: 'Database ERD', icon: Database, key: 'erd', col: 'text-emerald-400', badge: 'Schema' },
+                  { title: 'Security Chain', icon: ShieldCheck, key: 'security', col: 'text-purple-400', badge: 'JWT' },
+                  { title: 'AI Assistant', icon: Bot, key: 'ai', col: 'text-pink-300', badge: 'Audit' },
+                  { title: 'SQL Explorer', icon: Database, key: 'sql', col: 'text-blue-400', badge: 'JPA' },
+                  { title: 'Dependencies', icon: Package, key: 'deps', col: 'text-indigo-300', badge: 'Maven' },
+                  { title: 'File Tree', icon: FolderTree, key: 'files', col: 'text-cyan-300', badge: '5 Views' },
+                ].map((tool, i) => {
+                  const Icon = tool.icon;
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => handleOpenToolDirectly(tool.key)}
+                      className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-pink-500/60 flex items-center justify-between text-left transition-all active:scale-95 shadow-md"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <Icon className={`w-4 h-4 ${tool.col}`} />
+                        <span className="text-xs font-mono font-bold text-white truncate max-w-[85px]">
+                          {tool.title}
+                        </span>
+                      </div>
+                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                        {tool.badge}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* 5. Live Telemetry Strip */}
