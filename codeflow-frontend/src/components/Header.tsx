@@ -289,11 +289,25 @@ export const Header: React.FC<HeaderProps> = ({
           <Import className="w-3.5 h-3.5" /><span>Import</span>
         </button>
 
-        {currentProjectId && (
-          <button onClick={onExitProject} className="hidden md:flex items-center space-x-1 px-2.5 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-xs font-medium text-red-400">
-            <X className="w-3.5 h-3.5" /><span>Exit</span>
+        {/* Mobile Action & Menu Button */}
+        <div className="flex md:hidden items-center space-x-2">
+          {onLoadDemo && !currentProjectId && (
+            <button
+              onClick={onLoadDemo}
+              className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-pink-600 to-indigo-600 text-xs font-bold text-white shadow-md"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Demo</span>
+            </button>
+          )}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 rounded-xl border border-slate-700 bg-slate-900 text-slate-200 hover:text-white"
+            aria-label="Toggle Navigation Menu"
+          >
+            {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
-        )}
+        </div>
       </div>
 
       {isMobileMenuOpen && (
