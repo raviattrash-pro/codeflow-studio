@@ -1,11 +1,11 @@
 @import 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css';
 
 :root {
-  --bg-main: #0c101d;
-  --bg-surface: #14192b;
-  --bg-card: rgba(22, 29, 49, 0.85);
-  --border-card: rgba(255, 255, 255, 0.1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --bg-main: #070a12;
+  --bg-surface: #0f172a;
+  --bg-card: rgba(15, 23, 42, 0.85);
+  --border-card: rgba(255, 255, 255, 0.08);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
@@ -15,11 +15,12 @@ body {
   padding: 0;
   background-color: var(--bg-main);
   color: #f1f5f9;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-code, pre {
-  font-family: 'JetBrains Mono', monospace;
+code, pre, .font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 /* Fix input text visibility and browser autofill white background */
@@ -35,6 +36,34 @@ input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px #0f172a inset !important;
   -webkit-text-fill-color: #f8fafc !important;
   caret-color: #f8fafc !important;
+}
+
+/* Blueprint dot matrix grid */
+.blueprint-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.blueprint-grid-dense {
+  background-image: radial-gradient(rgba(99, 102, 241, 0.12) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* Keycap tactile badge */
+.keycap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.65rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: #94a3b8;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-bottom: 2px solid #475569;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .modal-backdrop {
@@ -61,18 +90,18 @@ input:-webkit-autofill:active {
 }
 
 .glass-modal {
-  background: rgba(18, 25, 43, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  background: rgba(15, 23, 42, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  animation: modalPopIn 0.26s var(--ease-smooth) forwards;
+  animation: modalPopIn 0.26s var(--ease-spring) forwards;
   will-change: transform, opacity;
 }
 
 .modal-pop-in {
-  animation: modalPopIn 0.26s var(--ease-smooth) forwards;
+  animation: modalPopIn 0.26s var(--ease-spring) forwards;
   will-change: transform, opacity;
 }
 
@@ -125,7 +154,7 @@ input:-webkit-autofill:active {
 
 .dropdown-pop {
   transform-origin: top right;
-  animation: dropdownPopIn 0.18s var(--ease-smooth) forwards;
+  animation: dropdownPopIn 0.18s var(--ease-spring) forwards;
   will-change: transform, opacity;
 }
 
@@ -194,33 +223,6 @@ input:-webkit-autofill:active {
   font-size: 1rem;
 }
 
-/* Gradients for Column Headers */
-.text-gradient-cyan {
-  background: linear-gradient(135deg, #22d3ee, #0284c7);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.text-gradient-indigo {
-  background: linear-gradient(135deg, #818cf8, #4338ca);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.text-gradient-blue {
-  background: linear-gradient(135deg, #60a5fa, #1d4ed8);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.text-gradient-purple {
-  background: linear-gradient(135deg, #c084fc, #7e22ce);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.text-gradient-amber {
-  background: linear-gradient(135deg, #fbbf24, #b45309);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
 .arrow-line {
   background: repeating-linear-gradient(90deg, transparent, transparent 4px, currentColor 4px, currentColor 8px);
 }
@@ -266,7 +268,7 @@ input:-webkit-autofill:active {
 
 /* 4 Theme View System */
 [data-theme="NIGHT"] {
-  --bg-main: #0c101d;
+  --bg-main: #070a12;
   --bg-surface: #0f172a;
   --text-main: #f8fafc;
 }
@@ -345,11 +347,7 @@ input:-webkit-autofill:active {
   color: #ffffff !important;
 }
 
-/* ─────────────────────────────────────────────────────────── */
-/* DEEP THEME SYSTEM OVERRIDES FOR ALL MODALS & TOOLS           */
-/* ─────────────────────────────────────────────────────────── */
-
-/* 1. NORMAL THEME OVERRIDES FOR MODALS */
+/* Theme overrides for modals */
 [data-theme="NORMAL"] .modal-backdrop {
   background: rgba(15, 23, 42, 0.45) !important;
   backdrop-filter: blur(8px) !important;
@@ -360,34 +358,7 @@ input:-webkit-autofill:active {
   color: #0f172a !important;
   box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.2) !important;
 }
-[data-theme="NORMAL"] .modal-backdrop div {
-  background-color: transparent;
-  border-color: #e2e8f0;
-  color: #0f172a;
-}
-[data-theme="NORMAL"] .modal-backdrop .bg-slate-900,
-[data-theme="NORMAL"] .modal-backdrop .bg-slate-950,
-[data-theme="NORMAL"] .modal-backdrop .bg-slate-800 {
-  background-color: #f8fafc !important;
-  border-color: #e2e8f0 !important;
-  color: #0f172a !important;
-}
-[data-theme="NORMAL"] .modal-backdrop text,
-[data-theme="NORMAL"] .modal-backdrop h3,
-[data-theme="NORMAL"] .modal-backdrop h4,
-[data-theme="NORMAL"] .modal-backdrop p,
-[data-theme="NORMAL"] .modal-backdrop span:not(.chip),
-[data-theme="NORMAL"] .modal-backdrop code,
-[data-theme="NORMAL"] .modal-backdrop pre {
-  color: #0f172a !important;
-}
-[data-theme="NORMAL"] .modal-backdrop input {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  border-color: #cbd5e1 !important;
-}
 
-/* 2. NEUMORPHIC LIGHT OVERRIDES FOR MODALS (IMAGE 1) */
 [data-theme="NEUMORPHIC"] .modal-backdrop {
   background: rgba(224, 229, 236, 0.75) !important;
   backdrop-filter: blur(12px) !important;
@@ -399,37 +370,7 @@ input:-webkit-autofill:active {
   box-shadow: 14px 14px 28px #a3b1c6, -14px -14px 28px #ffffff !important;
   border-radius: 28px !important;
 }
-[data-theme="NEUMORPHIC"] .modal-backdrop div {
-  border-color: #c0cbdc;
-  color: #2d3748;
-}
-[data-theme="NEUMORPHIC"] .modal-backdrop .bg-slate-900,
-[data-theme="NEUMORPHIC"] .modal-backdrop .bg-slate-950,
-[data-theme="NEUMORPHIC"] .modal-backdrop .bg-slate-800 {
-  background-color: #e0e5ec !important;
-  box-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff !important;
-  border-color: rgba(255,255,255,0.6) !important;
-  color: #2d3748 !important;
-  border-radius: 16px;
-}
-[data-theme="NEUMORPHIC"] .modal-backdrop button {
-  background-color: #e0e5ec !important;
-  color: #2d3748 !important;
-  box-shadow: 4px 4px 8px #a3b1c6, -4px -4px 8px #ffffff !important;
-  border-radius: 12px !important;
-  border: none !important;
-}
-[data-theme="NEUMORPHIC"] .modal-backdrop text,
-[data-theme="NEUMORPHIC"] .modal-backdrop h3,
-[data-theme="NEUMORPHIC"] .modal-backdrop h4,
-[data-theme="NEUMORPHIC"] .modal-backdrop p,
-[data-theme="NEUMORPHIC"] .modal-backdrop span,
-[data-theme="NEUMORPHIC"] .modal-backdrop code,
-[data-theme="NEUMORPHIC"] .modal-backdrop pre {
-  color: #2d3748 !important;
-}
 
-/* 3. GLASSMORPHISM GEL OVERRIDES FOR MODALS (IMAGE 2) */
 [data-theme="GLASSMORPHISM"] .modal-backdrop {
   background: rgba(238, 242, 246, 0.65) !important;
   backdrop-filter: blur(20px) !important;
@@ -442,19 +383,6 @@ input:-webkit-autofill:active {
   color: #0f172a !important;
   box-shadow: 0 20px 60px rgba(31, 38, 135, 0.18), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
   border-radius: 28px !important;
-}
-[data-theme="GLASSMORPHISM"] .modal-backdrop div {
-  border-color: rgba(255, 255, 255, 0.8);
-  color: #0f172a;
-}
-[data-theme="GLASSMORPHISM"] .modal-backdrop .bg-slate-900,
-[data-theme="GLASSMORPHISM"] .modal-backdrop .bg-slate-950,
-[data-theme="GLASSMORPHISM"] .modal-backdrop .bg-slate-800 {
-  background-color: rgba(255, 255, 255, 0.65) !important;
-  backdrop-filter: blur(15px) !important;
-  border-color: rgba(255, 255, 255, 0.9) !important;
-  color: #0f172a !important;
-  box-shadow: 0 8px 25px rgba(31, 38, 135, 0.08) !important;
 }
 
 /* Custom Styling for Trace Range Slider Thumb Across All Themes */
@@ -498,11 +426,10 @@ button:active, .btn-tactile:active {
   transition: transform 0.12s var(--ease-smooth);
 }
 
-/* Modal Pop In animation based on Emil Kowalski principles */
 @keyframes modalPopIn {
   0% {
     opacity: 0;
-    transform: scale(0.96) translateY(8px);
+    transform: scale(0.95) translateY(10px);
   }
   100% {
     opacity: 1;
@@ -519,7 +446,6 @@ button:active, .btn-tactile:active {
   }
 }
 
-/* Dropdown pop animation */
 @keyframes dropdownPopIn {
   0% {
     opacity: 0;
