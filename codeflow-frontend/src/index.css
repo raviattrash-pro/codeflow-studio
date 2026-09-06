@@ -1,10 +1,13 @@
-@import "https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css";
+@import 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css';
 
 :root {
   --bg-main: #0c101d;
   --bg-surface: #14192b;
   --bg-card: rgba(22, 29, 49, 0.85);
   --border-card: rgba(255, 255, 255, 0.1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 body {
@@ -46,6 +49,7 @@ input:-webkit-autofill:active {
   justify-content: center;
   padding: 1.5rem;
   overflow-y: auto;
+  animation: backdropFadeIn 0.22s var(--ease-smooth) forwards;
 }
 
 .glass-panel {
@@ -63,6 +67,13 @@ input:-webkit-autofill:active {
   max-height: 90vh;
   display: flex;
   flex-direction: column;
+  animation: modalPopIn 0.26s var(--ease-smooth) forwards;
+  will-change: transform, opacity;
+}
+
+.modal-pop-in {
+  animation: modalPopIn 0.26s var(--ease-smooth) forwards;
+  will-change: transform, opacity;
 }
 
 /* Claymorphism styles for HLD Canvas */
@@ -74,7 +85,7 @@ input:-webkit-autofill:active {
     -2px -2px 6px rgba(255, 255, 255, 0.02),
     inset 1px 1px 5px rgba(255, 255, 255, 0.03),
     inset -1px -1px 8px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
+  transition: all 0.3s var(--ease-smooth);
   border-radius: 16px;
 }
 
@@ -104,12 +115,18 @@ input:-webkit-autofill:active {
 }
 
 @keyframes slideDownFade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .tools-dropdown {
-  animation: slideDownFade 0.2s ease-out forwards;
+  animation: slideDownFade 0.2s var(--ease-smooth) forwards;
+}
+
+.dropdown-pop {
+  transform-origin: top right;
+  animation: dropdownPopIn 0.18s var(--ease-smooth) forwards;
+  will-change: transform, opacity;
 }
 
 .chip {
@@ -120,6 +137,7 @@ input:-webkit-autofill:active {
   border-radius: 9999px;
   border-width: 1px;
   font-weight: 500;
+  transition: transform 0.15s var(--ease-smooth);
 }
 
 .chip-indigo {
@@ -174,24 +192,6 @@ input:-webkit-autofill:active {
 .tree-node-icon {
   margin-right: 0.5rem;
   font-size: 1rem;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
 }
 
 /* Gradients for Column Headers */
@@ -367,10 +367,7 @@ input:-webkit-autofill:active {
 }
 [data-theme="NORMAL"] .modal-backdrop .bg-slate-900,
 [data-theme="NORMAL"] .modal-backdrop .bg-slate-950,
-[data-theme="NORMAL"] .modal-backdrop .bg-\[\#080b13\],
-[data-theme="NORMAL"] .modal-backdrop .bg-\[\#0f172a\],
-[data-theme="NORMAL"] .modal-backdrop .bg-\[\#0b0f19\],
-[data-theme="NORMAL"] .modal-backdrop .bg-\[\#0a0d16\] {
+[data-theme="NORMAL"] .modal-backdrop .bg-slate-800 {
   background-color: #f8fafc !important;
   border-color: #e2e8f0 !important;
   color: #0f172a !important;
@@ -408,10 +405,7 @@ input:-webkit-autofill:active {
 }
 [data-theme="NEUMORPHIC"] .modal-backdrop .bg-slate-900,
 [data-theme="NEUMORPHIC"] .modal-backdrop .bg-slate-950,
-[data-theme="NEUMORPHIC"] .modal-backdrop .bg-\[\#080b13\],
-[data-theme="NEUMORPHIC"] .modal-backdrop .bg-\[\#0f172a\],
-[data-theme="NEUMORPHIC"] .modal-backdrop .bg-\[\#0b0f19\],
-[data-theme="NEUMORPHIC"] .modal-backdrop .bg-\[\#0a0d16\] {
+[data-theme="NEUMORPHIC"] .modal-backdrop .bg-slate-800 {
   background-color: #e0e5ec !important;
   box-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff !important;
   border-color: rgba(255,255,255,0.6) !important;
@@ -455,16 +449,14 @@ input:-webkit-autofill:active {
 }
 [data-theme="GLASSMORPHISM"] .modal-backdrop .bg-slate-900,
 [data-theme="GLASSMORPHISM"] .modal-backdrop .bg-slate-950,
-[data-theme="GLASSMORPHISM"] .modal-backdrop .bg-\[\#080b13\],
-[data-theme="GLASSMORPHISM"] .modal-backdrop .bg-\[\#0f172a\],
-[data-theme="GLASSMORPHISM"] .modal-backdrop .bg-\[\#0b0f19\],
-[data-theme="GLASSMORPHISM"] .modal-backdrop .bg-\[\#0a0d16\] {
+[data-theme="GLASSMORPHISM"] .modal-backdrop .bg-slate-800 {
   background-color: rgba(255, 255, 255, 0.65) !important;
   backdrop-filter: blur(15px) !important;
   border-color: rgba(255, 255, 255, 0.9) !important;
   color: #0f172a !important;
   box-shadow: 0 8px 25px rgba(31, 38, 135, 0.08) !important;
 }
+
 /* Custom Styling for Trace Range Slider Thumb Across All Themes */
 .trace-slider-input::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -479,6 +471,7 @@ input:-webkit-autofill:active {
   position: relative;
   z-index: 30;
 }
+
 .trace-slider-input::-moz-range-thumb {
   width: 22px;
   height: 22px;
@@ -492,11 +485,6 @@ input:-webkit-autofill:active {
 }
 
 /* Emil Kowalski & Taste Skill Design Easing & Micro-Interactions */
-:root {
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
 .ease-spring {
   transition-timing-function: var(--ease-spring);
 }
@@ -505,8 +493,99 @@ input:-webkit-autofill:active {
   transition-timing-function: var(--ease-smooth);
 }
 
-button:active {
-  transform: scale(0.98);
+button:active, .btn-tactile:active {
+  transform: scale(0.97);
+  transition: transform 0.12s var(--ease-smooth);
+}
+
+/* Modal Pop In animation based on Emil Kowalski principles */
+@keyframes modalPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes backdropFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Dropdown pop animation */
+@keyframes dropdownPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Flow Arrow animated dashes */
+@keyframes dashFlow {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 24px 0;
+  }
+}
+
+.arrow-line-animated {
+  background: repeating-linear-gradient(90deg, transparent, transparent 4px, currentColor 4px, currentColor 8px);
+  background-size: 24px 2px;
+  animation: dashFlow 1s linear infinite;
+}
+
+/* Sheen Shimmer effect for badges and highlights */
+@keyframes sheenFlow {
+  0% {
+    transform: translateX(-150%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+.badge-sheen {
+  position: relative;
+  overflow: hidden;
+}
+
+.badge-sheen::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transform: translateX(-150%);
+  animation: sheenFlow 3s infinite ease-in-out;
+}
+
+/* Subtle gentle floating animation */
+@keyframes gentleFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.float-gentle {
+  animation: gentleFloat 4s ease-in-out infinite;
 }
 
 /* Anti-slop custom scrollbar */

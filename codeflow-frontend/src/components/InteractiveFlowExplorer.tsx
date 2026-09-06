@@ -431,7 +431,7 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
             {/* 100% Solid Opaque Dropdown Menu */}
             {isDropdownOpen && (
               <div
-                className={`absolute left-0 top-full mt-2 w-96 rounded-2xl border overflow-hidden z-[9999] flex flex-col max-h-96 tools-dropdown ${getDropdownMenuStyle()}`}
+                className={`dropdown-pop absolute left-0 top-full mt-2 w-96 rounded-2xl border overflow-hidden z-[9999] flex flex-col max-h-96 ${getDropdownMenuStyle()}`}
                 style={{
                   backgroundColor: currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : currentTheme === 'NIGHT' ? '#0b0f19' : '#ffffff',
                   opacity: 1,

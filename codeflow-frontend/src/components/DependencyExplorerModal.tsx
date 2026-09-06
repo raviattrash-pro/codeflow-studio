@@ -135,7 +135,7 @@ export const DependencyExplorerModal: React.FC<DependencyExplorerModalProps> = (
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div
-        className="w-full max-w-5xl h-[85vh] max-h-[85vh] bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col my-auto"
+        className="modal-pop-in w-full max-w-5xl h-[85vh] max-h-[85vh] bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

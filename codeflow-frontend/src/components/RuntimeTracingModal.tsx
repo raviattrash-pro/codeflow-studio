@@ -146,7 +146,7 @@ export const RuntimeTracingModal: React.FC<RuntimeTracingModalProps> = ({
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div
-        className={`w-full max-w-6xl h-[88vh] max-h-[88vh] border rounded-3xl overflow-hidden flex flex-col my-auto ${getModalStyle()}`}
+        className={`modal-pop-in w-full max-w-6xl h-[88vh] max-h-[88vh] border rounded-3xl overflow-hidden flex flex-col my-auto ${getModalStyle()}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}

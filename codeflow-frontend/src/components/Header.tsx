@@ -172,7 +172,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           {isThemeOpen && (
             <div
-              className={`absolute right-0 top-full mt-2 w-56 rounded-2xl border shadow-2xl overflow-hidden py-1 ${
+              className={`dropdown-pop absolute right-0 top-full mt-2 w-56 rounded-2xl border shadow-2xl overflow-hidden py-1 ${
                 currentTheme === 'NEUMORPHIC' ? 'bg-[#e0e5ec] border-[#babecc] text-[#2d3748]' :
                 currentTheme === 'GLASSMORPHISM' ? 'bg-white border-slate-200 text-slate-900 shadow-2xl' :
                 currentTheme === 'NORMAL' ? 'bg-white border-slate-200 text-slate-900 shadow-2xl' :
@@ -188,7 +188,7 @@ export const Header: React.FC<HeaderProps> = ({
               
               <button
                 onClick={() => { onThemeChange('NIGHT'); setIsThemeOpen(false); }}
-                className="w-full text-left px-4 py-2 hover:bg-indigo-500/10 flex items-center space-x-2 text-xs font-bold transition-colors"
+                className="w-full text-left px-4 py-2 hover:bg-indigo-500/10 flex items-center space-x-2 text-xs font-bold transition-colors active:scale-[0.98]"
               >
                 <Moon className="w-4 h-4 text-indigo-400" />
                 <span>1. Night View (Midnight Dark)</span>
@@ -196,7 +196,7 @@ export const Header: React.FC<HeaderProps> = ({
 
               <button
                 onClick={() => { onThemeChange('NORMAL'); setIsThemeOpen(false); }}
-                className="w-full text-left px-4 py-2 hover:bg-amber-500/10 flex items-center space-x-2 text-xs font-bold transition-colors"
+                className="w-full text-left px-4 py-2 hover:bg-amber-500/10 flex items-center space-x-2 text-xs font-bold transition-colors active:scale-[0.98]"
               >
                 <Sun className="w-4 h-4 text-amber-400" />
                 <span>2. Normal View (Clean Slate)</span>
@@ -204,7 +204,7 @@ export const Header: React.FC<HeaderProps> = ({
 
               <button
                 onClick={() => { onThemeChange('NEUMORPHIC'); setIsThemeOpen(false); }}
-                className="w-full text-left px-4 py-2 hover:bg-slate-500/10 flex items-center space-x-2 text-xs font-bold transition-colors"
+                className="w-full text-left px-4 py-2 hover:bg-slate-500/10 flex items-center space-x-2 text-xs font-bold transition-colors active:scale-[0.98]"
               >
                 <Box className="w-4 h-4 text-slate-400" />
                 <span>3. Neumorphic Soft View (Image 1)</span>
@@ -212,7 +212,7 @@ export const Header: React.FC<HeaderProps> = ({
 
               <button
                 onClick={() => { onThemeChange('GLASSMORPHISM'); setIsThemeOpen(false); }}
-                className="w-full text-left px-4 py-2 hover:bg-blue-500/10 flex items-center space-x-2 text-xs font-bold transition-colors"
+                className="w-full text-left px-4 py-2 hover:bg-blue-500/10 flex items-center space-x-2 text-xs font-bold transition-colors active:scale-[0.98]"
               >
                 <Sparkles className="w-4 h-4 text-blue-400" />
                 <span>4. Glassmorphism Gel View (Image 2)</span>
@@ -231,7 +231,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative hidden md:block" ref={toolsRef} style={{ zIndex: 999999 }}>
             <button
               onClick={() => setIsToolsOpen(!isToolsOpen)}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all shadow-md ${
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all shadow-md active:scale-[0.97] ${
                 currentTheme === 'NEUMORPHIC' ? 'neu-button' :
                 currentTheme === 'GLASSMORPHISM' ? 'bg-white/80 text-slate-900 border-white shadow-sm' :
                 currentTheme === 'NORMAL' ? 'bg-slate-100 text-slate-800 border-slate-300' :
@@ -239,13 +239,13 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               <span>Tools</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isToolsOpen ? 'rotate-180 text-indigo-400' : ''}`} />
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isToolsOpen ? 'rotate-180 text-indigo-400' : ''}`} />
             </button>
             
             {/* 100% SOLID OPAQUE Dropdown Menu */}
             {isToolsOpen && (
               <div
-                className={`absolute right-0 top-full mt-2 w-56 rounded-2xl border shadow-2xl overflow-hidden py-1 ${
+                className={`dropdown-pop absolute right-0 top-full mt-2 w-56 rounded-2xl border shadow-2xl overflow-hidden py-1 ${
                   currentTheme === 'NEUMORPHIC' ? 'bg-[#e0e5ec] border-[#babecc] text-[#2d3748]' :
                   currentTheme === 'GLASSMORPHISM' ? 'bg-white border-slate-200 text-slate-900 shadow-2xl' :
                   currentTheme === 'NORMAL' ? 'bg-white border-slate-200 text-slate-900 shadow-2xl' :

@@ -309,7 +309,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
 
                           return (
                             <div key={i} className="absolute top-1/2 left-full -translate-y-1/2 flex items-center z-20 pointer-events-none" style={{ width: '64px' }}>
-                              <div className={`flex-1 h-0.5 ${isActive ? 'bg-pink-500 shadow-[0_0_8px_#ec4899]' : 'arrow-line text-slate-400/60'}`} />
+                              <div className={`flex-1 h-0.5 ${isActive ? 'bg-gradient-to-r from-pink-500 to-indigo-500 shadow-[0_0_10px_#ec4899] arrow-line-animated' : 'arrow-line text-slate-400/60'}`} />
                               <div className={`w-2 h-2 ${isActive ? 'border-pink-500' : 'border-slate-400/60'} border-t-2 border-r-2 transform rotate-45 -ml-1`} />
                               {arr.step && (
                                 <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">

@@ -44,7 +44,7 @@ export const LatencyHeatmapModal: React.FC<LatencyHeatmapModalProps> = ({
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div
-        className={`w-full max-w-6xl h-[88vh] max-h-[88vh] rounded-3xl border flex flex-col my-auto shadow-2xl overflow-hidden font-sans ${getModalStyle()}`}
+        className={`modal-pop-in w-full max-w-6xl h-[88vh] max-h-[88vh] rounded-3xl border flex flex-col my-auto shadow-2xl overflow-hidden font-sans ${getModalStyle()}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
