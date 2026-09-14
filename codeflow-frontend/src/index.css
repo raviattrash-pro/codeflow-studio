@@ -40,16 +40,6 @@ input:-webkit-autofill:active {
   caret-color: #f8fafc !important;
 }
 
-/* Blueprint dot matrix grid */
-.blueprint-grid {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-.blueprint-grid-dense {
-  background-image: radial-gradient(rgba(99, 102, 241, 0.12) 1px, transparent 1px);
-  background-size: 16px 16px;
-}
 
 /* Keycap tactile badge */
 .keycap {

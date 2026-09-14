@@ -75,8 +75,8 @@ const SCENARIOS: Record<ScenarioKey, ScenarioConfig> = {
         duration: '0.8ms',
         icon: '📱',
         color: 'text-cyan-400',
-        border: 'border-cyan-500/50',
-        bg: 'bg-cyan-950/40',
+        border: 'border-cyan-500/40',
+        bg: 'bg-cyan-950/30',
         filePath: 'src/features/checkout/CheckoutForm.tsx',
         annotations: ['@tanstack/react-query', 'useState', 'useEffect'],
         code: `const { mutate: checkout } = useMutation({
@@ -93,15 +93,15 @@ const SCENARIOS: Record<ScenarioKey, ScenarioConfig> = {
         duration: '2.1ms',
         icon: '🛡️',
         color: 'text-indigo-400',
-        border: 'border-indigo-500/50',
-        bg: 'bg-indigo-950/40',
+        border: 'border-indigo-500/40',
+        bg: 'bg-indigo-950/30',
         filePath: 'src/main/java/com/codeflow/config/JwtAuthenticationFilter.java',
         annotations: ['@Component', '@Order(1)', '@Slf4j'],
         code: `@Override
 protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) {
-    String token = resolveToken(req);
-    if (token != null && jwtProvider.validate(token)) {
-        Authentication auth = jwtProvider.getAuthentication(token);
+    String token = resolveBearerToken(req);
+    if (token != null && jwtValidator.validate(token)) {
+        Authentication auth = jwtValidator.getAuthentication(token);
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
     chain.doFilter(req, res);
@@ -110,62 +110,55 @@ protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res,
       {
         key: 'controller',
         label: 'OrderController',
-        sub: '@PostMapping @Valid',
+        sub: '@PostMapping /api/v1/orders',
         type: 'Controller',
         duration: '1.4ms',
         icon: '⚡',
-        color: 'text-blue-400',
-        border: 'border-blue-500/50',
-        bg: 'bg-blue-950/40',
-        filePath: 'src/main/java/com/codeflow/orders/OrderController.java',
-        annotations: ['@RestController', '@RequestMapping("/api/v1/orders")', '@PreAuthorize("hasRole(\'BUYER\')")'],
+        color: 'text-sky-400',
+        border: 'border-sky-500/40',
+        bg: 'bg-sky-950/30',
+        filePath: 'src/main/java/com/codeflow/order/OrderController.java',
+        annotations: ['@RestController', '@RequestMapping', '@Valid'],
         code: `@PostMapping
-@PreAuthorize("hasRole('BUYER')")
-public ResponseEntity<OrderResponse> placeOrder(
-    @Valid @RequestBody CreateOrderDTO dto,
-    @AuthenticationPrincipal UserPrincipal user
-) {
-    Order order = orderService.createOrder(dto, user.getId());
-    return ResponseEntity.status(HttpStatus.CREATED).body(orderMapper.toResponse(order));
+public ResponseEntity<OrderResponseDTO> createOrder(@Valid @RequestBody CreateOrderRequest req) {
+    Order order = orderService.createOrder(req.toDomain(), req.getItems());
+    return ResponseEntity.status(HttpStatus.CREATED).body(OrderResponseDTO.from(order));
 }`
       },
       {
         key: 'service',
         label: 'OrderService',
-        sub: '@Transactional createOrder()',
+        sub: '@Transactional Isolation.READ_COMMITTED',
         type: 'Service',
         duration: '16.2ms',
         icon: '🛠️',
-        color: 'text-purple-400',
-        border: 'border-purple-500/50',
-        bg: 'bg-purple-950/40',
-        filePath: 'src/main/java/com/codeflow/orders/OrderService.java',
-        annotations: ['@Service', '@Transactional(rollbackFor = Exception.class)', '@RequiredArgsConstructor'],
-        code: `@Transactional(rollbackFor = Exception.class)
-public Order createOrder(CreateOrderDTO dto, Long userId) {
-    inventoryService.reserveStock(dto.getItems());
-    Order order = Order.builder()
-        .userId(userId)
-        .totalAmount(dto.calculateTotal())
-        .status(OrderStatus.CONFIRMED)
-        .build();
-    return orderRepository.save(order);
+        color: 'text-blue-400',
+        border: 'border-blue-500/40',
+        bg: 'bg-blue-950/30',
+        filePath: 'src/main/java/com/codeflow/order/OrderService.java',
+        annotations: ['@Service', '@Transactional', '@RequiredArgsConstructor'],
+        code: `@Transactional
+public Order createOrder(Order order, List<OrderItemDTO> items) {
+    inventoryService.reserveStock(items);
+    paymentService.authorize(order.getPaymentToken(), order.getTotalAmount());
+    Order saved = orderRepository.save(order);
+    eventPublisher.publishEvent(new OrderCreatedEvent(saved.getId()));
+    return saved;
 }`
       },
       {
         key: 'db',
-        label: 'PostgreSQL 16',
-        sub: 'ACID Storage (JPA/Hibernate)',
+        label: 'PostgreSQL DB',
+        sub: 'JPA Save / INSERT INTO orders',
         type: 'Database',
         duration: '7.9ms',
         icon: '🗄️',
         color: 'text-amber-400',
-        border: 'border-amber-500/50',
-        bg: 'bg-amber-950/40',
-        filePath: 'src/main/java/com/codeflow/orders/OrderRepository.java',
-        annotations: ['@Repository', 'JpaRepository<Order, UUID>'],
-        code: `@Repository
-public interface OrderRepository extends JpaRepository<Order, UUID> {
+        border: 'border-amber-500/40',
+        bg: 'bg-amber-950/30',
+        filePath: 'src/main/java/com/codeflow/order/OrderRepository.java',
+        annotations: ['@Repository', 'JpaRepository<Order, Long>'],
+        code: `public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o WHERE o.userId = :userId ORDER BY o.createdAt DESC")
     List<Order> findRecentOrdersByUserId(@Param("userId") Long userId);
 }`
@@ -208,8 +201,8 @@ RETURNING id, status, created_at;`,
         duration: '0.5ms',
         icon: '📱',
         color: 'text-cyan-400',
-        border: 'border-cyan-500/50',
-        bg: 'bg-cyan-950/40',
+        border: 'border-cyan-500/40',
+        bg: 'bg-cyan-950/30',
         filePath: 'src/context/AuthContext.tsx',
         annotations: ['useContext', 'useCallback'],
         code: `const login = async (creds: LoginCredentials) => {
@@ -226,8 +219,8 @@ RETURNING id, status, created_at;`,
         duration: '1.2ms',
         icon: '🛡️',
         color: 'text-indigo-400',
-        border: 'border-indigo-500/50',
-        bg: 'bg-indigo-950/40',
+        border: 'border-indigo-500/40',
+        bg: 'bg-indigo-950/30',
         filePath: 'src/main/java/com/codeflow/config/SecurityConfig.java',
         annotations: ['@Configuration', '@EnableWebSecurity'],
         code: `@Bean
@@ -245,9 +238,9 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         type: 'Controller',
         duration: '3.8ms',
         icon: '⚡',
-        color: 'text-blue-400',
-        border: 'border-blue-500/50',
-        bg: 'bg-blue-950/40',
+        color: 'text-sky-400',
+        border: 'border-sky-500/40',
+        bg: 'bg-sky-950/30',
         filePath: 'src/main/java/com/codeflow/auth/AuthController.java',
         annotations: ['@RestController', '@RequestMapping("/api/v1/auth")'],
         code: `@PostMapping("/token")
@@ -266,9 +259,9 @@ public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest req) 
         type: 'Service',
         duration: '6.4ms',
         icon: '🛠️',
-        color: 'text-purple-400',
-        border: 'border-purple-500/50',
-        bg: 'bg-purple-950/40',
+        color: 'text-blue-400',
+        border: 'border-blue-500/40',
+        bg: 'bg-blue-950/30',
         filePath: 'src/main/java/com/codeflow/auth/JwtTokenProvider.java',
         annotations: ['@Component'],
         code: `public String generateToken(Authentication auth) {
@@ -290,8 +283,8 @@ public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest req) 
         duration: '2.3ms',
         icon: '🗄️',
         color: 'text-amber-400',
-        border: 'border-amber-500/50',
-        bg: 'bg-amber-950/40',
+        border: 'border-amber-500/40',
+        bg: 'bg-amber-950/30',
         filePath: 'src/main/java/com/codeflow/auth/UserRepository.java',
         annotations: ['@Repository'],
         code: `SELECT u.id, u.email, u.password_hash, u.role FROM users u WHERE u.email = :email AND u.active = true;`
@@ -318,43 +311,41 @@ LIMIT 1;`,
     ]
   },
   cache: {
-    name: 'Inventory Cache-Aside Sync',
-    subtitle: '5 Steps • Redis Cluster + Spring Cache',
-    icon: '📦',
+    name: 'Redis Cache Hit Inspection',
+    subtitle: 'Zero DB Disk I/O • RAM Retrieval',
+    icon: '⚡',
     method: 'GET',
     endpoint: '/api/v1/products/492/stock',
     status: '200 OK (Cache Hit)',
-    totalDuration: '3.8ms',
+    totalDuration: '1.2ms',
     nodes: [
       {
         key: 'client',
-        label: 'React Catalog',
-        sub: 'fetchStock(productId)',
+        label: 'React Query',
+        sub: 'useQuery([products, 492])',
         type: 'Client',
         duration: '0.3ms',
         icon: '📱',
         color: 'text-cyan-400',
-        border: 'border-cyan-500/50',
-        bg: 'bg-cyan-950/40',
-        filePath: 'src/components/ProductCard.tsx',
-        annotations: ['useEffect', 'useQuery'],
-        code: `const { data: stock } = useQuery(['stock', productId], () =>
-  api.get(\`/api/v1/products/\${productId}/stock\`).then(r => r.data)
-);`
+        border: 'border-cyan-500/40',
+        bg: 'bg-cyan-950/30',
+        filePath: 'src/features/products/ProductCard.tsx',
+        annotations: ['staleTime: 60s'],
+        code: `const { data: stock } = useQuery({ queryKey: ['product_stock', id], queryFn: fetchStock });`
       },
       {
         key: 'gateway',
-        label: 'API Gateway',
-        sub: 'RateLimit + Cache-Control',
+        label: 'Edge CDN / Gateway',
+        sub: 'Header ETag Cache-Control',
         type: 'Gateway',
         duration: '0.6ms',
         icon: '🛡️',
         color: 'text-indigo-400',
-        border: 'border-indigo-500/50',
-        bg: 'bg-indigo-950/40',
+        border: 'border-indigo-500/40',
+        bg: 'bg-indigo-950/30',
         filePath: 'src/main/java/com/codeflow/config/CacheFilter.java',
-        annotations: ['@Component'],
-        code: `res.setHeader("Cache-Control", "public, max-age=60");`
+        annotations: ['@CacheControl'],
+        code: `res.setHeader("Cache-Control", "public, max-age=60, s-maxage=120");`
       },
       {
         key: 'controller',
@@ -363,37 +354,35 @@ LIMIT 1;`,
         type: 'Controller',
         duration: '0.9ms',
         icon: '⚡',
-        color: 'text-blue-400',
-        border: 'border-blue-500/50',
-        bg: 'bg-blue-950/40',
+        color: 'text-sky-400',
+        border: 'border-sky-500/40',
+        bg: 'bg-sky-950/30',
         filePath: 'src/main/java/com/codeflow/inventory/InventoryController.java',
-        annotations: ['@RestController', '@RequestMapping("/api/v1/products")'],
+        annotations: ['@RestController', '@Cacheable("product_stock")'],
         code: `@GetMapping("/{id}/stock")
-public ResponseEntity<StockDTO> getStock(@PathVariable Long id) {
-    return ResponseEntity.ok(inventoryService.getStock(id));
+@Cacheable(value = "product_stock", key = "#id")
+public StockDTO getStock(@PathVariable Long id) {
+    return inventoryService.getStockLevel(id);
 }`
       },
       {
         key: 'service',
-        label: 'Redis Cache Layer',
-        sub: '@Cacheable("product_stock")',
+        label: 'Redis Cache Cluster',
+        sub: 'GET product_stock::492',
         type: 'Cache',
         duration: '1.2ms',
         icon: '⚡',
         color: 'text-emerald-400',
-        border: 'border-emerald-500/50',
-        bg: 'bg-emerald-950/40',
-        filePath: 'src/main/java/com/codeflow/inventory/InventoryService.java',
-        annotations: ['@Cacheable(value = "product_stock", key = "#id")'],
-        code: `@Cacheable(value = "product_stock", key = "#id", unless = "#result == null")
-public StockDTO getStock(Long id) {
-    return inventoryRepository.findStockById(id);
-}`
+        border: 'border-emerald-500/40',
+        bg: 'bg-emerald-950/30',
+        filePath: 'src/main/java/com/codeflow/config/RedisConfig.java',
+        annotations: ['RedisTemplate<String, Object>', 'TTL 60s'],
+        code: `// Redis Key Hit: product_stock::492 -> Payload: { "available": 140, "reserved": 12 }`
       },
       {
         key: 'db',
-        label: 'PostgreSQL DB',
-        sub: 'Skipped (0 DB I/O)',
+        label: 'PostgreSQL (Bypassed)',
+        sub: '0ms Disk Access Required',
         type: 'Database',
         duration: '0.0ms',
         icon: '🗄️',
@@ -434,8 +423,8 @@ public StockDTO getStock(Long id) {
         duration: '0.9ms',
         icon: '📱',
         color: 'text-cyan-400',
-        border: 'border-cyan-500/50',
-        bg: 'bg-cyan-950/40',
+        border: 'border-cyan-500/40',
+        bg: 'bg-cyan-950/30',
         filePath: 'src/telemetry/TelemetryClient.ts',
         annotations: ['navigator.sendBeacon', 'gzip'],
         code: `navigator.sendBeacon('/api/v1/telemetry/batch', JSON.stringify(batch));`
@@ -448,8 +437,8 @@ public StockDTO getStock(Long id) {
         duration: '1.1ms',
         icon: '🛡️',
         color: 'text-indigo-400',
-        border: 'border-indigo-500/50',
-        bg: 'bg-indigo-950/40',
+        border: 'border-indigo-500/40',
+        bg: 'bg-indigo-950/30',
         filePath: 'src/main/java/com/codeflow/telemetry/RateLimitFilter.java',
         annotations: ['@Component', 'Bucket4j'],
         code: `ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);`
@@ -461,9 +450,9 @@ public StockDTO getStock(Long id) {
         type: 'Controller',
         duration: '1.8ms',
         icon: '⚡',
-        color: 'text-blue-400',
-        border: 'border-blue-500/50',
-        bg: 'bg-blue-950/40',
+        color: 'text-sky-400',
+        border: 'border-sky-500/40',
+        bg: 'bg-sky-950/30',
         filePath: 'src/main/java/com/codeflow/telemetry/TelemetryController.java',
         annotations: ['@RestController', '@Async'],
         code: `@PostMapping("/batch")
@@ -479,9 +468,9 @@ public ResponseEntity<Void> ingest(@RequestBody List<TelemetryEvent> events) {
         type: 'Service',
         duration: '4.5ms',
         icon: '🛠️',
-        color: 'text-pink-400',
-        border: 'border-pink-500/50',
-        bg: 'bg-pink-950/40',
+        color: 'text-blue-400',
+        border: 'border-blue-500/40',
+        bg: 'bg-blue-950/30',
         filePath: 'src/main/java/com/codeflow/telemetry/KafkaEventProducer.java',
         annotations: ['@Service', 'KafkaTemplate'],
         code: `kafkaTemplate.send("telemetry-stream", event.getTenantId(), event);`
@@ -494,8 +483,8 @@ public ResponseEntity<Void> ingest(@RequestBody List<TelemetryEvent> events) {
         duration: '0.8ms',
         icon: '🗄️',
         color: 'text-amber-400',
-        border: 'border-amber-500/50',
-        bg: 'bg-amber-950/40',
+        border: 'border-amber-500/40',
+        bg: 'bg-amber-950/30',
         filePath: 'src/main/java/com/codeflow/telemetry/TelemetryWorker.java',
         annotations: ['@KafkaListener'],
         code: `INSERT INTO telemetry_hypertable (time, tenant_id, metric, value) VALUES ...;`
@@ -550,6 +539,8 @@ export default function App() {
   const scenario = SCENARIOS[activeScenarioKey];
   const selectedNode = scenario.nodes[selectedStudioNodeIdx] || scenario.nodes[0];
 
+  const isLight = currentTheme === 'NORMAL' || currentTheme === 'GLASSMORPHISM' || currentTheme === 'NEUMORPHIC';
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', currentTheme);
   }, [currentTheme]);
@@ -559,7 +550,7 @@ export default function App() {
     if (currentProjectId || !isPlayingTrace) return;
     const interval = setInterval(() => {
       setActiveTraceStep((prev) => (prev + 1) % scenario.nodes.length);
-    }, 2200);
+    }, 2400);
     return () => clearInterval(interval);
   }, [currentProjectId, isPlayingTrace, scenario.nodes.length]);
 
@@ -679,7 +670,7 @@ export default function App() {
   const handleExportMarkdown = () => {
     if (!currentProjectId || !project) return;
     const markdownContent = `# Architectural Documentation: ${project.name}
-Generated by CodeFlow Studio v4.2.0
+Generated by CodeFlow Studio v5.0
 
 ## Project Overview
 - **Name**: ${project.name}
@@ -710,8 +701,17 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
     setTimeout(() => setHasCopiedSql(false), 2000);
   };
 
+  const getPageBgClass = () => {
+    switch (currentTheme) {
+      case 'NEUMORPHIC': return 'bg-[#e0e5ec] text-[#2d3748]';
+      case 'GLASSMORPHISM': return 'bg-[#eef2f6] text-slate-900';
+      case 'NORMAL': return 'bg-[#f8fafc] text-slate-900';
+      default: return 'bg-[#090d16] text-slate-100';
+    }
+  };
+
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-col bg-[#070a12] text-slate-100 font-sans select-none">
+    <div className={`h-screen w-screen overflow-hidden flex flex-col font-sans select-none ${getPageBgClass()}`}>
       <Header
         currentProjectName={project?.name}
         currentProjectId={currentProjectId}
@@ -742,39 +742,42 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
       <div className="flex-1 flex overflow-hidden relative">
         {!currentProjectId ? (
           /* ========================================================================= */
-          /* BESPOKE HANDCRAFTED LANDING STUDIO (Emil Kowalski + Impeccable + Taste)    */
+          /* PREMIUM HANDCRAFTED DEVELOPER LANDING STUDIO                               */
           /* ========================================================================= */
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-3.5 sm:p-8 flex flex-col items-center bg-[#070a12] text-slate-100 relative blueprint-grid" style={{ backgroundColor: "#070a12", color: "#f1f5f9" }}>
-            {/* Top Atmospheric Radial Glow */}
-            <div className="absolute top-0 inset-x-0 h-[480px] bg-[radial-gradient(ellipse_at_top,rgba(236,72,153,0.14),rgba(99,102,241,0.18),transparent_75%)] pointer-events-none" />
+          <div className={`flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-10 flex flex-col items-center relative transition-colors duration-200 ${getPageBgClass()}`}>
+            {/* Top Atmospheric Radial Glow (Subtle Cyan & Indigo) */}
+            <div className="absolute top-0 inset-x-0 h-[420px] bg-[radial-gradient(ellipse_at_top,rgba(14,165,233,0.1),rgba(99,102,241,0.1),transparent_70%)] pointer-events-none" />
 
             {/* 1. Release Eyebrow Chip */}
-            <div className="inline-flex items-center space-x-2.5 px-4 py-1.5 rounded-full text-xs font-mono font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 mb-5 shadow-lg shadow-indigo-500/10 badge-sheen">
+            <div className={`inline-flex items-center space-x-2.5 px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold mb-6 transition-all ${
+              isLight
+                ? 'bg-sky-500/10 text-sky-700 border border-sky-500/30'
+                : 'bg-sky-500/10 text-sky-300 border border-sky-500/30 shadow-md shadow-sky-500/5'
+            }`}>
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>CODEFLOW STUDIO 5.0 • REACT 19 RUNTIME & FULL-STACK FLOW ENGINE</span>
+              <span>CODEFLOW STUDIO 5.0 • REACT 19 & SPRING BOOT 3 RUNTIME ENGINE</span>
             </div>
 
             {/* 2. Hero Headline */}
-            <h1 className="text-2xl sm:text-5xl lg:text-6xl font-extrabold text-center max-w-5xl tracking-tight leading-[1.15] mb-4">
-              <span className="text-white drop-shadow-sm">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-center max-w-4xl tracking-tight leading-[1.14] mb-4">
+              <span className={isLight ? 'text-slate-900' : 'text-slate-50'}>
                 Observe, Replay &amp; Master Real Code Execution.
               </span>
-              <br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400">
+              <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-indigo-400">
                 From HTTP Request to Hibernate SQL in Milliseconds.
               </span>
             </h1>
 
             {/* 3. Hero Subtitle */}
-            <p className="text-sm md:text-base text-slate-400 max-w-3xl text-center leading-relaxed mb-8">
-              A developer-first visual IDE and execution debugger for <span className="text-white font-semibold">Spring Boot 3</span> and <span className="text-white font-semibold">React 19</span>. Step through runtime call-stacks, inspect security filter chains, explore relational schemas, and audit performance bottlenecks.
+            <p className={`text-sm md:text-base max-w-3xl text-center leading-relaxed mb-8 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+              A developer-first visual IDE and execution debugger for <strong className={isLight ? 'text-slate-900' : 'text-slate-200'}>Spring Boot 3</strong> and <strong className={isLight ? 'text-slate-900' : 'text-slate-200'}>React 19</strong>. Step through runtime call-stacks, inspect security filter chains, explore relational schemas, and audit performance bottlenecks.
             </p>
 
             {/* 4. Main Action Hub (CTAs + Keyboard Hints) */}
             <div className="flex flex-col sm:flex-row items-center gap-4 mb-10 z-10">
               <button
                 onClick={handleLoadDemoProject}
-                className="w-full sm:w-auto flex items-center justify-center space-x-3 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-sm font-bold text-white shadow-2xl shadow-pink-600/30 transition-all transform hover:scale-105 active:scale-95 group badge-sheen"
+                className="w-full sm:w-auto flex items-center justify-center space-x-3 px-8 py-3.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-sm font-bold text-white shadow-xl shadow-sky-600/25 transition-all transform hover:scale-[1.02] active:scale-98 group"
               >
                 <Play className="w-4 h-4 fill-white group-hover:translate-x-0.5 transition-transform" />
                 <span>Launch Full Studio (Demo Mode)</span>
@@ -783,9 +786,13 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
 
               <button
                 onClick={() => setIsIngestModalOpen(true)}
-                className="w-full sm:w-auto flex items-center justify-center space-x-2.5 px-6 py-3.5 rounded-2xl bg-[#0f172a] border border-slate-700/80 hover:border-indigo-500 text-sm font-bold text-slate-200 shadow-lg hover:shadow-indigo-500/20 transition-all transform hover:scale-105 active:scale-95"
+                className={`w-full sm:w-auto flex items-center justify-center space-x-2.5 px-6 py-3.5 rounded-xl text-sm font-semibold transition-all transform hover:scale-[1.02] active:scale-98 ${
+                  isLight
+                    ? 'bg-white border border-slate-300 text-slate-800 shadow-sm hover:bg-slate-50'
+                    : 'bg-[#0f172a] border border-slate-700/80 text-slate-200 hover:border-slate-500 shadow-lg'
+                }`}
               >
-                <Sparkles className="w-4 h-4 text-indigo-400" />
+                <Sparkles className="w-4 h-4 text-sky-400" />
                 <span>Import Repository / ZIP</span>
                 <span className="keycap ml-1">I</span>
               </button>
@@ -794,21 +801,21 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
             {/* Mobile 1-Tap Quick Launch Tools Grid */}
             <div className="w-full sm:hidden mb-8">
               <div className="flex items-center justify-between mb-2.5 px-1">
-                <span className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
+                <span className={`text-xs font-mono font-bold uppercase tracking-wider ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
                   ⚡ All 12 Visual Tools (1-Tap Launch)
                 </span>
-                <span className="text-[10px] font-mono text-emerald-400 font-bold">● 100% Offline</span>
+                <span className="text-[10px] font-mono text-emerald-500 font-bold">● 100% Offline</span>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                                    { title: 'React 19 Runtime', icon: Activity, key: 'react', col: 'text-cyan-400', badge: 'v5.0' },
+                  { title: 'React 19 Runtime', icon: Activity, key: 'react', col: 'text-sky-400', badge: 'v5.0' },
                   { title: 'Runtime Tracing', icon: Activity, key: 'tracing', col: 'text-cyan-400', badge: 'v4.2' },
                   { title: 'API Metrics', icon: BarChart2, key: 'metrics', col: 'text-indigo-400', badge: 'P95' },
-                  { title: 'Sequence Tracer', icon: Zap, key: 'sequence', col: 'text-pink-400', badge: '7-Hop' },
-                  { title: '24h Heatmap', icon: Flame, key: 'heatmap', col: 'text-amber-400', badge: 'Matrix' },
+                  { title: 'Sequence Tracer', icon: Zap, key: 'sequence', col: 'text-amber-400', badge: '7-Hop' },
+                  { title: '24h Heatmap', icon: Flame, key: 'heatmap', col: 'text-orange-400', badge: 'Matrix' },
                   { title: 'Database ERD', icon: Database, key: 'erd', col: 'text-emerald-400', badge: 'Schema' },
-                  { title: 'Security Chain', icon: ShieldCheck, key: 'security', col: 'text-purple-400', badge: 'JWT' },
-                  { title: 'AI Assistant', icon: Bot, key: 'ai', col: 'text-pink-300', badge: 'Audit' },
+                  { title: 'Security Chain', icon: ShieldCheck, key: 'security', col: 'text-indigo-400', badge: 'JWT' },
+                  { title: 'AI Assistant', icon: Bot, key: 'ai', col: 'text-sky-400', badge: 'Audit' },
                   { title: 'SQL Explorer', icon: Database, key: 'sql', col: 'text-blue-400', badge: 'JPA' },
                   { title: 'Dependencies', icon: Package, key: 'deps', col: 'text-indigo-300', badge: 'Maven' },
                   { title: 'File Tree', icon: FolderTree, key: 'files', col: 'text-cyan-300', badge: '5 Views' },
@@ -818,15 +825,19 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     <button
                       key={i}
                       onClick={() => handleOpenToolDirectly(tool.key)}
-                      className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-pink-500/60 flex items-center justify-between text-left transition-all active:scale-95 shadow-md"
+                      className={`p-2.5 rounded-xl border flex items-center justify-between text-left transition-all active:scale-95 shadow-sm ${
+                        isLight
+                          ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'
+                          : 'bg-slate-900/90 border-slate-800 text-slate-100 hover:border-slate-700'
+                      }`}
                     >
                       <div className="flex items-center space-x-2">
                         <Icon className={`w-4 h-4 ${tool.col}`} />
-                        <span className="text-xs font-mono font-bold text-white truncate max-w-[85px]">
+                        <span className="text-xs font-mono font-bold truncate max-w-[85px]">
                           {tool.title}
                         </span>
                       </div>
-                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-500/10 text-slate-400 border border-slate-500/20">
                         {tool.badge}
                       </span>
                     </button>
@@ -836,42 +847,52 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
             </div>
 
             {/* 5. Live Telemetry Strip */}
-            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8 px-6 py-2.5 rounded-2xl bg-slate-900/60 border border-slate-800/80 text-xs font-mono text-slate-400 mb-12 shadow-md">
-              <div className="flex items-center space-x-1.5 text-slate-300">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>11 Visual Tools</span>
+            <div className={`flex flex-wrap items-center justify-center gap-4 md:gap-8 px-6 py-2.5 rounded-2xl text-xs font-mono mb-12 shadow-sm border ${
+              isLight
+                ? 'bg-white border-slate-200 text-slate-600'
+                : 'bg-slate-900/60 border-slate-800/80 text-slate-400'
+            }`}>
+              <div className="flex items-center space-x-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                <span className={isLight ? 'text-slate-800 font-medium' : 'text-slate-300'}>12 Visual Architecture Tools</span>
               </div>
-              <div className="flex items-center space-x-1.5 text-slate-300">
+              <div className="flex items-center space-x-1.5">
                 <Activity className="w-3.5 h-3.5 text-cyan-400" />
-                <span>7-Hop Tracing Engine</span>
+                <span className={isLight ? 'text-slate-800 font-medium' : 'text-slate-300'}>7-Hop Tracing Engine</span>
               </div>
-              <div className="flex items-center space-x-1.5 text-slate-300">
+              <div className="flex items-center space-x-1.5">
                 <Zap className="w-3.5 h-3.5 text-amber-400" />
-                <span>100% Offline Demo Mode</span>
+                <span className={isLight ? 'text-slate-800 font-medium' : 'text-slate-300'}>100% Offline Demo Mode</span>
               </div>
-              <div className="flex items-center space-x-1.5 text-slate-300">
+              <div className="flex items-center space-x-1.5">
                 <Shield className="w-3.5 h-3.5 text-indigo-400" />
-                <span>Spring Security 6 Audit</span>
+                <span className={isLight ? 'text-slate-800 font-medium' : 'text-slate-300'}>Spring Security 6 Audit</span>
               </div>
             </div>
 
             {/* ===================================================================== */}
             {/* 6. THE LIVE INTERACTIVE WORKBENCH (Core Hands-On Simulation Sandbox)   */}
             {/* ===================================================================== */}
-            <div className="w-full max-w-5xl rounded-3xl border border-slate-800/90 bg-[#0c1222]/95 shadow-[0_20px_70px_rgba(0,0,0,0.8)] backdrop-blur-2xl mb-16 overflow-hidden relative">
+            <div className={`w-full max-w-5xl rounded-2xl border mb-16 overflow-hidden relative shadow-2xl transition-colors duration-200 ${
+              isLight
+                ? 'bg-white border-slate-200 text-slate-900'
+                : 'bg-[#0c1222]/95 border-slate-800/90 text-slate-100'
+            }`}>
               {/* macOS Window Chrome Header */}
-              <div className="px-5 py-3.5 bg-[#0a0f1d] border-b border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div className={`px-5 py-3 border-b flex flex-col md:flex-row md:items-center justify-between gap-3 ${
+                isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#0a0f1d] border-slate-800'
+              }`}>
                 <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-1.5">
-                    <div className="w-3 h-3 rounded-full bg-red-500/80 hover:opacity-100 transition-opacity" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-500/80 hover:opacity-100 transition-opacity" />
-                    <div className="w-3 h-3 rounded-full bg-green-500/80 hover:opacity-100 transition-opacity" />
+                    <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                    <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                    <div className="w-3 h-3 rounded-full bg-green-500/80" />
                   </div>
-                  <span className="text-slate-600">|</span>
+                  <span className="text-slate-400">|</span>
                   <div className="flex items-center space-x-2 text-xs font-mono">
                     <span className="text-slate-400 font-bold">Workbench:</span>
-                    <span className="text-white font-semibold">{scenario.name}</span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-pink-500/20 text-pink-300 border border-pink-500/30">
+                    <span className={`font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>{scenario.name}</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-sky-500/10 text-sky-400 border border-sky-500/20 font-bold">
                       {scenario.method} {scenario.endpoint}
                     </span>
                   </div>
@@ -889,9 +910,11 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                           setActiveScenarioKey(key);
                           setActiveTraceStep(0);
                         }}
-                        className={`px-3 py-1 rounded-xl text-xs font-mono font-bold transition-all flex items-center space-x-1.5 shrink-0 ${
+                        className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all flex items-center space-x-1.5 shrink-0 ${
                           isSelected
-                            ? 'bg-gradient-to-r from-pink-600 to-indigo-600 text-white shadow-md'
+                            ? 'bg-gradient-to-r from-sky-600 to-indigo-600 text-white shadow-md'
+                            : isLight
+                            ? 'bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200 border border-slate-200'
                             : 'bg-slate-900 text-slate-400 hover:text-white hover:bg-slate-800 border border-slate-800'
                         }`}
                       >
@@ -904,8 +927,12 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
               </div>
 
               {/* Workbench Navigation Tab Bar */}
-              <div className="px-5 py-2.5 bg-[#0d1428] border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center space-x-1 bg-slate-950/60 p-1 rounded-xl border border-slate-800/80">
+              <div className={`px-5 py-2.5 border-b flex flex-wrap items-center justify-between gap-2 ${
+                isLight ? 'bg-slate-50/50 border-slate-200' : 'bg-[#0d1428] border-slate-800/80'
+              }`}>
+                <div className={`flex items-center space-x-1 p-1 rounded-xl border ${
+                  isLight ? 'bg-slate-100 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                }`}>
                   {[
                     { key: 'flow', label: '⚡ Architecture Flow' },
                     { key: 'trace', label: '🎬 Trace Replay & Stack' },
@@ -918,7 +945,9 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                       onClick={() => setStudioTab(t.key as StudioTab)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
                         studioTab === t.key
-                          ? 'bg-indigo-600 text-white shadow-md'
+                          ? 'bg-indigo-600 text-white shadow-sm'
+                          : isLight
+                          ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
                           : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
                       }`}
                     >
@@ -928,7 +957,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                 </div>
 
                 <div className="flex items-center space-x-2 text-xs font-mono text-slate-400">
-                  <span className="text-emerald-400 font-bold">● {scenario.status}</span>
+                  <span className="text-emerald-500 font-bold">● {scenario.status}</span>
                   <span>•</span>
                   <span>Duration: {scenario.totalDuration}</span>
                 </div>
@@ -940,13 +969,17 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                 {studioTab === 'flow' && (
                   <div>
                     {/* Top Scrubber & Controls */}
-                    <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800/80">
+                    <div className={`flex items-center justify-between mb-6 pb-4 border-b ${
+                      isLight ? 'border-slate-200' : 'border-slate-800/80'
+                    }`}>
                       <div className="flex items-center space-x-3">
                         <button
                           onClick={() => setIsPlayingTrace(!isPlayingTrace)}
-                          className={`p-2 rounded-xl border text-xs font-mono font-bold flex items-center space-x-1.5 transition-all ${
+                          className={`px-3.5 py-1.5 rounded-xl border text-xs font-mono font-bold flex items-center space-x-1.5 transition-all ${
                             isPlayingTrace
-                              ? 'bg-pink-600 border-pink-500 text-white shadow-lg shadow-pink-600/30'
+                              ? 'bg-sky-600 border-sky-500 text-white shadow-md shadow-sky-600/20'
+                              : isLight
+                              ? 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200'
                               : 'bg-slate-900 border-slate-700 text-slate-300 hover:text-white'
                           }`}
                         >
@@ -955,7 +988,11 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                         </button>
                         <button
                           onClick={() => setActiveTraceStep((prev) => (prev + 1) % scenario.nodes.length)}
-                          className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs font-mono font-bold text-slate-300 hover:text-white flex items-center space-x-1"
+                          className={`px-3 py-1.5 rounded-xl border text-xs font-mono font-bold flex items-center space-x-1.5 transition-all ${
+                            isLight
+                              ? 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200'
+                              : 'bg-slate-900 border-slate-700 text-slate-300 hover:text-white'
+                          }`}
                         >
                           <span>Step Next</span>
                           <span className="keycap">Space</span>
@@ -963,8 +1000,8 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                       </div>
 
                       <div className="text-xs font-mono text-slate-400">
-                        Active Step <span className="text-pink-400 font-bold">{activeTraceStep + 1}</span> of {scenario.nodes.length}:{' '}
-                        <span className="text-white font-bold">{scenario.nodes[activeTraceStep]?.label}</span>
+                        Active Step <span className="text-sky-400 font-bold">{activeTraceStep + 1}</span> of {scenario.nodes.length}:{' '}
+                        <span className={`font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>{scenario.nodes[activeTraceStep]?.label}</span>
                       </div>
                     </div>
 
@@ -980,22 +1017,26 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                               setSelectedStudioNodeIdx(idx);
                               setActiveTraceStep(idx);
                             }}
-                            className={`cursor-pointer p-4 rounded-2xl border transition-all duration-300 flex flex-col justify-between relative group ${
+                            className={`cursor-pointer p-4 rounded-xl border transition-all duration-200 flex flex-col justify-between relative group ${
                               isCurrentActive
-                                ? 'bg-slate-900 border-pink-500 shadow-[0_0_25px_rgba(236,72,153,0.4)] scale-105 ring-2 ring-pink-500/50 z-10'
+                                ? 'ring-2 ring-sky-500 shadow-lg scale-[1.02] z-10 ' + (isLight ? 'bg-sky-50 border-sky-400 text-slate-900' : 'bg-slate-900 border-sky-400 text-white')
                                 : isNodeSelected
-                                ? 'bg-[#151f38] border-indigo-500 shadow-md'
-                                : `${n.bg} ${n.border} opacity-80 hover:opacity-100 hover:scale-102`
+                                ? (isLight ? 'bg-slate-100 border-indigo-400 text-slate-900' : 'bg-[#151f38] border-indigo-500 text-white')
+                                : isLight
+                                ? 'bg-white border-slate-200 text-slate-800 hover:border-slate-300'
+                                : `${n.bg} ${n.border} opacity-85 hover:opacity-100`
                             }`}
                           >
                             <div>
                               <div className="flex items-center justify-between mb-2">
-                                <span className="text-2xl drop-shadow-md">{n.icon}</span>
-                                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                                <span className="text-xl">{n.icon}</span>
+                                <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold border ${
+                                  isLight ? 'bg-slate-100 text-slate-600 border-slate-200' : 'bg-slate-800 text-slate-300 border-slate-700'
+                                }`}>
                                   {n.duration}
                                 </span>
                               </div>
-                              <h4 className={`text-xs font-mono font-bold truncate ${isCurrentActive ? 'text-pink-300' : n.color}`}>
+                              <h4 className={`text-xs font-mono font-bold truncate ${isCurrentActive ? 'text-sky-500' : isLight ? 'text-slate-900' : n.color}`}>
                                 {n.label}
                               </h4>
                               <p className="text-[10px] font-mono text-slate-400 truncate mt-0.5">
@@ -1003,14 +1044,16 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                               </p>
                             </div>
 
-                            <div className="mt-3 pt-2 border-t border-slate-800/60 flex items-center justify-between text-[10px] font-mono text-slate-500">
+                            <div className={`mt-3 pt-2 border-t flex items-center justify-between text-[10px] font-mono ${
+                              isLight ? 'border-slate-100 text-slate-400' : 'border-slate-800/60 text-slate-500'
+                            }`}>
                               <span>{n.type}</span>
-                              <span className="group-hover:text-pink-400 transition-colors">Inspect →</span>
+                              <span className="group-hover:text-sky-400 transition-colors">Inspect →</span>
                             </div>
 
                             {/* Active Step Indicator Badge */}
                             {isCurrentActive && (
-                              <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-pink-500 text-white font-mono text-[10px] font-bold flex items-center justify-center shadow-lg shadow-pink-500/50">
+                              <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-sky-500 text-white font-mono text-[10px] font-bold flex items-center justify-center shadow-md">
                                 {idx + 1}
                               </div>
                             )}
@@ -1020,24 +1063,24 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     </div>
 
                     {/* Node Detail Code & Annotation Inspector */}
-                    <div className="rounded-2xl bg-slate-950 border border-slate-800/90 p-4 font-mono text-xs">
+                    <div className="rounded-xl bg-slate-950 border border-slate-800/90 p-4 font-mono text-xs">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-800 gap-2 mb-3">
                         <div className="flex items-center space-x-2 text-slate-300">
-                          <FileCode className="w-4 h-4 text-indigo-400" />
+                          <FileCode className="w-4 h-4 text-sky-400" />
                           <span className="text-slate-400">Inspecting:</span>
                           <span className="text-white font-bold">{selectedNode.label}</span>
                           <span className="text-slate-500">({selectedNode.filePath})</span>
                         </div>
                         <div className="flex flex-wrap gap-1.5">
                           {selectedNode.annotations.map((ann, i) => (
-                            <span key={i} className="px-2 py-0.5 rounded text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                            <span key={i} className="px-2 py-0.5 rounded text-[10px] bg-sky-500/10 text-sky-300 border border-sky-500/20">
                               {ann}
                             </span>
                           ))}
                         </div>
                       </div>
 
-                      <pre className="p-3.5 rounded-xl bg-[#090d16] text-slate-300 overflow-x-auto text-[11px] leading-relaxed border border-slate-900">
+                      <pre className="p-3.5 rounded-xl bg-[#070a12] text-slate-300 overflow-x-auto text-[11px] leading-relaxed border border-slate-900">
                         <code>{selectedNode.code}</code>
                       </pre>
                     </div>
@@ -1049,7 +1092,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                   <div>
                     <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
                       <div className="flex items-center space-x-2">
-                        <Activity className="w-4 h-4 text-pink-400" />
+                        <Activity className="w-4 h-4 text-sky-400" />
                         <span className="text-xs font-mono font-bold text-white">Execution Call Stack Scrubber</span>
                       </div>
                       <span className="text-xs font-mono text-slate-400">Total Latency: {scenario.totalDuration}</span>
@@ -1064,13 +1107,13 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                             onClick={() => setActiveTraceStep(idx)}
                             className={`cursor-pointer p-3 rounded-xl border flex items-center justify-between text-xs font-mono transition-all ${
                               isCurrent
-                                ? 'bg-[#1e1533] border-pink-500 shadow-md ring-1 ring-pink-500/40 text-pink-200'
+                                ? 'bg-sky-950/40 border-sky-500 shadow-md ring-1 ring-sky-500/40 text-sky-200'
                                 : 'bg-slate-900/60 border-slate-800 text-slate-300 hover:bg-slate-800'
                             }`}
                           >
                             <div className="flex items-center space-x-3">
                               <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                                isCurrent ? 'bg-pink-500 text-white' : 'bg-slate-800 text-slate-400'
+                                isCurrent ? 'bg-sky-500 text-white' : 'bg-slate-800 text-slate-400'
                               }`}>
                                 {idx + 1}
                               </span>
@@ -1089,12 +1132,12 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     </div>
 
                     {/* JSON Payload Inspector */}
-                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 font-mono text-xs">
+                    <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs">
                       <div className="flex items-center justify-between mb-2 text-slate-400">
                         <span>Resolved JWT Claims &amp; Context:</span>
                         <span className="text-emerald-400">● Verified Signature (HS256)</span>
                       </div>
-                      <pre className="p-3 rounded-xl bg-[#090d16] text-indigo-300 text-[11px] leading-relaxed border border-slate-900">
+                      <pre className="p-3 rounded-lg bg-[#070a12] text-sky-300 text-[11px] leading-relaxed border border-slate-900">
                         <code>{scenario.jwtPayload}</code>
                       </pre>
                     </div>
@@ -1120,7 +1163,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                         { title: '2. JwtAuthenticationFilter', status: 'VALIDATED', desc: 'Bearer Token HS256', col: 'text-indigo-400' },
                         { title: '3. SecurityContextHolder', status: 'POPULATED', desc: 'Principal: User(42)', col: 'text-cyan-400' },
                       ].map((item, i) => (
-                        <div key={i} className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
+                        <div key={i} className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
                           <div className="flex items-center justify-between mb-1">
                             <span className="text-xs font-mono font-bold text-white">{item.title}</span>
                             <span className={`text-[10px] font-mono font-bold ${item.col}`}>{item.status}</span>
@@ -1130,9 +1173,9 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                       ))}
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-xs font-mono">
+                    <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono">
                       <div className="text-slate-400 mb-2">Decoded Principal Context:</div>
-                      <pre className="p-3 rounded-xl bg-[#090d16] text-purple-300 text-[11px] leading-relaxed border border-slate-900">
+                      <pre className="p-3 rounded-lg bg-[#070a12] text-indigo-300 text-[11px] leading-relaxed border border-slate-900">
                         <code>{scenario.jwtPayload}</code>
                       </pre>
                     </div>
@@ -1156,12 +1199,12 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                       </button>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 font-mono text-xs mb-4">
+                    <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs mb-4">
                       <div className="flex items-center justify-between text-[11px] text-slate-400 mb-2">
                         <span>Executed Prepared Statement:</span>
                         <span className="text-amber-400 font-bold">Execution Time: {scenario.sqlDuration}</span>
                       </div>
-                      <pre className="p-4 rounded-xl bg-[#090d16] text-amber-300 text-[12px] leading-relaxed border border-slate-900 overflow-x-auto">
+                      <pre className="p-4 rounded-lg bg-[#070a12] text-amber-300 text-[12px] leading-relaxed border border-slate-900 overflow-x-auto">
                         <code>{scenario.sqlQuery}</code>
                       </pre>
                     </div>
@@ -1201,14 +1244,14 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                         { label: 'P95 Latency', val: '28.4ms', col: 'text-indigo-400' },
                         { label: 'P99 Latency', val: '46.1ms', col: 'text-amber-400' },
                       ].map((m, i) => (
-                        <div key={i} className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800">
+                        <div key={i} className="p-3.5 rounded-xl bg-slate-900 border border-slate-800">
                           <span className="text-[10px] text-slate-400 uppercase tracking-wider">{m.label}</span>
                           <div className={`text-lg font-extrabold mt-0.5 ${m.col}`}>{m.val}</div>
                         </div>
                       ))}
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+                    <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
                       <div className="text-xs font-mono text-slate-400 mb-3">24-Hour Hourly Heatmap Quantiles:</div>
                       <div className="grid grid-cols-12 gap-1.5">
                         {Array.from({ length: 24 }).map((_, h) => {
@@ -1216,7 +1259,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                           return (
                             <div
                               key={h}
-                              className={`h-9 rounded-lg flex flex-col items-center justify-center text-[10px] font-mono font-bold transition-transform hover:scale-110 cursor-pointer ${
+                              className={`h-9 rounded-lg flex flex-col items-center justify-center text-[10px] font-mono font-bold transition-transform hover:scale-105 cursor-pointer ${
                                 isSpike
                                   ? 'bg-amber-500/80 text-slate-950'
                                   : h % 2 === 0
@@ -1236,13 +1279,15 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
               </div>
 
               {/* Bottom Quick-Launch Bar */}
-              <div className="px-6 py-3.5 bg-[#090d16] border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className={`px-6 py-3.5 border-t flex flex-col sm:flex-row items-center justify-between gap-3 ${
+                isLight ? 'bg-slate-50 border-slate-200' : 'bg-[#090d16] border-slate-800/80'
+              }`}>
                 <span className="text-xs font-mono text-slate-400">
                   Ready to explore all models, dependencies, and execution logs?
                 </span>
                 <button
                   onClick={handleLoadDemoProject}
-                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-xs font-mono font-bold text-white shadow-md transition-transform hover:scale-105"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-xs font-mono font-bold text-white shadow-md transition-transform hover:scale-105"
                 >
                   Open Full Studio Canvas →
                 </button>
@@ -1250,11 +1295,11 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
             </div>
 
             {/* ===================================================================== */}
-            {/* 7. ALL 11 VISUAL ARCHITECTURE TOOLS SPOTLIGHT SHOWCASE               */}
+            {/* 7. ALL 12 VISUAL ARCHITECTURE TOOLS SPOTLIGHT SHOWCASE               */}
             {/* ===================================================================== */}
             <div className="w-full max-w-5xl mb-12">
               <div className="text-center mb-8">
-                <h3 className="text-xl md:text-2xl font-bold font-mono text-white">
+                <h3 className={`text-xl md:text-2xl font-bold font-mono ${isLight ? 'text-slate-900' : 'text-white'}`}>
                   12 Specialized Visual Architecture Tools
                 </h3>
                 <p className="text-xs md:text-sm text-slate-400 font-mono mt-1">
@@ -1266,9 +1311,9 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                 {[
                   {
                     title: 'React 19 Runtime Explorer',
-                    desc: 'Virtual DOM Fiber tree reconciliation, Hook state mutation timeline, and Axios request/response interceptors.',
+                    desc: 'Virtual DOM Fiber tree reconciliation, Hook state mutation timeline, and Axios interceptors.',
                     icon: Activity,
-                    col: 'text-cyan-400',
+                    col: 'text-sky-400',
                     key: 'react',
                     badge: 'v5.0 Core',
                     preview: '⚛️ useMutation(createOrder) ➔ Fiber Tree Re-render'
@@ -1295,7 +1340,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     title: '7-Swimlane Sequence Tracer',
                     desc: 'Asynchronous request and response lifecycle mapping across Controller, Service, Cache, and DB.',
                     icon: Zap,
-                    col: 'text-pink-400',
+                    col: 'text-amber-400',
                     key: 'sequence',
                     badge: '7 Swimlanes',
                     preview: '⚡ Controller ➔ JWT Filter ➔ Service ➔ JPA'
@@ -1304,7 +1349,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     title: '24-Hour Latency Heatmap',
                     desc: 'Hourly quantile matrix diagnosing traffic bursts, cache invalidations, and query spikes.',
                     icon: Flame,
-                    col: 'text-amber-400',
+                    col: 'text-orange-400',
                     key: 'heatmap',
                     badge: '24h Matrix',
                     preview: '🔥 24-Column Timeline Matrix with Hover Tooltips'
@@ -1322,29 +1367,62 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     title: 'AI Code & Security Assistant',
                     desc: 'Architectural explanations, Spring Security compliance auditing, and query reviews.',
                     icon: Bot,
-                    col: 'text-purple-400',
+                    col: 'text-sky-400',
                     key: 'ai',
                     badge: 'AI Explainer',
                     preview: '🤖 "Detected @Transactional with READ_COMMITTED"'
                   },
+                  {
+                    title: 'Live SQL Query Explorer',
+                    desc: 'Inspect executed SQL queries, query execution plans, and transaction boundaries.',
+                    icon: Database,
+                    col: 'text-blue-400',
+                    key: 'sql',
+                    badge: 'JPA Queries',
+                    preview: '⚡ SELECT id, total_amount FROM orders WHERE user_id = 42'
+                  },
+                  {
+                    title: 'Maven Dependency Graph',
+                    desc: 'Analyze project starters, external libraries, CVE vulnerabilities, and transitive links.',
+                    icon: Package,
+                    col: 'text-indigo-300',
+                    key: 'deps',
+                    badge: 'Maven BOM',
+                    preview: '📦 spring-boot-starter-data-jpa (3.2.0)'
+                  },
+                  {
+                    title: 'Interactive File Tree',
+                    desc: 'Explore source files by Layer, Feature, MVC Pattern, Framework, or Raw Directory structure.',
+                    icon: FolderTree,
+                    col: 'text-cyan-300',
+                    key: 'files',
+                    badge: '5 Views',
+                    preview: '📁 /src/main/java/com/codeflow/order'
+                  }
                 ].map((f, i) => {
                   const Icon = f.icon;
                   return (
                     <div
                       key={i}
                       onClick={() => handleOpenToolDirectly(f.key)}
-                      className="cursor-pointer p-5 rounded-2xl bg-[#0f172a]/80 border border-slate-800/80 hover:border-indigo-500/60 hover:bg-[#131d38] transition-all duration-200 flex flex-col justify-between shadow-xl group hover:-translate-y-1"
+                      className={`cursor-pointer p-5 rounded-xl border transition-all duration-200 flex flex-col justify-between group hover:-translate-y-0.5 ${
+                        isLight
+                          ? 'bg-white border-slate-200 text-slate-800 shadow-sm hover:border-sky-400 hover:shadow-md'
+                          : 'bg-[#0f172a]/80 border-slate-800/80 hover:border-sky-500/60 hover:bg-[#131d38] text-slate-100 shadow-lg'
+                      }`}
                     >
                       <div>
                         <div className="flex items-center justify-between mb-3">
-                          <div className={`p-2.5 rounded-xl bg-slate-900 border border-slate-800 ${f.col} group-hover:scale-110 transition-transform`}>
-                            <Icon className="w-5 h-5" />
+                          <div className={`p-2 rounded-lg ${isLight ? 'bg-slate-100' : 'bg-slate-900 border border-slate-800'} ${f.col} group-hover:scale-105 transition-transform`}>
+                            <Icon className="w-4 h-4" />
                           </div>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold border ${
+                            isLight ? 'bg-slate-100 text-slate-600 border-slate-200' : 'bg-slate-800 text-slate-300 border-slate-700'
+                          }`}>
                             {f.badge}
                           </span>
                         </div>
-                        <h4 className="text-sm font-bold font-mono text-white group-hover:text-indigo-300 transition-colors">
+                        <h4 className={`text-sm font-bold font-mono ${isLight ? 'text-slate-900' : 'text-white'} group-hover:text-sky-400 transition-colors`}>
                           {f.title}
                         </h4>
                         <p className="text-xs text-slate-400 font-mono mt-1.5 leading-relaxed">
@@ -1352,11 +1430,13 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                         </p>
                       </div>
 
-                      <div className="mt-4 pt-3 border-t border-slate-800/60">
-                        <div className="p-2 rounded-lg bg-slate-950 text-[10px] font-mono text-slate-400 border border-slate-900 truncate mb-3">
+                      <div className={`mt-4 pt-3 border-t ${isLight ? 'border-slate-100' : 'border-slate-800/60'}`}>
+                        <div className={`p-2 rounded-lg text-[10px] font-mono truncate mb-3 border ${
+                          isLight ? 'bg-slate-50 text-slate-600 border-slate-200' : 'bg-slate-950 text-slate-400 border-slate-900'
+                        }`}>
                           {f.preview}
                         </div>
-                        <div className="flex items-center justify-between text-xs font-mono text-indigo-400 font-bold group-hover:text-pink-400 transition-colors">
+                        <div className="flex items-center justify-between text-xs font-mono text-sky-400 font-bold group-hover:text-indigo-400 transition-colors">
                           <span>Launch Tool</span>
                           <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -1368,7 +1448,9 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
             </div>
 
             {/* Bottom Tech Indicators */}
-            <div className="flex flex-wrap items-center justify-center gap-2 pt-6 border-t border-slate-800/60 text-[11px] font-mono text-slate-400">
+            <div className={`flex flex-wrap items-center justify-center gap-2 pt-6 border-t text-[11px] font-mono ${
+              isLight ? 'border-slate-200 text-slate-500' : 'border-slate-800/60 text-slate-400'
+            }`}>
               <span>Java 21</span>
               <span>•</span>
               <span>Spring Boot 3.2</span>
@@ -1410,7 +1492,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
         )}
       </div>
 
-            {/* Modals */}
+      {/* Modals */}
       <IngestionModal
         isOpen={isIngestModalOpen}
         onClose={() => setIsIngestModalOpen(false)}
