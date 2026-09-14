@@ -69,7 +69,7 @@ const cleanFeatureName = (name: string): string => {
   if (!name) return 'Feature Flow';
   let clean = name.replace('Flow', '').replace('Controller', '').replace('.java', '').trim();
   clean = clean.replace(/\(\)/g, '');
-  clean = clean.replace(/([A-Z])/g, ' $1').trim();
+  clean = clean.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2').trim();
   return `${clean} Flow`;
 };
 

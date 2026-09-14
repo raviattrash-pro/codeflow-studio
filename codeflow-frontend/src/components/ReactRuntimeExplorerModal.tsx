@@ -139,10 +139,7 @@ export const ReactRuntimeExplorerModal: React.FC<ReactRuntimeExplorerModalProps>
 
   return (
     <div className="modal-backdrop">
-      <div
-        className="glass-modal w-full max-w-6xl h-[90vh] rounded-3xl overflow-hidden flex flex-col border border-slate-700/80 shadow-2xl relative"
-        style={{ backgroundColor: currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : currentTheme === 'NORMAL' ? '#ffffff' : '#0a0e1a' }}
-      >
+      <div className="w-full max-w-6xl h-[90vh] rounded-3xl overflow-hidden flex flex-col border border-slate-800 shadow-2xl relative bg-[#0a0e1a] text-slate-100">
         {/* Top Header Bar */}
         <div className="px-6 py-4 border-b border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3 shrink-0 bg-slate-950/80">
           <div className="flex items-center space-x-3">
