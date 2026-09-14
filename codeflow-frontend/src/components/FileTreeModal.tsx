@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { X, Search, Folder, FileCode, Copy, Check, Sparkles, Orbit, Network, FileText, Code2 } from 'lucide-react';
+import { X, Search, Folder, FileCode, Copy, Check, Sparkles, Orbit, FileText, Code2, Layers, Cpu, CheckCircle2 } from 'lucide-react';
 import { DEMO_FILE_TREE_DATA, DEMO_PROJECT_DATA } from '../utils/demoData';
+import { ThemeMode } from './Header';
 
 interface FileTreeModalProps {
   projectId: string | null;
   isOpen: boolean;
   onClose: () => void;
   onViewCode?: (filePath: string) => void;
+  currentTheme?: ThemeMode;
 }
 
 interface TreeNode {
@@ -37,6 +39,7 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
   isOpen,
   onClose,
   onViewCode,
+  currentTheme = 'NIGHT',
 }) => {
   const [treeData, setTreeData] = useState<TreeNode[]>([]);
   const [stats, setStats] = useState<FileTreeStats>({ totalFolders: 0, totalFiles: 0 });
@@ -45,6 +48,10 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['src']));
   const [copied, setCopied] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  const isLight = currentTheme === 'NORMAL';
+  const isNeumorphic = currentTheme === 'NEUMORPHIC';
+  const isGlass = currentTheme === 'GLASSMORPHISM';
 
   useEffect(() => {
     if (isOpen && projectId) {
@@ -150,7 +157,11 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
       return (
         <div key={fullPath} style={{ paddingLeft: `${level * 16}px` }}>
           <div
-            className="tree-node flex items-center justify-between py-1 px-2 rounded-lg hover:bg-slate-800/60 cursor-pointer group text-xs font-mono"
+            className={`tree-node flex items-center justify-between py-1.5 px-2.5 rounded-xl cursor-pointer group text-xs font-mono transition-colors ${
+              isLight
+                ? 'hover:bg-slate-100 text-slate-800'
+                : 'hover:bg-slate-800/70 text-slate-200'
+            }`}
             onClick={() => {
               if (node.type === 'folder') toggleFolder(fullPath);
               else if (onViewCode) onViewCode(fullPath);
@@ -158,15 +169,25 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
           >
             <div className="flex items-center space-x-2 truncate">
               <span className="text-base select-none">{getIcon(node.name, node.type)}</span>
-              <span className={`truncate ${node.type === 'folder' ? 'font-bold text-amber-200' : 'text-slate-200'}`}>
+              <span className={`truncate ${
+                node.type === 'folder'
+                  ? isLight ? 'font-bold text-amber-700' : 'font-bold text-amber-300'
+                  : isLight ? 'text-slate-800' : 'text-slate-200'
+              }`}>
                 {node.name}
               </span>
             </div>
             {node.type === 'file' && (
-              <div className="flex items-center space-x-2 text-[10px] text-slate-500 opacity-80 group-hover:opacity-100">
-                {node.lineCount && <span>{node.lineCount} lines</span>}
+              <div className="flex items-center space-x-2 text-[10px]">
+                {node.lineCount && (
+                  <span className={isLight ? 'text-slate-500' : 'text-slate-400'}>{node.lineCount} lines</span>
+                )}
                 {onViewCode && (
-                  <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                  <span className={`px-2 py-0.5 rounded-lg border font-medium ${
+                    isLight
+                      ? 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100'
+                      : 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'
+                  }`}>
                     View
                   </span>
                 )}
@@ -249,94 +270,93 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
 
   // Galaxy Starfield View Canvas Rendering
   useEffect(() => {
-    if (viewMode !== 'galaxy' || !canvasRef.current) return;
+    if (viewMode !== 'galaxy' || !canvasRef.current || treeData.length === 0) return;
+
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     let animId: number;
-    const width = canvas.offsetWidth;
-    const height = canvas.offsetHeight;
-    canvas.width = width;
-    canvas.height = height;
+    let width = (canvas.width = canvas.parentElement?.clientWidth || 800);
+    let height = (canvas.height = 500);
 
-    // Flatten tree nodes into stars
-    interface GalaxyNode {
+    interface CelestialNode {
+      name: string;
+      type: 'folder' | 'file';
       x: number;
       y: number;
+      radius: number;
+      color: string;
       vx: number;
       vy: number;
-      radius: number;
-      name: string;
-      color: string;
-      isFolder: boolean;
-      path: string;
     }
 
-    const nodes: GalaxyNode[] = [];
-    const centerX = width / 2;
-    const centerY = height / 2;
+    const celestialNodes: CelestialNode[] = [];
 
-    const flatten = (items: TreeNode[], depth = 1, currentPath = '') => {
-      items.forEach((item, idx) => {
-        const fullPath = currentPath ? `${currentPath}/${item.name}` : item.name;
-        const angle = (idx / items.length) * Math.PI * 2 + depth;
-        const dist = depth * 70 + Math.random() * 30;
-        const x = centerX + Math.cos(angle) * dist;
-        const y = centerY + Math.sin(angle) * dist;
+    const flatten = (items: TreeNode[]) => {
+      items.forEach((item) => {
+        let color = '#38bdf8';
+        if (item.type === 'folder') color = '#fbbf24';
+        else if (item.name.endsWith('.java')) color = '#818cf8';
+        else if (item.name.endsWith('.tsx') || item.name.endsWith('.ts')) color = '#22d3ee';
 
-        nodes.push({
-          x,
-          y,
+        celestialNodes.push({
+          name: item.name,
+          type: item.type,
+          x: Math.random() * (width - 100) + 50,
+          y: Math.random() * (height - 100) + 50,
+          radius: item.type === 'folder' ? 7 : 4.5,
+          color,
           vx: (Math.random() - 0.5) * 0.4,
           vy: (Math.random() - 0.5) * 0.4,
-          radius: item.type === 'folder' ? 6 : 4,
-          name: item.name,
-          color: item.type === 'folder' ? '#fbbf24' : item.name.endsWith('.java') ? '#818cf8' : '#22d3ee',
-          isFolder: item.type === 'folder',
-          path: fullPath,
         });
 
-        if (item.children) {
-          flatten(item.children, depth + 1, fullPath);
-        }
+        if (item.children) flatten(item.children);
       });
     };
 
-    flatten(filteredData);
+    flatten(treeData);
 
     const render = () => {
-      ctx.fillStyle = '#060912';
+      ctx.fillStyle = isLight ? '#f8fafc' : '#040711';
       ctx.fillRect(0, 0, width, height);
 
-      // Draw connections to center
-      ctx.lineWidth = 0.5;
-      nodes.forEach((n) => {
-        ctx.strokeStyle = `${n.color}33`;
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.lineTo(n.x, n.y);
-        ctx.stroke();
+      // Draw faint connections
+      ctx.strokeStyle = isLight ? 'rgba(99, 102, 241, 0.12)' : 'rgba(56, 189, 248, 0.1)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < celestialNodes.length; i++) {
+        for (let j = i + 1; j < celestialNodes.length; j++) {
+          const dx = celestialNodes[i].x - celestialNodes[j].x;
+          const dy = celestialNodes[i].y - celestialNodes[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 100) {
+            ctx.beginPath();
+            ctx.moveTo(celestialNodes[i].x, celestialNodes[i].y);
+            ctx.lineTo(celestialNodes[j].x, celestialNodes[j].y);
+            ctx.stroke();
+          }
+        }
+      }
 
-        // Update particle physics
-        n.x += n.vx;
-        n.y += n.vy;
-        if (n.x < 50 || n.x > width - 50) n.vx *= -1;
-        if (n.y < 50 || n.y > height - 50) n.vy *= -1;
+      // Update and draw nodes
+      celestialNodes.forEach((node) => {
+        node.x += node.vx;
+        node.y += node.vy;
 
-        // Draw star
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = n.color;
-        ctx.fillStyle = n.color;
+        if (node.x < 30 || node.x > width - 30) node.vx *= -1;
+        if (node.y < 30 || node.y > height - 30) node.vy *= -1;
+
         ctx.beginPath();
-        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+        ctx.fillStyle = node.color;
+        ctx.shadowColor = node.color;
+        ctx.shadowBlur = isLight ? 4 : 8;
         ctx.fill();
         ctx.shadowBlur = 0;
 
-        // Label
-        ctx.fillStyle = '#cbd5e1';
-        ctx.font = '10px monospace';
-        ctx.fillText(n.name, n.x + 8, n.y + 3);
+        ctx.font = '10px JetBrains Mono, monospace';
+        ctx.fillStyle = isLight ? '#334155' : 'rgba(226, 232, 240, 0.85)';
+        ctx.fillText(node.name, node.x + 9, node.y + 3);
       });
 
       animId = requestAnimationFrame(render);
@@ -345,7 +365,7 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
     render();
 
     return () => cancelAnimationFrame(animId);
-  }, [viewMode, filteredData]);
+  }, [viewMode, treeData, isLight]);
 
   if (!isOpen) return null;
 
@@ -356,56 +376,86 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div
-        className="modal-pop-in w-full max-w-5xl h-[85vh] max-h-[85vh] bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col my-auto"
+        className={`w-full max-w-5xl h-[88vh] max-h-[88vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col my-auto border ${
+          isLight
+            ? 'bg-white border-slate-200 text-slate-900 shadow-slate-300/50'
+            : isGlass
+            ? 'glass-modal border-slate-700/80 text-white'
+            : isNeumorphic
+            ? 'neumorphic-card border-slate-700 text-slate-100'
+            : 'bg-[#0b0f19] border-slate-800 text-white'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/90 shrink-0">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+        <div className={`px-6 py-4.5 border-b flex items-center justify-between shrink-0 ${
+          isLight ? 'bg-slate-50/90 border-slate-200' : 'bg-slate-950/90 border-slate-800/80'
+        }`}>
+          <div className="flex items-center space-x-3.5">
+            <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-cyan-500/20 to-indigo-500/20 text-cyan-400 border border-cyan-500/30">
               <Folder className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white font-mono flex items-center space-x-2">
-                <span>File Tree & Architecture Visualizer</span>
-                <span className="px-2 py-0.5 text-[10px] bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 rounded-full">
-                  {stats.totalFolders} Folders · {stats.totalFiles} Files
+              <div className="flex items-center space-x-2">
+                <h3 className={`text-base font-bold font-mono ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                  Project File Hierarchy & AST Starfield
+                </h3>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                  Recursive AST
                 </span>
-              </h3>
-              <p className="text-xs text-slate-400 font-mono">
-                Interactive project tree, ASCII, Emoji, Mermaid AST, and Galaxy Starfield view
+              </div>
+              <p className={`text-xs mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                Full folder topology with multi-format export (ASCII, Mermaid, Emoji, Starfield Galaxy)
               </p>
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-all"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center space-x-3">
+            <div className={`flex items-center space-x-3 px-3 py-1.5 rounded-xl border text-xs font-mono ${
+              isLight ? 'bg-slate-100 border-slate-200 text-slate-600' : 'bg-slate-900 border-slate-800 text-slate-300'
+            }`}>
+              <span>📁 {stats.totalFolders} folders</span>
+              <span>•</span>
+              <span>📄 {stats.totalFiles} files</span>
+            </div>
+
+            <button
+              onClick={onClose}
+              className={`p-2 rounded-xl transition-all ${
+                isLight ? 'hover:bg-slate-200 text-slate-500 hover:text-slate-900' : 'hover:bg-slate-800 text-slate-400 hover:text-white'
+              }`}
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
-        {/* View Mode Tabs & Filter */}
-        <div className="px-6 py-3 border-b border-slate-800/80 bg-slate-950/60 flex flex-wrap items-center justify-between gap-3 shrink-0">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+        {/* Toolbar */}
+        <div className={`px-6 py-3 border-b flex flex-wrap items-center justify-between gap-3 shrink-0 ${
+          isLight ? 'bg-slate-50/50 border-slate-200' : 'bg-slate-950/40 border-slate-800/80'
+        }`}>
+          <div className="relative flex-1 max-w-md">
+            <Search className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 ${isLight ? 'text-slate-400' : 'text-slate-500'}`} />
             <input
               type="text"
-              placeholder="Search files and folders..."
+              placeholder="Filter file or directory name..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 font-mono"
+              className={`w-full pl-9 pr-4 py-2 rounded-xl border text-xs font-mono outline-none transition-all ${
+                isLight
+                  ? 'bg-white border-slate-300 text-slate-900 focus:border-cyan-500 placeholder-slate-400'
+                  : 'bg-slate-900 border-slate-800 text-slate-200 focus:border-cyan-500 placeholder-slate-500'
+              }`}
             />
           </div>
 
           <div className="flex items-center space-x-1.5 text-xs font-mono">
             {[
-              { id: 'interactive', label: 'Interactive', icon: Folder },
+              { id: 'interactive', label: 'Interactive Tree', icon: Folder },
               { id: 'ascii', label: 'ASCII Tree', icon: FileText },
               { id: 'emoji', label: 'Emoji Tree', icon: Sparkles },
-              { id: 'mermaid', label: 'Mermaid', icon: Code2 },
-              { id: 'galaxy', label: 'Galaxy View', icon: Orbit },
+              { id: 'mermaid', label: 'Mermaid Spec', icon: Code2 },
+              { id: 'galaxy', label: 'Starfield Galaxy', icon: Orbit },
             ].map((tab) => {
               const Icon = tab.icon;
               const active = viewMode === tab.id;
@@ -415,8 +465,12 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
                   onClick={() => setViewMode(tab.id as ViewMode)}
                   className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border transition-all ${
                     active
-                      ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 font-bold'
-                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+                      ? isLight
+                        ? 'bg-cyan-500/10 text-cyan-700 border-cyan-400 font-bold shadow-sm'
+                        : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 font-bold shadow-lg shadow-cyan-950/50'
+                      : isLight
+                      ? 'bg-white border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                      : 'bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800'
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
@@ -428,12 +482,18 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 min-h-0 p-6 overflow-y-auto custom-scrollbar bg-slate-950/50">
+        <div className={`flex-1 min-h-0 p-6 overflow-y-auto custom-scrollbar ${
+          isLight ? 'bg-slate-100/60' : 'bg-slate-950/60'
+        }`}>
           {viewMode === 'interactive' && (
-            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+            <div className={`p-4 rounded-2xl border shadow-sm ${
+              isLight ? 'bg-white border-slate-200' : 'bg-slate-900/90 border-slate-800'
+            }`}>
               {renderInteractiveTree(filteredData)}
               {filteredData.length === 0 && (
-                <div className="p-8 text-center text-slate-500 font-mono text-xs">No matching files found.</div>
+                <div className={`p-8 text-center font-mono text-xs ${isLight ? 'text-slate-500' : 'text-slate-500'}`}>
+                  No matching files found.
+                </div>
               )}
             </div>
           )}
@@ -443,13 +503,21 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
               <div className="flex justify-end">
                 <button
                   onClick={() => handleCopyText(asciiText)}
-                  className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono border border-slate-700 transition-all"
+                  className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono border transition-all ${
+                    isLight
+                      ? 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300 shadow-sm'
+                      : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                  }`}
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copied ? 'Copied ASCII' : 'Copy ASCII Tree'}</span>
                 </button>
               </div>
-              <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 font-mono text-xs text-amber-200/90 overflow-x-auto custom-scrollbar whitespace-pre leading-relaxed">
+              <div className={`p-5 rounded-2xl border font-mono text-xs overflow-x-auto custom-scrollbar whitespace-pre leading-relaxed ${
+                isLight
+                  ? 'bg-slate-900 text-amber-300 border-slate-800 shadow-inner'
+                  : 'bg-slate-950 text-amber-200/90 border-slate-800 shadow-inner'
+              }`}>
                 {asciiText}
               </div>
             </div>
@@ -460,13 +528,21 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
               <div className="flex justify-end">
                 <button
                   onClick={() => handleCopyText(emojiText)}
-                  className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono border border-slate-700 transition-all"
+                  className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono border transition-all ${
+                    isLight
+                      ? 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300 shadow-sm'
+                      : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                  }`}
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copied ? 'Copied Emoji' : 'Copy Emoji Tree'}</span>
                 </button>
               </div>
-              <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 font-mono text-xs text-cyan-200/90 overflow-x-auto custom-scrollbar whitespace-pre leading-relaxed">
+              <div className={`p-5 rounded-2xl border font-mono text-xs overflow-x-auto custom-scrollbar whitespace-pre leading-relaxed ${
+                isLight
+                  ? 'bg-slate-900 text-cyan-300 border-slate-800 shadow-inner'
+                  : 'bg-slate-950 text-cyan-200/90 border-slate-800 shadow-inner'
+              }`}>
                 {emojiText}
               </div>
             </div>
@@ -477,23 +553,37 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
               <div className="flex justify-end">
                 <button
                   onClick={() => handleCopyText(mermaidText)}
-                  className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono border border-slate-700 transition-all"
+                  className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-mono border transition-all ${
+                    isLight
+                      ? 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300 shadow-sm'
+                      : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                  }`}
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copied ? 'Copied Mermaid' : 'Copy Mermaid Code'}</span>
                 </button>
               </div>
-              <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 font-mono text-xs text-purple-200/90 overflow-x-auto custom-scrollbar whitespace-pre leading-relaxed">
+              <div className={`p-5 rounded-2xl border font-mono text-xs overflow-x-auto custom-scrollbar whitespace-pre leading-relaxed ${
+                isLight
+                  ? 'bg-slate-900 text-purple-300 border-slate-800 shadow-inner'
+                  : 'bg-slate-950 text-purple-200/90 border-slate-800 shadow-inner'
+              }`}>
                 {mermaidText}
               </div>
             </div>
           )}
 
           {viewMode === 'galaxy' && (
-            <div className="relative w-full h-[500px] rounded-2xl overflow-hidden border border-slate-800 bg-[#060912]">
+            <div className={`relative w-full h-[500px] rounded-2xl overflow-hidden border shadow-xl ${
+              isLight ? 'border-slate-300 bg-slate-50' : 'border-slate-800 bg-[#040711]'
+            }`}>
               <canvas ref={canvasRef} className="w-full h-full block" />
-              <div className="absolute top-4 left-4 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-800 text-[11px] font-mono text-slate-300">
-                ⭐ <span className="text-amber-400 font-bold">Gold</span> = Folders · <span className="text-indigo-400 font-bold">Purple</span> = Java · <span className="text-cyan-400 font-bold">Cyan</span> = React/TSX
+              <div className={`absolute top-4 left-4 backdrop-blur-md px-3.5 py-2 rounded-xl border text-[11px] font-mono shadow-lg ${
+                isLight
+                  ? 'bg-white/90 border-slate-300 text-slate-800 shadow-slate-200'
+                  : 'bg-slate-900/80 border-slate-800 text-slate-200'
+              }`}>
+                ⭐ <span className="text-amber-500 font-bold">Gold</span> = Folders · <span className="text-indigo-500 font-bold">Purple</span> = Java · <span className="text-cyan-500 font-bold">Cyan</span> = React/TSX
               </div>
             </div>
           )}

@@ -1533,6 +1533,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                   nodeDetail={selectedNodeDetail}
                   onClose={() => setSelectedNodeId(undefined)}
                   onViewCode={(path) => setViewingFilePath(path)}
+                  currentTheme={currentTheme}
                 />
               )}
             </div>
@@ -1548,42 +1549,49 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
           setCurrentProjectId(projectId);
           setSelectedNodeId(undefined);
         }}
+        currentTheme={currentTheme}
       />
 
       <MonacoViewerModal
         projectId={currentProjectId || ''}
         filePath={viewingFilePath}
         onClose={() => setViewingFilePath(null)}
+        currentTheme={currentTheme}
       />
 
       <DependencyExplorerModal
         projectId={currentProjectId}
         isOpen={isDependencyModalOpen}
         onClose={() => setIsDependencyModalOpen(false)}
+        currentTheme={currentTheme}
       />
 
       <SqlExplorerModal
         projectId={currentProjectId}
         isOpen={isSqlExplorerOpen}
         onClose={() => setIsSqlExplorerOpen(false)}
+        currentTheme={currentTheme}
       />
 
       <AiAssistantModal
         projectId={currentProjectId}
         isOpen={isAiAssistantOpen}
         onClose={() => setIsAiAssistantOpen(false)}
+        currentTheme={currentTheme}
       />
 
       <ErDiagramModal
         projectId={currentProjectId}
         isOpen={isErDiagramOpen}
         onClose={() => setIsErDiagramOpen(false)}
+        currentTheme={currentTheme}
       />
 
       <SecurityExplorerModal
         projectId={currentProjectId}
         isOpen={isSecurityFlowOpen}
         onClose={() => setIsSecurityFlowOpen(false)}
+        currentTheme={currentTheme}
       />
 
       <FileTreeModal
@@ -1594,27 +1602,32 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
           setIsFileTreeOpen(false);
           setViewingFilePath(path);
         }}
+        currentTheme={currentTheme}
       />
 
       <RuntimeTracingModal
         projectId={currentProjectId}
         isOpen={isRuntimeTracingOpen}
         onClose={() => setIsRuntimeTracingOpen(false)}
+        currentTheme={currentTheme}
       />
 
       <ApiMetricsDashboardModal
         isOpen={isApiMetricsOpen}
         onClose={() => setIsApiMetricsOpen(false)}
+        currentTheme={currentTheme}
       />
 
       <SequenceDiagramModal
         isOpen={isSequenceDiagramOpen}
         onClose={() => setIsSequenceDiagramOpen(false)}
+        currentTheme={currentTheme}
       />
 
       <LatencyHeatmapModal
         isOpen={isLatencyHeatmapOpen}
         onClose={() => setIsLatencyHeatmapOpen(false)}
+        currentTheme={currentTheme}
       />
       <ReactRuntimeExplorerModal
         isOpen={isReactRuntimeOpen}

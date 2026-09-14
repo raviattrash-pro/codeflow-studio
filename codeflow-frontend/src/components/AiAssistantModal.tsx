@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { X, Sparkles, Bot, Send, ShieldCheck, Database, Layers, CheckCircle2, ArrowRight } from 'lucide-react';
-
 import { DEMO_PROJECT_DATA } from '../utils/demoData';
+import { ThemeMode } from './Header';
 
 interface AiAssistantModalProps {
   projectId: string | null;
   isOpen: boolean;
   onClose: () => void;
+  currentTheme?: ThemeMode;
 }
 
 interface AiResponse {
@@ -60,10 +61,15 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
   projectId,
   isOpen,
   onClose,
+  currentTheme = 'NIGHT',
 }) => {
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<AiResponse | null>(null);
+
+  const isLight = currentTheme === 'NORMAL';
+  const isNeumorphic = currentTheme === 'NEUMORPHIC';
+  const isGlass = currentTheme === 'GLASSMORPHISM';
 
   if (!isOpen) return null;
 
@@ -92,127 +98,183 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div
-        className="modal-pop-in w-full max-w-3xl h-[85vh] max-h-[85vh] bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col my-auto"
+        className={`modal-pop-in w-full max-w-3xl h-[85vh] max-h-[85vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col my-auto border ${
+          isLight
+            ? 'bg-white border-slate-200 text-slate-900'
+            : isGlass
+            ? 'glass-modal border-slate-700/80 text-white'
+            : isNeumorphic
+            ? 'neumorphic-card border-slate-700 text-slate-100'
+            : 'bg-slate-900 border-slate-800 text-white'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/90 shrink-0">
+        <div className={`px-6 py-4.5 border-b flex items-center justify-between shrink-0 ${
+          isLight ? 'bg-slate-50/95 border-slate-200' : 'bg-slate-950/90 border-slate-800'
+        }`}>
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-pink-500/20">
+            <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-purple-500/20 to-pink-500/20 text-purple-400 border border-purple-500/30">
               <Bot className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white font-mono flex items-center space-x-2">
-                <span>AI Code Assistant & Architectural Explainer</span>
-                <span className="px-2 py-0.5 text-[10px] bg-pink-500/20 text-pink-300 border border-pink-500/30 rounded-full">
-                  v2.0 Upgrade
+              <div className="flex items-center space-x-2">
+                <h3 className={`text-base font-bold font-mono ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                  AI Architecture Assistant & Code Auditor
+                </h3>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                  Deep Context Engine
                 </span>
-              </h3>
-              <p className="text-xs text-slate-400 font-mono">
-                Ask architectural questions or generate security & database compliance reviews
+              </div>
+              <p className={`text-xs mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                Ask deep technical questions about Spring Boot lifecycle, React integration, queries, or security
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-all"
+            className={`p-2 rounded-xl transition-all ${
+              isLight ? 'hover:bg-slate-200 text-slate-500 hover:text-slate-900' : 'hover:bg-slate-800 text-slate-400 hover:text-white'
+            }`}
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Preset Prompt Buttons */}
-        <div className="p-4 border-b border-slate-800/80 bg-slate-950/40 flex flex-wrap gap-2 text-xs font-mono shrink-0">
-          <button
-            onClick={() => handleQuery('Explain Architecture')}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 transition-all"
-          >
-            <Layers className="w-3.5 h-3.5" />
-            <span>Explain Overall Architecture</span>
-          </button>
-          <button
-            onClick={() => handleQuery('Security & JWT')}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 border border-purple-500/30 transition-all"
-          >
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Security & Auth Review</span>
-          </button>
-          <button
-            onClick={() => handleQuery('Database & JPA')}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-amber-600/20 hover:bg-amber-600/40 text-amber-300 border border-amber-500/30 transition-all"
-          >
-            <Database className="w-3.5 h-3.5" />
-            <span>Database & JPA Review</span>
-          </button>
-        </div>
-
-        {/* Main Response Area */}
-        <div className="flex-1 min-h-0 p-6 overflow-y-auto custom-scrollbar space-y-5">
-          {loading ? (
-            <div className="p-12 text-center space-y-3">
-              <Sparkles className="w-8 h-8 text-pink-500 mx-auto animate-spin" />
-              <p className="text-sm font-mono text-slate-300">Analyzing AST graphs and generating architectural response...</p>
+        {/* Content */}
+        <div className={`flex-1 p-6 overflow-y-auto custom-scrollbar space-y-6 ${
+          isLight ? 'bg-slate-100/50' : 'bg-slate-950/40'
+        }`}>
+          {/* Quick Prompts */}
+          <div className="space-y-2">
+            <span className={`text-xs font-bold uppercase tracking-wider block ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+              ⚡ Quick Technical Audits
+            </span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+              {[
+                { label: 'Explain Full Architecture', query: 'Explain the high level architecture and layer boundaries' },
+                { label: 'Audit Security & JWT Pipeline', query: 'Audit Spring Security filter chain and JWT validation flow' },
+                { label: 'Inspect JPA & DB Bottlenecks', query: 'Analyze database entity relationships and connection pooling' },
+              ].map((qp, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleQuery(qp.query)}
+                  className={`p-3 rounded-2xl border text-left text-xs transition-all ${
+                    isLight
+                      ? 'bg-white hover:bg-purple-50 text-slate-800 border-slate-200 hover:border-purple-300 shadow-sm'
+                      : 'bg-slate-900/90 hover:bg-slate-850 text-slate-200 border-slate-800 hover:border-purple-500/40'
+                  }`}
+                >
+                  <div className="flex items-center space-x-1.5 font-bold text-purple-500 mb-1">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>{qp.label}</span>
+                  </div>
+                  <p className={`text-[11px] truncate ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>{qp.query}</p>
+                </button>
+              ))}
             </div>
-          ) : response ? (
-            <div className="space-y-5 animate-fade-in">
-              <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
-                <h4 className="text-sm font-bold text-white font-mono">{response.title}</h4>
-                <p className="text-xs text-slate-300 leading-relaxed font-sans">{response.explanation}</p>
+          </div>
+
+          {/* AI Response Card */}
+          {loading && (
+            <div className={`p-8 rounded-2xl border text-center space-y-3 ${
+              isLight ? 'bg-white border-slate-200' : 'bg-slate-900/90 border-slate-800'
+            }`}>
+              <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto" />
+              <p className={`text-xs font-mono ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                Synthesizing repository AST, Spring Boot context, and database schema...
+              </p>
+            </div>
+          )}
+
+          {response && !loading && (
+            <div className={`p-6 rounded-3xl border space-y-5 shadow-lg ${
+              isLight ? 'bg-white border-purple-200 shadow-purple-100/50' : 'bg-slate-900/90 border-purple-500/30'
+            }`}>
+              <div className="flex items-center space-x-2 text-purple-500 border-b border-purple-500/20 pb-3">
+                <Bot className="w-5 h-5" />
+                <h4 className={`text-sm font-bold font-mono ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                  {response.title}
+                </h4>
               </div>
 
-              {Array.isArray(response.keyComponents) && (
-                <div className="p-4 rounded-2xl bg-indigo-950/20 border border-indigo-500/20 space-y-2">
-                  <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider block font-mono">
-                    Key Architectural Components
+              <div className="space-y-2">
+                <span className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                  Analysis & Mechanics
+                </span>
+                <p className={`text-xs font-sans leading-relaxed ${isLight ? 'text-slate-700' : 'text-slate-200'}`}>
+                  {response.explanation}
+                </p>
+              </div>
+
+              {Array.isArray(response.keyComponents) && response.keyComponents.length > 0 && (
+                <div className="space-y-2">
+                  <span className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                    Key Architectural Nodes
                   </span>
-                  <div className="flex flex-wrap gap-2">
-                    {response.keyComponents.map((comp, i) => (
-                      <span
-                        key={i}
-                        className="px-2.5 py-1 text-xs font-mono rounded-lg bg-indigo-500/10 text-indigo-300 border border-indigo-500/30"
+                  <div className="space-y-1.5">
+                    {response.keyComponents.map((comp, cIdx) => (
+                      <div
+                        key={cIdx}
+                        className={`p-2.5 rounded-xl border text-xs font-mono flex items-center space-x-2 ${
+                          isLight ? 'bg-slate-50 border-slate-200 text-slate-800' : 'bg-slate-950/80 border-slate-800 text-slate-300'
+                        }`}
                       >
-                        {comp}
-                      </span>
+                        <span className="text-purple-400">▹</span>
+                        <span>{comp}</span>
+                      </div>
                     ))}
                   </div>
                 </div>
               )}
 
               {response.recommendation && (
-                <div className="p-4 rounded-2xl bg-emerald-950/20 border border-emerald-500/20 space-y-1">
-                  <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider block font-mono">
-                    Optimization Recommendation
-                  </span>
-                  <p className="text-xs text-slate-300 font-sans leading-relaxed">{response.recommendation}</p>
+                <div className={`p-4 rounded-2xl border space-y-1.5 ${
+                  isLight ? 'bg-emerald-50/80 border-emerald-200 text-emerald-900' : 'bg-emerald-950/30 border-emerald-500/30 text-emerald-200'
+                }`}>
+                  <div className="flex items-center space-x-1.5 text-xs font-bold text-emerald-500">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Senior Architect Recommendation</span>
+                  </div>
+                  <p className="text-xs leading-relaxed font-sans">{response.recommendation}</p>
                 </div>
               )}
-            </div>
-          ) : (
-            <div className="p-12 text-center text-slate-500 font-mono">
-              Select a preset prompt above or type your architectural query below.
             </div>
           )}
         </div>
 
-        {/* Input Bar */}
-        <div className="p-4 border-t border-slate-800 bg-slate-950/90 flex items-center space-x-3 shrink-0">
-          <input
-            type="text"
-            placeholder="Ask AI Assistant about architecture, security, JPA, or controllers..."
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleQuery(prompt)}
-            className="flex-1 bg-slate-900 border border-slate-700/60 rounded-xl px-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-pink-500 transition-all font-mono"
-          />
-          <button
-            onClick={() => handleQuery(prompt)}
-            disabled={!prompt.trim() || loading}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-bold text-xs shadow-md transition-all flex items-center space-x-1.5 disabled:opacity-50"
+        {/* Query Input */}
+        <div className={`p-4 border-t shrink-0 ${
+          isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950 border-slate-800'
+        }`}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (prompt.trim()) handleQuery(prompt);
+            }}
+            className="flex items-center space-x-2"
           >
-            <Send className="w-3.5 h-3.5" />
-            <span>Ask AI</span>
-          </button>
+            <input
+              type="text"
+              placeholder="Ask anything about Spring controllers, JPA models, React query hooks..."
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              className={`flex-1 px-4 py-3 rounded-2xl border text-xs outline-none transition-all ${
+                isLight
+                  ? 'bg-white border-slate-300 text-slate-900 focus:border-purple-500 placeholder-slate-400 shadow-sm'
+                  : 'bg-slate-900 border-slate-800 text-slate-100 focus:border-purple-500 placeholder-slate-500'
+              }`}
+            />
+            <button
+              type="submit"
+              disabled={loading || !prompt.trim()}
+              className="px-5 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white text-xs font-bold font-mono flex items-center space-x-1.5 transition-all shadow-lg shadow-purple-900/30"
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span>Ask AI</span>
+            </button>
+          </form>
         </div>
       </div>
     </div>
