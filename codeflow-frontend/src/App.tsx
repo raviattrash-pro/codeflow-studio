@@ -22,6 +22,7 @@ import { RuntimeTracingModal } from './components/RuntimeTracingModal';
 import { ApiMetricsDashboardModal } from './components/ApiMetricsDashboardModal';
 import { SequenceDiagramModal } from './components/SequenceDiagramModal';
 import { LatencyHeatmapModal } from './components/LatencyHeatmapModal';
+import { ReactRuntimeExplorerModal } from './components/ReactRuntimeExplorerModal';
 import { Project, GraphData, NodeDetail, ProjectNode } from './types';
 import { DEMO_PROJECT_DATA, DEMO_GRAPH_DATA } from './utils/demoData';
 
@@ -533,6 +534,7 @@ export default function App() {
   const [isApiMetricsOpen, setIsApiMetricsOpen] = useState(false);
   const [isSequenceDiagramOpen, setIsSequenceDiagramOpen] = useState(false);
   const [isLatencyHeatmapOpen, setIsLatencyHeatmapOpen] = useState(false);
+  const [isReactRuntimeOpen, setIsReactRuntimeOpen] = useState(false);
   const [viewingFilePath, setViewingFilePath] = useState<string | null>(null);
 
   const [currentTheme, setCurrentTheme] = useState<ThemeMode>('NIGHT');
@@ -606,6 +608,7 @@ export default function App() {
     if (toolKey === 'deps') setIsDependencyModalOpen(true);
     if (toolKey === 'ai') setIsAiAssistantOpen(true);
     if (toolKey === 'files') setIsFileTreeOpen(true);
+    if (toolKey === 'react' || toolKey === 'fiber') setIsReactRuntimeOpen(true);
   };
 
   useEffect(() => {
@@ -724,6 +727,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
         onOpenApiMetrics={() => setIsApiMetricsOpen(true)}
         onOpenSequenceDiagram={() => setIsSequenceDiagramOpen(true)}
         onOpenLatencyHeatmap={() => setIsLatencyHeatmapOpen(true)}
+        onOpenReactRuntime={() => setIsReactRuntimeOpen(true)}
         onExportMarkdown={handleExportMarkdown}
         onExitProject={handleExitProject}
         searchQuery={searchQuery}
@@ -747,7 +751,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
             {/* 1. Release Eyebrow Chip */}
             <div className="inline-flex items-center space-x-2.5 px-4 py-1.5 rounded-full text-xs font-mono font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 mb-5 shadow-lg shadow-indigo-500/10 badge-sheen">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>CODEFLOW STUDIO 4.2 • SYSTEM ARCHITECTURE & RUNTIME ENGINE</span>
+              <span>CODEFLOW STUDIO 5.0 • REACT 19 RUNTIME & FULL-STACK FLOW ENGINE</span>
             </div>
 
             {/* 2. Hero Headline */}
@@ -791,12 +795,13 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
             <div className="w-full sm:hidden mb-8">
               <div className="flex items-center justify-between mb-2.5 px-1">
                 <span className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
-                  ⚡ All 11 Visual Tools (1-Tap Launch)
+                  ⚡ All 12 Visual Tools (1-Tap Launch)
                 </span>
                 <span className="text-[10px] font-mono text-emerald-400 font-bold">● 100% Offline</span>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 {[
+                                    { title: 'React 19 Runtime', icon: Activity, key: 'react', col: 'text-cyan-400', badge: 'v5.0' },
                   { title: 'Runtime Tracing', icon: Activity, key: 'tracing', col: 'text-cyan-400', badge: 'v4.2' },
                   { title: 'API Metrics', icon: BarChart2, key: 'metrics', col: 'text-indigo-400', badge: 'P95' },
                   { title: 'Sequence Tracer', icon: Zap, key: 'sequence', col: 'text-pink-400', badge: '7-Hop' },
@@ -1250,7 +1255,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
             <div className="w-full max-w-5xl mb-12">
               <div className="text-center mb-8">
                 <h3 className="text-xl md:text-2xl font-bold font-mono text-white">
-                  11 Specialized Visual Architecture Tools
+                  12 Specialized Visual Architecture Tools
                 </h3>
                 <p className="text-xs md:text-sm text-slate-400 font-mono mt-1">
                   Click any card to launch interactive demo mode directly into that tool
@@ -1259,6 +1264,15 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[
+                  {
+                    title: 'React 19 Runtime Explorer',
+                    desc: 'Virtual DOM Fiber tree reconciliation, Hook state mutation timeline, and Axios request/response interceptors.',
+                    icon: Activity,
+                    col: 'text-cyan-400',
+                    key: 'react',
+                    badge: 'v5.0 Core',
+                    preview: '⚛️ useMutation(createOrder) ➔ Fiber Tree Re-render'
+                  },
                   {
                     title: 'Runtime Tracing Replay',
                     desc: 'Step-by-step VCR playback tracing requests from Controller down to Hibernate and PostgreSQL.',
@@ -1472,6 +1486,13 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
         isOpen={isLatencyHeatmapOpen}
         onClose={() => setIsLatencyHeatmapOpen(false)}
       />
+      <ReactRuntimeExplorerModal
+        isOpen={isReactRuntimeOpen}
+        onClose={() => setIsReactRuntimeOpen(false)}
+        projectId={currentProjectId}
+        currentTheme={currentTheme}
+      />
+
     </div>
   );
 }

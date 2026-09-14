@@ -94,3 +94,50 @@ export interface ProjectDependency {
   purposeSummary: string;
   commonAnnotations: string;
 }
+
+export interface ReactFiberNode {
+  id: string;
+  name: string;
+  type: 'COMPONENT' | 'PROVIDER' | 'HOOK' | 'HTML_ELEMENT';
+  renderCount: number;
+  renderTimeMs: number;
+  status: 'MOUNTED' | 'UPDATED' | 'MEMOIZED' | 'WASTED';
+  props: Record<string, any>;
+  stateSummary?: string;
+  hooks: string[];
+  reRenderReason?: string;
+  children?: ReactFiberNode[];
+}
+
+export interface HookMutationStep {
+  stepIndex: number;
+  hookName: string;
+  component: string;
+  phase: 'RENDER' | 'EFFECT' | 'MUTATION' | 'ACTION' | 'HYDRATION';
+  stateBefore: any;
+  stateAfter: any;
+  diffDescription: string;
+  durationMs: number;
+  codeSnippet: string;
+}
+
+export interface ClientInterceptorTrace {
+  stage: 'USER_EVENT' | 'REQUEST_INTERCEPTOR' | 'NETWORK_TRANSPORT' | 'RESPONSE_INTERCEPTOR' | 'CACHE_UPDATE' | 'DOM_COMMIT';
+  label: string;
+  durationMs: number;
+  headers?: Record<string, string>;
+  payload?: any;
+  statusText?: string;
+  details: string;
+}
+
+export interface ReactRuntimeScenario {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  totalClientDurationMs: number;
+  componentRoot: ReactFiberNode;
+  steps: HookMutationStep[];
+  interceptorPipeline: ClientInterceptorTrace[];
+}

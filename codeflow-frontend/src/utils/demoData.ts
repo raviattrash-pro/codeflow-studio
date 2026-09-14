@@ -664,3 +664,451 @@ export const CartView = () => {
     </dependencies>
 </project>`,
 };
+
+import { ReactRuntimeScenario } from '../types';
+
+export const DEMO_REACT_RUNTIME_SCENARIOS: ReactRuntimeScenario[] = [
+  {
+    id: 'checkout_mutation',
+    name: 'useMutation(createOrder) Client Pipeline',
+    description: 'User Click ➔ Optimistic Cart Lock ➔ Axios JWT Interceptor ➔ Network Transport ➔ React Query Cache Invalidation ➔ Component Re-render',
+    icon: '🛒',
+    totalClientDurationMs: 14.8,
+    componentRoot: {
+      id: 'fiber_app',
+      name: 'App',
+      type: 'COMPONENT',
+      renderCount: 1,
+      renderTimeMs: 0.4,
+      status: 'MOUNTED',
+      props: { theme: 'NIGHT' },
+      hooks: ['useTheme()', 'useRouter()'],
+      children: [
+        {
+          id: 'fiber_query_provider',
+          name: 'QueryClientProvider',
+          type: 'PROVIDER',
+          renderCount: 1,
+          renderTimeMs: 0.1,
+          status: 'MEMOIZED',
+          props: { client: 'QueryClient' },
+          hooks: ['useContext()'],
+          children: [
+            {
+              id: 'fiber_checkout_page',
+              name: 'CheckoutPage',
+              type: 'COMPONENT',
+              renderCount: 3,
+              renderTimeMs: 2.4,
+              status: 'UPDATED',
+              props: { userTier: 'GOLD', autoApplyCoupon: true },
+              stateSummary: 'orderStatus: "MUTATING", isPending: true',
+              hooks: ['useMutation(createOrder)', 'useMemo(total)', 'useEffect(telemetry)'],
+              reRenderReason: 'Hook state update in useMutation',
+              children: [
+                {
+                  id: 'fiber_order_summary',
+                  name: 'OrderSummary',
+                  type: 'COMPONENT',
+                  renderCount: 3,
+                  renderTimeMs: 1.1,
+                  status: 'UPDATED',
+                  props: { itemsCount: 3, subtotal: 189.50 },
+                  hooks: ['useMemo(discountedTotal)'],
+                  reRenderReason: 'Parent CheckoutPage re-rendered',
+                  children: []
+                },
+                {
+                  id: 'fiber_payment_form',
+                  name: 'PaymentForm',
+                  type: 'COMPONENT',
+                  renderCount: 2,
+                  renderTimeMs: 1.6,
+                  status: 'UPDATED',
+                  props: { currency: 'USD', methods: ['CARD', 'APPLE_PAY'] },
+                  stateSummary: 'cardNumber: "**** 4242", isValid: true',
+                  hooks: ['useForm()', 'useState(paymentMethod)'],
+                  reRenderReason: 'State update: paymentMethod',
+                  children: [
+                    {
+                      id: 'fiber_submit_btn',
+                      name: 'SubmitOrderButton',
+                      type: 'COMPONENT',
+                      renderCount: 4,
+                      renderTimeMs: 0.6,
+                      status: 'UPDATED',
+                      props: { isLoading: true, disabled: true },
+                      hooks: ['useCallback(handleClick)'],
+                      reRenderReason: 'Prop isLoading changed: false -> true',
+                      children: []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    steps: [
+      {
+        stepIndex: 1,
+        hookName: 'onClick Handler',
+        component: 'SubmitOrderButton.tsx',
+        phase: 'RENDER',
+        stateBefore: { isSubmitting: false, buttonState: 'IDLE' },
+        stateAfter: { isSubmitting: true, buttonState: 'PENDING' },
+        diffDescription: 'Button clicked. Dispatched mutateAsync() with OrderDTO payload.',
+        durationMs: 0.8,
+        codeSnippet: `const handleCheckout = async () => {
+  setIsSubmitting(true);
+  await checkoutMutation.mutateAsync({
+    items: cart.items,
+    total: cart.total,
+    currency: 'USD'
+  });
+};`
+      },
+      {
+        stepIndex: 2,
+        hookName: 'Axios Request Interceptor',
+        component: 'apiClient.ts',
+        phase: 'ACTION',
+        stateBefore: { headers: { 'Content-Type': 'application/json' } },
+        stateAfter: {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            'X-Correlation-ID': 'req_984f8812'
+          }
+        },
+        diffDescription: 'Injected JWT Bearer token & correlation ID into outgoing HTTP request headers.',
+        durationMs: 1.4,
+        codeSnippet: `apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('access_token');
+  if (token) {
+    config.headers.Authorization = \`Bearer \${token}\`;
+    config.headers['X-Correlation-ID'] = generateUuid();
+  }
+  return config;
+});`
+      },
+      {
+        stepIndex: 3,
+        hookName: 'useMutation(createOrder) Execution',
+        component: 'useCheckout.ts',
+        phase: 'MUTATION',
+        stateBefore: { status: 'idle', isPending: false, data: null, error: null },
+        stateAfter: { status: 'pending', isPending: true, data: null, error: null },
+        diffDescription: 'React Query transition to pending status. Fiber flagged for re-render.',
+        durationMs: 2.1,
+        codeSnippet: `const { mutateAsync, isPending } = useMutation({
+  mutationKey: ['createOrder'],
+  mutationFn: (orderDto: CreateOrderDTO) =>
+    apiClient.post('/api/v1/orders/checkout', orderDto),
+});`
+      },
+      {
+        stepIndex: 4,
+        hookName: 'Axios Response Interceptor & Status Handling',
+        component: 'apiClient.ts',
+        phase: 'ACTION',
+        stateBefore: { responseStatus: 'AWAITING_NETWORK' },
+        stateAfter: { responseStatus: 201, data: { orderId: 'ord_984e72a', status: 'CONFIRMED' } },
+        diffDescription: 'Received 201 Created from Spring Boot OrderController (28.4ms network duration).',
+        durationMs: 1.8,
+        codeSnippet: `apiClient.interceptors.response.use(
+  (response) => response.data,
+  (error) => handleApiError(error)
+);`
+      },
+      {
+        stepIndex: 5,
+        hookName: 'QueryClient.invalidateQueries() & Re-render',
+        component: 'CheckoutPage.tsx',
+        phase: 'HYDRATION',
+        stateBefore: { cachedOrders: 4, cartCount: 3 },
+        stateAfter: { cachedOrders: 5, cartCount: 0, toastMessage: 'Order #984 Confirmed!' },
+        diffDescription: 'Invalidated ["orders"] and ["cart"] cache keys. Triggered atomic Fiber DOM reconciliation.',
+        durationMs: 3.2,
+        codeSnippet: `onSuccess: (newOrder) => {
+  queryClient.invalidateQueries({ queryKey: ['orders'] });
+  queryClient.setQueryData(['cart'], { items: [] });
+  toast.success(\`Order #\${newOrder.orderId} placed successfully!\`);
+  navigate(\`/orders/\${newOrder.orderId}\`);
+}`
+      }
+    ],
+    interceptorPipeline: [
+      {
+        stage: 'USER_EVENT',
+        label: 'SubmitButton: PointerClick',
+        durationMs: 0.8,
+        details: 'User initiated checkout submission on CheckoutForm.tsx:114'
+      },
+      {
+        stage: 'REQUEST_INTERCEPTOR',
+        label: 'Axios: Bearer Auth & Trace Injection',
+        durationMs: 1.4,
+        headers: { 'Authorization': 'Bearer eyJhbGciOiJIUzI1Ni...', 'X-Trace-ID': 'trace_cf_8921' },
+        payload: { items: 3, total: 189.50, currency: 'USD' },
+        details: 'Added JWT Bearer token and W3C traceparent headers to request'
+      },
+      {
+        stage: 'NETWORK_TRANSPORT',
+        label: 'HTTP Dispatch ➔ Spring Gateway',
+        durationMs: 28.4,
+        statusText: '201 CREATED',
+        details: 'Dispatched to POST /api/v1/orders/checkout via TLS 1.3'
+      },
+      {
+        stage: 'RESPONSE_INTERCEPTOR',
+        label: 'Axios: Schema Deserializer',
+        durationMs: 1.8,
+        payload: { orderId: 'ord_984e72a', status: 'CONFIRMED', createdAt: '2026-09-14T12:00:00Z' },
+        details: 'Validated JSON payload against OrderResponseDTO interface'
+      },
+      {
+        stage: 'CACHE_UPDATE',
+        label: 'TanStack Query: Cache Mutation',
+        durationMs: 2.6,
+        details: 'Invalidated cache tags: ["orders"], ["user_balance"], ["cart_summary"]'
+      },
+      {
+        stage: 'DOM_COMMIT',
+        label: 'React 19 Fiber Reconciliation',
+        durationMs: 3.2,
+        details: 'Committed 3 DOM node updates to virtual DOM without wasted re-renders'
+      }
+    ]
+  },
+  {
+    id: 'auth_jwt_login',
+    name: 'useAuth() JWT Token Exchange & Storage',
+    description: 'Credential validation ➔ Axios Header Authorization Bearer injection ➔ LocalStorage sync ➔ AuthContext re-render',
+    icon: '🔐',
+    totalClientDurationMs: 9.4,
+    componentRoot: {
+      id: 'fiber_app',
+      name: 'App',
+      type: 'COMPONENT',
+      renderCount: 1,
+      renderTimeMs: 0.3,
+      status: 'MOUNTED',
+      props: {},
+      hooks: [],
+      children: [
+        {
+          id: 'fiber_auth_provider',
+          name: 'AuthProvider',
+          type: 'PROVIDER',
+          renderCount: 2,
+          renderTimeMs: 1.2,
+          status: 'UPDATED',
+          props: {},
+          stateSummary: 'isAuthenticated: true, user: "alex.morgan@company.com"',
+          hooks: ['useState(user)', 'useCallback(login)', 'useCallback(logout)'],
+          reRenderReason: 'State update: user token set',
+          children: [
+            {
+              id: 'fiber_login_page',
+              name: 'LoginPage',
+              type: 'COMPONENT',
+              renderCount: 2,
+              renderTimeMs: 0.9,
+              status: 'UPDATED',
+              props: {},
+              hooks: ['useAuth()', 'useNavigate()'],
+              reRenderReason: 'AuthContext updated',
+              children: []
+            }
+          ]
+        }
+      ]
+    },
+    steps: [
+      {
+        stepIndex: 1,
+        hookName: 'useAuth.login()',
+        component: 'LoginForm.tsx',
+        phase: 'ACTION',
+        stateBefore: { isAuthenticated: false },
+        stateAfter: { isAuthenticated: false, isAuthenticating: true },
+        diffDescription: 'Submitted email/password to AuthService endpoint.',
+        durationMs: 0.9,
+        codeSnippet: `const { login } = useAuth();
+await login({ email: 'alex@company.com', password: '••••••••' });`
+      },
+      {
+        stepIndex: 2,
+        hookName: 'Token LocalStorage Persist',
+        component: 'AuthContext.tsx',
+        phase: 'MUTATION',
+        stateBefore: { token: null },
+        stateAfter: { token: 'eyJhbGciOiJIUzI1Ni...' },
+        diffDescription: 'Saved JWT Access Token & Refresh Token to secure browser storage.',
+        durationMs: 1.1,
+        codeSnippet: `localStorage.setItem('access_token', token.access);
+localStorage.setItem('refresh_token', token.refresh);
+setUser(decodeJwt(token.access));`
+      },
+      {
+        stepIndex: 3,
+        hookName: 'Axios Global Default Authorization Injection',
+        component: 'apiClient.ts',
+        phase: 'ACTION',
+        stateBefore: { defaultAuthHeader: null },
+        stateAfter: { defaultAuthHeader: 'Bearer eyJhbGciOiJIUzI1Ni...' },
+        diffDescription: 'Set global Axios default Authorization header for all subsequent API requests.',
+        durationMs: 0.8,
+        codeSnippet: `apiClient.defaults.headers.common['Authorization'] = \`Bearer \${token.access}\`;`
+      },
+      {
+        stepIndex: 4,
+        hookName: 'AuthContext Broadcast & Route Redirect',
+        component: 'AppRouter.tsx',
+        phase: 'HYDRATION',
+        stateBefore: { activeRoute: '/login' },
+        stateAfter: { activeRoute: '/dashboard' },
+        diffDescription: 'AuthContext propagated state change. Navigated to /dashboard.',
+        durationMs: 2.4,
+        codeSnippet: `navigate('/dashboard', { replace: true });`
+      }
+    ],
+    interceptorPipeline: [
+      {
+        stage: 'USER_EVENT',
+        label: 'LoginForm: SubmitEvent',
+        durationMs: 0.6,
+        details: 'User submitted login credentials'
+      },
+      {
+        stage: 'REQUEST_INTERCEPTOR',
+        label: 'Axios: Credentials Serialization',
+        durationMs: 0.9,
+        payload: { email: 'alex.morgan@company.com' },
+        details: 'POST /api/v1/auth/token'
+      },
+      {
+        stage: 'NETWORK_TRANSPORT',
+        label: 'HTTP Dispatch ➔ Spring Security',
+        durationMs: 14.2,
+        statusText: '200 OK',
+        details: 'JWT Token Pair generated by Spring JwtTokenProvider'
+      },
+      {
+        stage: 'RESPONSE_INTERCEPTOR',
+        label: 'Axios: Token Storage Interceptor',
+        durationMs: 1.1,
+        details: 'Token stored in localStorage and memory context'
+      },
+      {
+        stage: 'DOM_COMMIT',
+        label: 'React 19 Re-render Protected Routes',
+        durationMs: 2.4,
+        details: 'Protected route guards evaluated -> Dashboard mounted'
+      }
+    ]
+  },
+  {
+    id: 'react19_optimistic',
+    name: 'React 19 useOptimistic & Server Actions',
+    description: 'Instant optimistic UI rollback buffer, pending transition state, and async mutation resolution',
+    icon: '⚡',
+    totalClientDurationMs: 6.2,
+    componentRoot: {
+      id: 'fiber_app',
+      name: 'App',
+      type: 'COMPONENT',
+      renderCount: 1,
+      renderTimeMs: 0.2,
+      status: 'MOUNTED',
+      props: {},
+      hooks: [],
+      children: [
+        {
+          id: 'fiber_cart_list',
+          name: 'OptimisticCartList',
+          type: 'COMPONENT',
+          renderCount: 2,
+          renderTimeMs: 0.8,
+          status: 'UPDATED',
+          props: {},
+          stateSummary: 'optimisticItems: 4 (1 pending server ack)',
+          hooks: ['useOptimistic()', 'useActionState()'],
+          reRenderReason: 'Optimistic state dispatched',
+          children: []
+        }
+      ]
+    },
+    steps: [
+      {
+        stepIndex: 1,
+        hookName: 'useOptimistic.addOptimisticItem()',
+        component: 'OptimisticCartList.tsx',
+        phase: 'RENDER',
+        stateBefore: { items: [{ id: '1', title: 'Product A' }] },
+        stateAfter: { items: [{ id: '1', title: 'Product A' }, { id: 'temp_2', title: 'Product B (Pending)', sending: true }] },
+        diffDescription: 'Immediate UI update without waiting for network response.',
+        durationMs: 0.4,
+        codeSnippet: `const [optimisticCart, addOptimisticItem] = useOptimistic(
+  cart,
+  (state, newItem) => [...state, { ...newItem, sending: true }]
+);`
+      },
+      {
+        stepIndex: 2,
+        hookName: 'startTransition & Server Action',
+        component: 'cartActions.ts',
+        phase: 'ACTION',
+        stateBefore: { actionStatus: 'IDLE' },
+        stateAfter: { actionStatus: 'RUNNING' },
+        diffDescription: 'Dispatched async background server action to persist item.',
+        durationMs: 1.2,
+        codeSnippet: `startTransition(async () => {
+  addOptimisticItem({ id: tempId, title: 'Product B' });
+  await addItemAction(productId);
+});`
+      },
+      {
+        stepIndex: 3,
+        hookName: 'Server Action Response Ack',
+        component: 'cartActions.ts',
+        phase: 'MUTATION',
+        stateBefore: { pendingSync: true },
+        stateAfter: { pendingSync: false, realId: 'item_7712' },
+        diffDescription: 'Server confirmed addition. Temp ID replaced with real DB ID.',
+        durationMs: 1.8,
+        codeSnippet: `const res = await addItemAction(productId);
+setCart(res.cart);`
+      }
+    ],
+    interceptorPipeline: [
+      {
+        stage: 'USER_EVENT',
+        label: 'AddToCartButton: ClickEvent',
+        durationMs: 0.4,
+        details: 'User clicked Add to Cart'
+      },
+      {
+        stage: 'CACHE_UPDATE',
+        label: 'React 19: Optimistic State Commit',
+        durationMs: 0.4,
+        details: 'Instant UI update rendered in < 1ms'
+      },
+      {
+        stage: 'NETWORK_TRANSPORT',
+        label: 'Async Server Action: addItemAction()',
+        durationMs: 22.1,
+        statusText: '200 OK',
+        details: 'POST /api/v1/cart/items'
+      },
+      {
+        stage: 'DOM_COMMIT',
+        label: 'Reconciliation with Authoritative State',
+        durationMs: 1.2,
+        details: 'Optimistic badge removed -> Permanent item synced'
+      }
+    ]
+  }
+];

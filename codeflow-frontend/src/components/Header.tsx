@@ -23,6 +23,7 @@ interface HeaderProps {
   onOpenApiMetrics?: () => void;
   onOpenSequenceDiagram?: () => void;
   onOpenLatencyHeatmap?: () => void;
+  onOpenReactRuntime?: () => void;
   onExportMarkdown: () => void;
   onExitProject: () => void;
   searchQuery: string;
@@ -48,6 +49,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenApiMetrics,
   onOpenSequenceDiagram,
   onOpenLatencyHeatmap,
+  onOpenReactRuntime,
   onExportMarkdown,
   onExitProject,
   searchQuery,
@@ -226,6 +228,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <button onClick={() => { onOpenAiAssistant(); setIsToolsOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-500/10 flex items-center space-x-2.5 text-xs text-pink-400 font-medium"><Bot className="w-4 h-4" /><span>AI Code Assistant</span></button>
                 <button onClick={() => { onOpenSqlExplorer(); setIsToolsOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-500/10 flex items-center space-x-2.5 text-xs text-blue-400 font-medium"><Database className="w-4 h-4" /><span>SQL Query Explorer</span></button>
                 <button onClick={() => { onOpenDependencies(); setIsToolsOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-500/10 flex items-center space-x-2.5 text-xs text-indigo-300 font-medium"><Package className="w-4 h-4" /><span>Dependencies</span></button>
+                                <button onClick={() => { onOpenReactRuntime?.(); setIsToolsOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-500/10 flex items-center space-x-2.5 text-xs text-cyan-400 font-bold"><Activity className="w-4 h-4" /><span>React 19 Runtime Explorer</span><span className="ml-auto text-[9px] px-1.5 py-0.5 rounded bg-cyan-950 border border-cyan-800 text-cyan-300">v5.0</span></button>
                 <button onClick={() => { onOpenFileTree(); setIsToolsOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-500/10 flex items-center space-x-2.5 text-xs text-cyan-300 font-medium"><FolderTree className="w-4 h-4" /><span>File Tree</span></button>
                 <div className="border-t border-slate-500/20 my-1"></div>
                 <button onClick={() => { onExportMarkdown(); setIsToolsOpen(false); }} className="w-full text-left px-4 py-2 hover:bg-slate-500/10 flex items-center space-x-2.5 text-xs text-emerald-400 font-medium"><Download className="w-4 h-4" /><span>Export Markdown</span></button>
@@ -314,7 +317,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* ALL 11 ARCHITECTURE TOOLS LIST */}
           <div className="pt-2">
             <div className="px-2 pb-1.5 text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-              <span>All 11 Architecture Tools</span>
+              <span>All 12 Architecture Tools</span>
               <span className="text-emerald-400">● 100% Offline</span>
             </div>
             <div className="space-y-1">
@@ -353,6 +356,10 @@ export const Header: React.FC<HeaderProps> = ({
               <button onClick={() => handleMobileToolClick(onOpenDependencies)} className="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-indigo-300 hover:bg-slate-800 text-xs font-bold">
                 <div className="flex items-center space-x-2.5"><Package className="w-4 h-4" /><span>9. Maven Dependency Graph</span></div>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-950 border border-indigo-800 text-indigo-300">Starters</span>
+              </button>
+                            <button onClick={() => handleMobileToolClick(onOpenReactRuntime)} className="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-cyan-400 hover:bg-slate-800 text-xs font-bold">
+                <div className="flex items-center space-x-2.5"><Activity className="w-4 h-4" /><span>11. React 19 Runtime Explorer</span></div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950 border border-cyan-800 text-cyan-300">v5.0</span>
               </button>
               <button onClick={() => handleMobileToolClick(onOpenFileTree)} className="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 text-cyan-300 hover:bg-slate-800 text-xs font-bold">
                 <div className="flex items-center space-x-2.5"><FolderTree className="w-4 h-4" /><span>10. File Tree Visualizer</span></div>
