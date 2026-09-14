@@ -1,7 +1,7 @@
-# CodeFlow Studio 🚀 (v6.0.0 Release)
-> **Observe, Replay & Master Real Code Execution — AI Architecture Intelligence, React 19 Fiber Reconciliation & Spring Boot 3 AST in Milliseconds.**
+# CodeFlow Studio 🚀 (v7.0.0 Release — Enterprise Architecture Suite)
+> **Observe, Replay & Master Real Code Execution — Command Palette, Health Scorecard HUD, REST API Sandbox, DTO-to-TS Generator, Chaos Simulator & 4K C4 Blueprints.**
 
-[![Version](https://img.shields.io/badge/version-6.0.0-indigo.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-7.0.0-indigo.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2%2B-green.svg)](https://spring.io/projects/spring-boot)
 [![React](https://img.shields.io/badge/React-19.2-blue.svg)](https://react.dev/)
@@ -15,57 +15,63 @@
 
 ![CodeFlow Studio Live Demo](docs/media/codeflow.gif)
 
-> 💡 *CodeFlow Studio v6.0 introduces deep codebase intelligence powered by RAG context injection from parsed AST nodes, combined with React 19 Fiber reconciliation, Hook state mutation scrubbing, Spring Security inspection, and JPA execution tracing.*
+> 💡 *CodeFlow Studio v7.0 delivers a complete Enterprise Architecture Suite: Global Command Palette (`Ctrl+K`), Health Scorecard HUD, Live REST API Sandbox, automated Java DTO ➔ TypeScript generator, Resilience4j Chaos Simulator, and 4K C4 Blueprint Exporter.*
 
 ---
 
-## ✨ What's New in v6.0.0 (AI Architecture Intelligence & RAG Release)
+## ✨ What's New in v7.0.0 (Enterprise Architecture Suite Release)
 
-### 1. 🤖 Context-Aware AI Intelligence Engine (NEW)
-- **RAG Context Injection from AST**: Synthesizes parsed `@RestController` endpoints, `@Service` beans, `@Entity` models, Maven dependencies, and SQL query logs into prompt context.
-- **3 AI Provider Support**: Strategy pattern supporting **Google Gemini 2.0 Flash**, **OpenAI GPT-4o Mini**, and **Local Ollama** (`codellama`, `deepseek-coder`).
-- **8 Pre-Built Analysis Modes**: Architecture Overview, Security Audit, Database Performance, SQL Optimization, Dependency Scan, Code Quality Review, REST API Design, and Technical Interview Prep.
+### 1. 🔍 Global Command Palette (`Ctrl+K` / `Cmd+K` Spotlight)
+- **Instant Spotlight Navigation**: Trigger anywhere with `Ctrl+K` or `Cmd+K` to search across all 17 tools, quick action shortcuts, live scenarios, and themes.
+- **Categorized Results**: Filter by *Tools*, *Scenarios*, *AI Actions*, *Themes*, and *Quick Actions* with instant fuzzy matching and keyboard navigation (`↑`/`↓` + `Enter`).
 
-### 2. 💬 Interactive Conversation Thread UI (NEW)
-- **Chat Thread Experience**: Natural conversation history with markdown-like code block formatting and senior architect recommendations.
-- **1-Click AI Triggers Across Tools**: Direct "Ask AI" buttons embedded inside the Node Inspector Sidebar, SQL Query Explorer, Security Flow Explorer, and Maven Dependency Explorer.
-- **Export to Markdown**: 1-click download of full architectural review transcripts as `.md` documents.
+### 2. 📊 Architecture Health & Readiness Scorecard (HUD)
+- **4 Real-Time Domain Dials**: Continuous static AST audit tracking **Security & Auth Posture** (94%), **SQL & Persistence Efficiency** (88%), **Dependency & CVE Risk** (98%), and **React 19 & Client Bundle** (92%).
+- **1-Click AI Remediation**: Instantly trigger the AI Assistant with pre-filled context to generate fixes for any audit finding.
+- **Export Audit Dossier**: Download comprehensive markdown and PDF-ready reports.
+
+### 3. 🌐 Interactive REST API Sandbox & cURL Runner
+- **Live Endpoint Dispatcher**: Test parsed Spring Boot REST endpoints (`POST /orders/checkout`, `POST /auth/login`, `GET /products`, `GET /users/me`).
+- **Multi-Language Snippet Generator**: Export executable code in **cURL**, **JavaScript (Fetch)**, **TypeScript (Axios)**, and **Python (requests)**.
+- **Payload & Auth Editor**: Custom JSON body editor and JWT Bearer token injector.
+
+### 4. ⚡ Java DTO ➔ TypeScript Interface Auto-Generator
+- **TypeSafe Bridge**: Transform Spring Boot JPA entities and Java Records into strict TypeScript interfaces and runtime **Zod schemas**.
+- **Side-by-Side Dual Viewer**: Inspect original Java source alongside generated TypeScript code with 1-click clipboard copy and `.ts` export.
+
+### 5. 💥 Chaos Engineering & Resilience Simulator (Resilience4j)
+- **Fault Injection Sandbox**: Simulate HikariCP connection pool starvation, Stripe 504 gateway timeouts, and Redis cache stampedes.
+- **Live CircuitBreaker Visualizer**: Animated state machine transitions (`CLOSED` ➔ `OPEN` ➔ `HALF_OPEN` ➔ `CLOSED`) with real-time failure rate metrics and fallback telemetry.
+
+### 6. 🖼️ 4K Architecture Blueprint & C4 Diagram Exporter
+- **C4 Architecture Models**: Interactive Level 1 (System Context), Level 2 (Container), and Level 3 (Component) diagrams.
+- **Multi-Format Export**: Download scalable **4K SVG vector blueprints**, high-res PNG posters, and PlantUML / Mermaid specs.
 
 ---
 
-## ✨ Features from v5.0.0 (React Runtime Explorer)
-
-### 1. ⚛️ React 19 Virtual DOM & Fiber Tree Visualizer
-- **Component Hierarchy & Re-render Diagnostics**: Visualizes the live React 19 Fiber tree (`App` ➔ `QueryClientProvider` ➔ `CheckoutPage` ➔ `OrderSummary` ➔ `PaymentForm` ➔ `SubmitButton`).
-- **Re-render Cause Analysis**: Color-coded render indicators with exact causal breakdowns (*State update in useMutation*, *Prop change: isLoading*, *Context broadcast*).
-
-### 2. 🪝 Hook Lifecycle & State Mutation Scrubber
-- **Interactive VCR Timeline Player**: Step forward and backward through React state transitions (`useState`, `useReducer`, `useMutation`, `useEffect`, `useOptimistic`).
-- **State Diff Inspector**: Side-by-side visual diffs comparing `stateBefore` and `stateAfter` with syntax highlighting.
-
-### 3. 🌐 Full Client-Side Axios & Fetch Interceptor Pipeline
-- **6-Stage Client Execution Flow**: `USER_EVENT` ➔ `REQUEST_INTERCEPTOR` (JWT Bearer injection) ➔ `NETWORK_TRANSPORT` (28.4ms TLS 1.3) ➔ `RESPONSE_INTERCEPTOR` ➔ `CACHE_UPDATE` (TanStack Query invalidation) ➔ `DOM_COMMIT`.
-
----
-
-## 🛠️ Complete Suite of 12 Visual Architecture Tools
+## 🛠️ Complete Suite of 17 Visual Architecture Tools
 
 Every tool operates in **Interactive Demo Mode** (zero backend setup required) or against real ingested repositories:
 
 | # | Tool / Modal | Component | Description & Scope |
 |---|---|---|---|
-| **1** | **⚛️ React 19 Runtime Explorer** | `ReactRuntimeExplorerModal.tsx` | Virtual DOM Fiber reconciliation, Hook state mutation timeline, and Axios interceptor pipeline. |
-| **2** | **⚡ Runtime Tracing Replay** | `RuntimeTracingModal.tsx` | Step-by-step VCR player playback from React UI down to Controller, Service, Hibernate, and PostgreSQL. |
-| **3** | **📊 API Metrics & Telemetry** | `ApiMetricsDashboardModal.tsx` | Real-time P50/P90/P95/P99 response times, throughput RPS, SLA status, and error rate tracking. |
-| **4** | **🔀 7-Swimlane Sequence Tracer** | `SequenceDiagramModal.tsx` | 12-hop asynchronous request and response lifecycle mapping across 7 architectural swimlanes. |
-| **5** | **🔥 24-Hour Latency Heatmap** | `LatencyHeatmapModal.tsx` | 24-hour hourly quantile matrix with color-coded buckets and hover tooltips for bottleneck discovery. |
-| **6** | **🗄️ Database ERD & Schema** | `ErDiagramModal.tsx` | `@Entity` relational table diagrams with column data types, primary keys, and foreign key linkages. |
-| **7** | **🔐 Spring Security 6 Pipeline** | `SecurityExplorerModal.tsx` | 6-stage stateless filter chain inspection (`CorsFilter`, `JwtAuthenticationFilter`, `SecurityContextHolder`). |
-| **8** | **💻 Live SQL Query Explorer** | `SqlExplorerModal.tsx` | Captured JPA prepared statements (SELECT, INSERT, UPDATE) with execution durations and row counts. |
-| **9** | **📦 Maven Dependency Graph** | `DependencyExplorerModal.tsx` | `pom.xml` starter analyzer explaining auto-configuration mechanics (Web, JPA, Security, PostgreSQL). |
-| **10** | **📁 5-Mode File Tree Visualizer** | `FileTreeModal.tsx` | 5 visualization modes: Interactive File Tree, ASCII Tree, Emoji Tree, Mermaid AST Diagram, and Galaxy 2D Canvas. |
-| **11** | **🤖 AI Architecture Assistant** | `AiAssistantModal.tsx` | Automated code explanations, compliance auditing, query reviews, and interview question preparation. |
-| **12** | **📝 Monaco Source Code Viewer** | `MonacoViewerModal.tsx` | Embedded code viewer with syntax highlighting for Controllers, Services, Repositories, and Config files. |
+| **1** | **🔍 Global Command Palette** | `CommandPaletteModal.tsx` | Global spotlight search (`Ctrl+K`) across tools, scenarios, themes, and AI actions. |
+| **2** | **📊 Health Scorecard HUD** | `ArchitectureScorecardModal.tsx` | Real-time Security (94%), SQL (88%), CVE (98%), and React 19 (92%) audit dials. |
+| **3** | **🌐 REST API Sandbox & cURL** | `ApiSandboxModal.tsx` | Test Spring Boot endpoints, inject JWT headers, and export cURL / Axios / Python snippets. |
+| **4** | **⚡ Java DTO ➔ TypeScript** | `TypeScriptGeneratorModal.tsx` | Auto-convert JPA entities and records to strict TypeScript interfaces and Zod schemas. |
+| **5** | **💥 Chaos Simulator** | `ChaosSimulatorModal.tsx` | Resilience4j fault injection, circuit breaker state machine, and fallback telemetry. |
+| **6** | **🖼️ 4K C4 Blueprint Exporter** | `ArchitectureBlueprintExportModal.tsx` | Export C4 Level 1/2/3 diagrams, 4K SVG vector blueprints, and Mermaid RFC specifications. |
+| **7** | **⚛️ React 19 Runtime Explorer** | `ReactRuntimeExplorerModal.tsx` | Virtual DOM Fiber reconciliation, Hook state mutation timeline, and Axios interceptors. |
+| **8** | **⚡ Runtime Tracing Replay** | `RuntimeTracingModal.tsx` | Step-by-step VCR playback from React UI down to Controller, Service, Hibernate, and DB. |
+| **9** | **📊 API Metrics & Telemetry** | `ApiMetricsDashboardModal.tsx` | Real-time P50/P90/P95/P99 response times, throughput RPS, and error rate tracking. |
+| **10** | **🔀 7-Swimlane Sequence Tracer** | `SequenceDiagramModal.tsx` | Asynchronous request and response lifecycle mapping across 7 architectural swimlanes. |
+| **11** | **🔥 24-Hour Latency Heatmap** | `LatencyHeatmapModal.tsx` | 24-hour hourly quantile matrix with color-coded buckets and hover tooltips. |
+| **12** | **🗄️ Database ERD & Schema** | `ErDiagramModal.tsx` | `@Entity` relational table diagrams with column data types and foreign key linkages. |
+| **13** | **🔐 Spring Security 6 Pipeline** | `SecurityExplorerModal.tsx` | 6-stage stateless filter chain inspection (`CorsFilter`, `JwtAuthenticationFilter`, etc.). |
+| **14** | **💻 Live SQL Query Explorer** | `SqlExplorerModal.tsx` | Captured JPA prepared statements (SELECT, INSERT, UPDATE) with execution durations. |
+| **15** | **📦 Maven Dependency Graph** | `DependencyExplorerModal.tsx` | `pom.xml` starter analyzer explaining auto-configuration mechanics (Web, JPA, Security). |
+| **16** | **📁 5-Mode File Tree Visualizer** | `FileTreeModal.tsx` | Interactive File Tree, ASCII Tree, Emoji Tree, Mermaid AST Diagram, and Galaxy Canvas. |
+| **17** | **🤖 AI Architecture Assistant** | `AiAssistantModal.tsx` | Automated code explanations, compliance auditing, query reviews, and interview prep. |
 
 ---
 

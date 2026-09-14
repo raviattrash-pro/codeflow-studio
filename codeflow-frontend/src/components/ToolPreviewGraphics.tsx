@@ -182,3 +182,82 @@ export const ExportGraphic: React.FC<GraphicProps> = ({ isLight }) => (
     <text x="175" y="23" textAnchor="middle" fill="#ffffff" fontSize="6">↓</text>
   </svg>
 );
+
+export const ScorecardGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <circle cx="45" cy="30" r="18" fill="none" stroke={isLight ? '#cbd5e1' : '#1e293b'} strokeWidth="3" />
+    <circle cx="45" cy="30" r="18" fill="none" stroke="#10b981" strokeWidth="3" strokeDasharray="90 100" strokeLinecap="round" />
+    <text x="45" y="34" textAnchor="middle" fill="#10b981" fontSize="10" fontWeight="bold" fontFamily="monospace">94%</text>
+    <rect x="80" y="16" width="130" height="6" rx="3" fill={isLight ? '#e2e8f0' : '#1e293b'} />
+    <rect x="80" y="16" width="118" height="6" rx="3" fill="#10b981" />
+    <rect x="80" y="28" width="130" height="6" rx="3" fill={isLight ? '#e2e8f0' : '#1e293b'} />
+    <rect x="80" y="28" width="105" height="6" rx="3" fill="#06b6d4" />
+    <rect x="80" y="40" width="130" height="6" rx="3" fill={isLight ? '#e2e8f0' : '#1e293b'} />
+    <rect x="80" y="40" width="125" height="6" rx="3" fill="#8b5cf6" />
+  </svg>
+);
+
+export const SandboxGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <rect x="25" y="14" width="38" height="16" rx="4" fill="#06b6d4" fillOpacity="0.2" stroke="#06b6d4" strokeWidth="1" />
+    <text x="44" y="25" textAnchor="middle" fill="#06b6d4" fontSize="8" fontWeight="bold" fontFamily="monospace">POST</text>
+    <rect x="70" y="14" width="145" height="16" rx="4" fill={isLight ? '#f1f5f9' : '#0f172a'} stroke={isLight ? '#cbd5e1' : '#334155'} strokeWidth="1" />
+    <text x="78" y="25" fill="#38bdf8" fontSize="7.5" fontFamily="monospace">/api/v1/orders/checkout</text>
+    <rect x="25" y="36" width="190" height="14" rx="3" fill={isLight ? '#f0fdf4' : '#064e3b'} fillOpacity="0.4" stroke="#10b981" strokeWidth="0.8" />
+    <text x="32" y="46" fill="#34d399" fontSize="7" fontFamily="monospace">✓ 201 Created • 48ms • &apos;ord_883&apos; (OK)</text>
+  </svg>
+);
+
+export const TsGenGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <rect x="25" y="12" width="80" height="38" rx="5" fill={isLight ? '#fffbeb' : '#451a03'} fillOpacity="0.3" stroke="#f59e0b" strokeWidth="1" />
+    <text x="32" y="24" fill="#f59e0b" fontSize="7.5" fontWeight="bold" fontFamily="monospace">class UserDto</text>
+    <text x="32" y="34" fill="#fbbf24" fontSize="6.5" fontFamily="monospace">Long id;</text>
+    <text x="32" y="44" fill="#fbbf24" fontSize="6.5" fontFamily="monospace">String email;</text>
+
+    <text x="120" y="34" textAnchor="middle" fill="#38bdf8" fontSize="14" fontWeight="bold">➔</text>
+
+    <rect x="135" y="12" width="80" height="38" rx="5" fill={isLight ? '#eff6ff' : '#172554'} fillOpacity="0.4" stroke="#3b82f6" strokeWidth="1" />
+    <text x="142" y="24" fill="#60a5fa" fontSize="7.5" fontWeight="bold" fontFamily="monospace">interface User</text>
+    <text x="142" y="34" fill="#93c5fd" fontSize="6.5" fontFamily="monospace">id: number;</text>
+    <text x="142" y="44" fill="#93c5fd" fontSize="6.5" fontFamily="monospace">email: string;</text>
+  </svg>
+);
+
+export const ChaosGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <rect x="30" y="18" width="55" height="24" rx="6" fill={isLight ? '#f0fdf4' : '#064e3b'} stroke="#10b981" strokeWidth="1" />
+    <text x="57" y="32" textAnchor="middle" fill="#34d399" fontSize="7.5" fontWeight="bold" fontFamily="monospace">CLOSED</text>
+
+    <line x1="88" y1="30" x2="110" y2="30" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="2 2" />
+    <text x="99" y="24" textAnchor="middle" fill="#ef4444" fontSize="8">💥</text>
+
+    <rect x="113" y="18" width="50" height="24" rx="6" fill={isLight ? '#fef2f2' : '#450a0a'} stroke="#ef4444" strokeWidth="1.5" />
+    <text x="138" y="32" textAnchor="middle" fill="#f87171" fontSize="7.5" fontWeight="bold" fontFamily="monospace">OPEN</text>
+
+    <line x1="166" y1="30" x2="182" y2="30" stroke="#f59e0b" strokeWidth="1.5" />
+
+    <circle cx="200" cy="30" r="12" fill={isLight ? '#fef3c7' : '#78350f'} stroke="#f59e0b" strokeWidth="1" />
+    <text x="200" y="33" textAnchor="middle" fill="#fbbf24" fontSize="6.5" fontWeight="bold" fontFamily="monospace">HALF</text>
+  </svg>
+);
+
+export const BlueprintGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <rect x="25" y="10" width="50" height="40" rx="4" fill={isLight ? '#f0f9ff' : '#082f49'} stroke="#0ea5e9" strokeWidth="1" />
+    <text x="50" y="28" textAnchor="middle" fill="#38bdf8" fontSize="7" fontWeight="bold" fontFamily="monospace">React 19</text>
+    <text x="50" y="38" textAnchor="middle" fill="#7dd3fc" fontSize="5.5" fontFamily="monospace">Client</text>
+
+    <line x1="75" y1="30" x2="105" y2="30" stroke="#38bdf8" strokeWidth="1" strokeDasharray="2 2" />
+
+    <rect x="105" y="10" width="50" height="40" rx="4" fill={isLight ? '#f0fdf4' : '#064e3b'} stroke="#10b981" strokeWidth="1" />
+    <text x="130" y="28" textAnchor="middle" fill="#34d399" fontSize="7" fontWeight="bold" fontFamily="monospace">Spring 3</text>
+    <text x="130" y="38" textAnchor="middle" fill="#6ee7b7" fontSize="5.5" fontFamily="monospace">Backend</text>
+
+    <line x1="155" y1="30" x2="185" y2="30" stroke="#10b981" strokeWidth="1" strokeDasharray="2 2" />
+
+    <rect x="185" y="10" width="40" height="40" rx="4" fill={isLight ? '#faf5ff' : '#3b0764'} stroke="#a855f7" strokeWidth="1" />
+    <text x="205" y="28" textAnchor="middle" fill="#c084fc" fontSize="7" fontWeight="bold" fontFamily="monospace">PG 16</text>
+    <text x="205" y="38" textAnchor="middle" fill="#d8b4fe" fontSize="5.5" fontFamily="monospace">DB</text>
+  </svg>
+);

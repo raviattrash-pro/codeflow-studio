@@ -27,10 +27,17 @@ const ApiMetricsDashboardModal = lazy(() => import('./components/ApiMetricsDashb
 const SequenceDiagramModal = lazy(() => import('./components/SequenceDiagramModal').then(m => ({ default: m.SequenceDiagramModal })));
 const LatencyHeatmapModal = lazy(() => import('./components/LatencyHeatmapModal').then(m => ({ default: m.LatencyHeatmapModal })));
 const ReactRuntimeExplorerModal = lazy(() => import('./components/ReactRuntimeExplorerModal').then(m => ({ default: m.ReactRuntimeExplorerModal })));
+const CommandPaletteModal = lazy(() => import('./components/CommandPaletteModal').then(m => ({ default: m.CommandPaletteModal })));
+const ArchitectureScorecardModal = lazy(() => import('./components/ArchitectureScorecardModal').then(m => ({ default: m.ArchitectureScorecardModal })));
+const ApiSandboxModal = lazy(() => import('./components/ApiSandboxModal').then(m => ({ default: m.ApiSandboxModal })));
+const TypeScriptGeneratorModal = lazy(() => import('./components/TypeScriptGeneratorModal').then(m => ({ default: m.TypeScriptGeneratorModal })));
+const ChaosSimulatorModal = lazy(() => import('./components/ChaosSimulatorModal').then(m => ({ default: m.ChaosSimulatorModal })));
+const ArchitectureBlueprintExportModal = lazy(() => import('./components/ArchitectureBlueprintExportModal').then(m => ({ default: m.ArchitectureBlueprintExportModal })));
 import {
   ReactRuntimeGraphic, TracingGraphic, ApiMetricsGraphic, SequenceGraphic,
   HeatmapGraphic, ErdGraphic, SecurityGraphic, AiGraphic,
-  SqlGraphic, DepsGraphic, FileTreeGraphic, ExportGraphic
+  SqlGraphic, DepsGraphic, FileTreeGraphic, ExportGraphic,
+  ScorecardGraphic, SandboxGraphic, TsGenGraphic, ChaosGraphic, BlueprintGraphic
 } from './components/ToolPreviewGraphics';
 import { Project, GraphData, NodeDetail, ProjectNode, AiAnalysisType } from './types';
 import { DEMO_PROJECT_DATA, DEMO_GRAPH_DATA } from './utils/demoData';
@@ -533,6 +540,12 @@ export default function App() {
   const [isSequenceDiagramOpen, setIsSequenceDiagramOpen] = useState(false);
   const [isLatencyHeatmapOpen, setIsLatencyHeatmapOpen] = useState(false);
   const [isReactRuntimeOpen, setIsReactRuntimeOpen] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isScorecardOpen, setIsScorecardOpen] = useState(false);
+  const [isApiSandboxOpen, setIsApiSandboxOpen] = useState(false);
+  const [isTsGeneratorOpen, setIsTsGeneratorOpen] = useState(false);
+  const [isChaosOpen, setIsChaosOpen] = useState(false);
+  const [isBlueprintOpen, setIsBlueprintOpen] = useState(false);
   const [viewingFilePath, setViewingFilePath] = useState<string | null>(null);
   const [aiInitialPrompt, setAiInitialPrompt] = useState<string | undefined>(undefined);
   const [aiInitialAnalysisType, setAiInitialAnalysisType] = useState<AiAnalysisType | undefined>(undefined);
@@ -576,6 +589,11 @@ export default function App() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
 
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
+        return;
+      }
       if (e.key === 'd' || e.key === 'D') {
         if (!currentProjectId) {
           handleLoadDemoProject();
@@ -617,6 +635,11 @@ export default function App() {
     if (toolKey === 'ai') setIsAiAssistantOpen(true);
     if (toolKey === 'files') setIsFileTreeOpen(true);
     if (toolKey === 'react' || toolKey === 'fiber') setIsReactRuntimeOpen(true);
+    if (toolKey === 'scorecard') setIsScorecardOpen(true);
+    if (toolKey === 'api-sandbox' || toolKey === 'sandbox') setIsApiSandboxOpen(true);
+    if (toolKey === 'ts-generator' || toolKey === 'ts') setIsTsGeneratorOpen(true);
+    if (toolKey === 'chaos') setIsChaosOpen(true);
+    if (toolKey === 'blueprint' || toolKey === 'export-c4') setIsBlueprintOpen(true);
   };
 
   useEffect(() => {
@@ -731,6 +754,12 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
     <div className={`h-screen w-screen overflow-hidden flex flex-col font-sans select-none ${getPageBgClass()}`}>
       <Header
         currentProjectName={project?.name}
+        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+        onOpenScorecard={() => handleOpenToolDirectly('scorecard')}
+        onOpenApiSandbox={() => handleOpenToolDirectly('api-sandbox')}
+        onOpenTsGenerator={() => handleOpenToolDirectly('ts-generator')}
+        onOpenChaos={() => handleOpenToolDirectly('chaos')}
+        onOpenBlueprint={() => handleOpenToolDirectly('blueprint')}
         currentProjectId={currentProjectId}
         onLoadDemo={handleLoadDemoProject}
         onOpenIngestModal={() => setIsIngestModalOpen(true)}
@@ -1332,7 +1361,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
             <div className="w-full max-w-5xl mb-12">
               <div className="text-center mb-8">
                 <h3 className={`text-xl md:text-2xl font-bold font-mono ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                  12 Specialized Visual Architecture Tools
+                  17 Specialized Visual Architecture Tools
                 </h3>
                 <p className="text-xs md:text-sm text-slate-400 font-mono mt-1">
                   Click any card to launch interactive demo mode directly into that tool
@@ -1450,6 +1479,56 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     badge: 'Documentation',
                     graphic: ExportGraphic,
                     preview: '📄 Instant PDF & Markdown Architectural Spec'
+                  },
+                  {
+                    title: 'Architecture Health Scorecard',
+                    desc: 'Continuous static AST audit dials: Security (94%), SQL (88%), CVE (98%), React 19 (92%).',
+                    icon: Activity,
+                    col: 'text-emerald-400',
+                    key: 'scorecard',
+                    badge: 'NEW HUD',
+                    graphic: ScorecardGraphic,
+                    preview: '📊 Grade A+ (93%) • 1-Click AI Remediation'
+                  },
+                  {
+                    title: 'REST API Sandbox & cURL',
+                    desc: 'Test Spring Boot endpoints, inject JWT headers, and export snippets to cURL, Fetch, Axios & Python.',
+                    icon: Terminal,
+                    col: 'text-cyan-400',
+                    key: 'api-sandbox',
+                    badge: 'NEW API',
+                    graphic: SandboxGraphic,
+                    preview: '⚡ POST /api/v1/orders/checkout ➔ 201 Created'
+                  },
+                  {
+                    title: 'Java DTO ➔ TypeScript Generator',
+                    desc: 'Instantly convert Spring JPA entities & Java record classes into strict TypeScript and Zod schemas.',
+                    icon: Code2,
+                    col: 'text-blue-400',
+                    key: 'ts-generator',
+                    badge: 'NEW Bridge',
+                    graphic: TsGenGraphic,
+                    preview: '🔄 UserEntity.java ➔ export interface UserDto'
+                  },
+                  {
+                    title: 'Chaos & Resilience Simulator',
+                    desc: 'Simulate HikariCP pool starvation, Stripe 504 timeouts, and visualize Resilience4j circuit states.',
+                    icon: Flame,
+                    col: 'text-rose-400',
+                    key: 'chaos',
+                    badge: 'NEW Chaos',
+                    graphic: ChaosGraphic,
+                    preview: '💥 CLOSED ➔ OPEN ➔ HALF_OPEN State Machine'
+                  },
+                  {
+                    title: '4K Blueprint & C4 Exporter',
+                    desc: 'Generate scalable 4K SVG architecture diagrams, C4 models, and PlantUML / Mermaid RFC specs.',
+                    icon: Sparkles,
+                    col: 'text-purple-400',
+                    key: 'blueprint',
+                    badge: 'NEW Vector',
+                    graphic: BlueprintGraphic,
+                    preview: '🖼️ C4 Level 1/2/3 Diagram & 4K SVG Export'
                   }
                 ].map((f, i) => {
                   const Icon = f.icon;
@@ -1658,6 +1737,53 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
           isOpen={isReactRuntimeOpen}
           onClose={() => setIsReactRuntimeOpen(false)}
           projectId={currentProjectId}
+          currentTheme={currentTheme}
+        />
+
+        <CommandPaletteModal
+          isOpen={isCommandPaletteOpen}
+          onClose={() => setIsCommandPaletteOpen(false)}
+          currentTheme={currentTheme}
+          onSelectTool={(toolId) => {
+            if (toolId === 'ai') handleOpenAi();
+            else handleOpenToolDirectly(toolId);
+          }}
+          onSelectScenario={(scKey) => {
+            setActiveScenarioKey(scKey);
+            setActiveTraceStep(0);
+          }}
+          onSelectTheme={(theme) => setCurrentTheme(theme)}
+          onTriggerAi={(prompt, analysisType) => handleOpenAi(prompt, (analysisType as AiAnalysisType) || 'GENERAL')}
+        />
+
+        <ArchitectureScorecardModal
+          isOpen={isScorecardOpen}
+          onClose={() => setIsScorecardOpen(false)}
+          currentTheme={currentTheme}
+          onTriggerAiFix={(findingTitle, query) => handleOpenAi(query, 'ARCHITECTURE')}
+        />
+
+        <ApiSandboxModal
+          isOpen={isApiSandboxOpen}
+          onClose={() => setIsApiSandboxOpen(false)}
+          currentTheme={currentTheme}
+        />
+
+        <TypeScriptGeneratorModal
+          isOpen={isTsGeneratorOpen}
+          onClose={() => setIsTsGeneratorOpen(false)}
+          currentTheme={currentTheme}
+        />
+
+        <ChaosSimulatorModal
+          isOpen={isChaosOpen}
+          onClose={() => setIsChaosOpen(false)}
+          currentTheme={currentTheme}
+        />
+
+        <ArchitectureBlueprintExportModal
+          isOpen={isBlueprintOpen}
+          onClose={() => setIsBlueprintOpen(false)}
           currentTheme={currentTheme}
         />
       </Suspense>

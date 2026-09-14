@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Layers, Search, Database, ShieldCheck, Bot, Package, Download, X,
   FolderTree, Menu, Import, LogOut, ChevronDown, Activity, Moon, Sun,
-  Sparkles, Box, BarChart2, Flame, Zap, ArrowRight
+  Sparkles, Box, BarChart2, Flame, Zap, ArrowRight, Terminal, Code2
 } from 'lucide-react';
 import { ProjectNode } from '../types';
 
@@ -24,6 +24,12 @@ interface HeaderProps {
   onOpenSequenceDiagram?: () => void;
   onOpenLatencyHeatmap?: () => void;
   onOpenReactRuntime?: () => void;
+  onOpenCommandPalette?: () => void;
+  onOpenScorecard?: () => void;
+  onOpenApiSandbox?: () => void;
+  onOpenTsGenerator?: () => void;
+  onOpenChaos?: () => void;
+  onOpenBlueprint?: () => void;
   onExportMarkdown: () => void;
   onExitProject: () => void;
   searchQuery: string;
@@ -50,6 +56,12 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSequenceDiagram,
   onOpenLatencyHeatmap,
   onOpenReactRuntime,
+  onOpenCommandPalette,
+  onOpenScorecard,
+  onOpenApiSandbox,
+  onOpenTsGenerator,
+  onOpenChaos,
+  onOpenBlueprint,
   onExportMarkdown,
   onExitProject,
   searchQuery,
@@ -145,8 +157,8 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 max-w-md mx-4 relative hidden md:block">
-        <div className="relative">
+      <div className="flex-1 max-w-lg mx-4 flex items-center gap-2 hidden md:flex">
+        <div className="relative flex-1">
           <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
@@ -161,6 +173,25 @@ export const Header: React.FC<HeaderProps> = ({
             }`}
           />
         </div>
+
+        {/* Global Command Palette Spotlight Button */}
+        {onOpenCommandPalette && (
+          <button
+            onClick={onOpenCommandPalette}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all ${
+              isLight
+                ? 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+                : 'bg-slate-900/90 border-slate-700/80 text-slate-300 hover:text-white hover:border-slate-600'
+            }`}
+            title="Open Command Palette (Ctrl+K or Cmd+K)"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+            <kbd className="px-1.5 py-0.5 text-[10px] font-bold bg-slate-800/80 border border-slate-700 rounded text-slate-300 font-mono shadow-inner">
+              Ctrl K
+            </kbd>
+          </button>
+        )}
+
         {searchResults && searchResults.length > 0 && currentProjectId && (
           <div
             className={`absolute top-full mt-2 w-full border rounded-xl shadow-2xl overflow-hidden max-h-64 overflow-y-auto ${getDropdownStyle()}`}
@@ -247,21 +278,47 @@ export const Header: React.FC<HeaderProps> = ({
 
             {isToolsOpen && (
               <div
-                className={`absolute right-0 mt-2 w-64 border rounded-xl shadow-2xl overflow-hidden py-1.5 ${getDropdownStyle()}`}
+                className={`absolute right-0 mt-2 w-72 border rounded-xl shadow-2xl overflow-hidden py-1.5 ${getDropdownStyle()}`}
                 style={{
                   backgroundColor: currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : isLight ? '#ffffff' : '#0b0f19',
                   zIndex: 999999,
                 }}
               >
-                <div className={`px-3.5 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider border-b ${
+                <div className={`px-3.5 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider border-b flex items-center justify-between ${
                   isLight ? 'text-slate-500 border-slate-200' : 'text-slate-400 border-slate-800'
                 }`}>
-                  Architecture Tools
+                  <span>Architecture Suite (v7.0)</span>
+                  <span className="text-purple-400 font-black">17 Tools</span>
                 </div>
+                <button onClick={() => { onOpenScorecard?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
+                  <Activity className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Health Scorecard (HUD)</span>
+                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}`}>NEW</span>
+                </button>
+                <button onClick={() => { onOpenApiSandbox?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
+                  <Terminal className="w-3.5 h-3.5 text-cyan-400" />
+                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>API Sandbox & cURL</span>
+                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-cyan-50 border-cyan-200 text-cyan-700' : 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'}`}>NEW</span>
+                </button>
+                <button onClick={() => { onOpenTsGenerator?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
+                  <Code2 className="w-3.5 h-3.5 text-blue-400" />
+                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Java DTO ➔ TypeScript</span>
+                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-blue-500/10 border-blue-500/20 text-blue-400'}`}>NEW</span>
+                </button>
+                <button onClick={() => { onOpenChaos?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
+                  <Flame className="w-3.5 h-3.5 text-rose-400" />
+                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Chaos & Resilience Sim</span>
+                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-rose-50 border-rose-200 text-rose-700' : 'bg-rose-500/10 border-rose-500/20 text-rose-400'}`}>NEW</span>
+                </button>
+                <button onClick={() => { onOpenBlueprint?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>4K Blueprint & C4 Exporter</span>
+                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-purple-50 border-purple-200 text-purple-700' : 'bg-purple-500/10 border-purple-500/20 text-purple-400'}`}>NEW</span>
+                </button>
+                <div className={`border-t my-1 ${isLight ? 'border-slate-200' : 'border-slate-800'}`}></div>
                 <button onClick={() => { onOpenReactRuntime?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
                   <Activity className="w-3.5 h-3.5 text-sky-500" />
                   <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>React 19 Runtime Explorer</span>
-                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-sky-50 border-sky-200 text-sky-700' : 'bg-sky-500/10 border-sky-500/20 text-sky-400'}`}>v5.0</span>
                 </button>
                 <button onClick={() => { onOpenRuntimeTracing?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
                   <Activity className="w-3.5 h-3.5 text-cyan-500" />
