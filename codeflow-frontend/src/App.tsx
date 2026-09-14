@@ -23,6 +23,12 @@ import { ApiMetricsDashboardModal } from './components/ApiMetricsDashboardModal'
 import { SequenceDiagramModal } from './components/SequenceDiagramModal';
 import { LatencyHeatmapModal } from './components/LatencyHeatmapModal';
 import { ReactRuntimeExplorerModal } from './components/ReactRuntimeExplorerModal';
+import { ArchitectureIllustration } from './components/ArchitectureIllustration';
+import {
+  ReactRuntimeGraphic, TracingGraphic, ApiMetricsGraphic, SequenceGraphic,
+  HeatmapGraphic, ErdGraphic, SecurityGraphic, AiGraphic,
+  SqlGraphic, DepsGraphic, FileTreeGraphic, ExportGraphic
+} from './components/ToolPreviewGraphics';
 import { Project, GraphData, NodeDetail, ProjectNode } from './types';
 import { DEMO_PROJECT_DATA, DEMO_GRAPH_DATA } from './utils/demoData';
 
@@ -870,6 +876,21 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
               </div>
             </div>
 
+            {/* 5.1 Interactive System Architecture Graphic Illustration */}
+            <div className="w-full max-w-5xl mb-12">
+              <ArchitectureIllustration
+                currentTheme={currentTheme}
+                onExploreLayer={(layer) => {
+                  if (layer === 'client') handleOpenToolDirectly('react');
+                  else if (layer === 'gateway') handleOpenToolDirectly('security');
+                  else if (layer === 'controller') handleOpenToolDirectly('tracing');
+                  else if (layer === 'service') handleOpenToolDirectly('sequence');
+                  else if (layer === 'cache') handleOpenToolDirectly('metrics');
+                  else if (layer === 'database') handleOpenToolDirectly('sql');
+                }}
+              />
+            </div>
+
             {/* ===================================================================== */}
             {/* 6. THE LIVE INTERACTIVE WORKBENCH (Core Hands-On Simulation Sandbox)   */}
             {/* ===================================================================== */}
@@ -1316,6 +1337,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     col: 'text-sky-400',
                     key: 'react',
                     badge: 'v5.0 Core',
+                    graphic: ReactRuntimeGraphic,
                     preview: '⚛️ useMutation(createOrder) ➔ Fiber Tree Re-render'
                   },
                   {
@@ -1325,6 +1347,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     col: 'text-cyan-400',
                     key: 'tracing',
                     badge: 'v4.2 Engine',
+                    graphic: TracingGraphic,
                     preview: '▶ Step 4/5: OrderService.createOrder() (16.2ms)'
                   },
                   {
@@ -1334,6 +1357,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     col: 'text-indigo-400',
                     key: 'metrics',
                     badge: 'Telemetry',
+                    graphic: ApiMetricsGraphic,
                     preview: '📊 P95 Latency: 28.4ms • 14,200 req/min'
                   },
                   {
@@ -1343,6 +1367,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     col: 'text-amber-400',
                     key: 'sequence',
                     badge: '7 Swimlanes',
+                    graphic: SequenceGraphic,
                     preview: '⚡ Controller ➔ JWT Filter ➔ Service ➔ JPA'
                   },
                   {
@@ -1352,6 +1377,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     col: 'text-orange-400',
                     key: 'heatmap',
                     badge: '24h Matrix',
+                    graphic: HeatmapGraphic,
                     preview: '🔥 24-Column Timeline Matrix with Hover Tooltips'
                   },
                   {
@@ -1361,6 +1387,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     col: 'text-emerald-400',
                     key: 'erd',
                     badge: 'JPA Schema',
+                    graphic: ErdGraphic,
                     preview: '🗄️ orders ➔ order_items ➔ users (FK Linked)'
                   },
                   {
@@ -1370,6 +1397,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     col: 'text-sky-400',
                     key: 'ai',
                     badge: 'AI Explainer',
+                    graphic: AiGraphic,
                     preview: '🤖 "Detected @Transactional with READ_COMMITTED"'
                   },
                   {
@@ -1379,6 +1407,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     col: 'text-blue-400',
                     key: 'sql',
                     badge: 'JPA Queries',
+                    graphic: SqlGraphic,
                     preview: '⚡ SELECT id, total_amount FROM orders WHERE user_id = 42'
                   },
                   {
@@ -1388,6 +1417,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     col: 'text-indigo-300',
                     key: 'deps',
                     badge: 'Maven BOM',
+                    graphic: DepsGraphic,
                     preview: '📦 spring-boot-starter-data-jpa (3.2.0)'
                   },
                   {
@@ -1397,7 +1427,18 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     col: 'text-cyan-300',
                     key: 'files',
                     badge: '5 Views',
+                    graphic: FileTreeGraphic,
                     preview: '📁 /src/main/java/com/codeflow/order'
+                  },
+                  {
+                    title: 'Architecture Spec Exporter',
+                    desc: 'Export comprehensive architectural markdown with entity inventories and API schemas.',
+                    icon: Package,
+                    col: 'text-emerald-400',
+                    key: 'export',
+                    badge: 'Documentation',
+                    graphic: ExportGraphic,
+                    preview: '📄 Instant PDF & Markdown Architectural Spec'
                   }
                 ].map((f, i) => {
                   const Icon = f.icon;
@@ -1428,10 +1469,17 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                         <p className="text-xs text-slate-400 font-mono mt-1.5 leading-relaxed">
                           {f.desc}
                         </p>
+
+                        {/* Graphic Schematic Diagram Preview */}
+                        <div className={`mt-3 mb-2 p-1 rounded-xl border overflow-hidden transition-all ${
+                          isLight ? 'bg-slate-50 border-slate-200/80 group-hover:border-sky-300' : 'bg-slate-950/60 border-slate-800/80 group-hover:border-sky-500/40'
+                        }`}>
+                          <f.graphic isLight={isLight} />
+                        </div>
                       </div>
 
-                      <div className={`mt-4 pt-3 border-t ${isLight ? 'border-slate-100' : 'border-slate-800/60'}`}>
-                        <div className={`p-2 rounded-lg text-[10px] font-mono truncate mb-3 border ${
+                      <div className={`mt-2 pt-2.5 border-t ${isLight ? 'border-slate-100' : 'border-slate-800/60'}`}>
+                        <div className={`p-2 rounded-lg text-[10px] font-mono truncate mb-2.5 border ${
                           isLight ? 'bg-slate-50 text-slate-600 border-slate-200' : 'bg-slate-950 text-slate-400 border-slate-900'
                         }`}>
                           {f.preview}
