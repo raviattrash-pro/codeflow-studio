@@ -304,144 +304,239 @@ export const Header: React.FC<HeaderProps> = ({
 
             {isToolsOpen && (
               <div
-                className={`absolute right-0 mt-2 w-72 border rounded-xl shadow-2xl overflow-hidden py-1.5 ${getDropdownStyle()}`}
+                className={`absolute right-0 mt-2 w-[620px] max-w-[92vw] border rounded-2xl shadow-2xl overflow-hidden flex flex-col ${getDropdownStyle()}`}
                 style={{
                   backgroundColor: currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : isLight ? '#ffffff' : '#0b0f19',
+                  maxHeight: 'calc(100vh - 5rem)',
                   zIndex: 999999,
                 }}
               >
-                <div className={`px-3.5 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider border-b flex items-center justify-between ${
-                  isLight ? 'text-slate-500 border-slate-200' : 'text-slate-400 border-slate-800'
+                {/* Mega Menu Header */}
+                <div className={`px-4 py-2.5 text-[11px] font-mono font-bold uppercase tracking-wider border-b flex items-center justify-between shrink-0 ${
+                  isLight ? 'text-slate-700 border-slate-200 bg-slate-50' : 'text-slate-300 border-slate-800 bg-[#111827]'
                 }`}>
-                  <span>Architecture Suite (v7.0)</span>
-                  <span className="text-purple-400 font-black">23 Tools</span>
+                  <div className="flex items-center gap-2">
+                    <Layers className="w-3.5 h-3.5 text-sky-400" />
+                    <span>Architecture Intelligence Suite (v8.0)</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                    23 Active Tools
+                  </span>
                 </div>
-                <button onClick={() => { onOpenDrift?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <GitPullRequest className="w-3.5 h-3.5 text-amber-400" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Git PR Architecture Drift</span>
-                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-amber-500/10 border-amber-500/20 text-amber-400'}`}>v8.0</span>
-                </button>
-                <button onClick={() => { onOpenTestGen?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <CheckSquare className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Automated Test Generator</span>
-                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}`}>v8.0</span>
-                </button>
-                <button onClick={() => { onOpenCloudInfra?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <Cloud className="w-3.5 h-3.5 text-sky-400" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Cloud IaC & Docker Synthesizer</span>
-                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-sky-50 border-sky-200 text-sky-700' : 'bg-sky-500/10 border-sky-500/20 text-sky-400'}`}>v8.0</span>
-                </button>
-                <button onClick={() => { onOpenEventStream?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <Radio className="w-3.5 h-3.5 text-purple-400" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Kafka / WebSocket Streams</span>
-                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-purple-50 border-purple-200 text-purple-700' : 'bg-purple-500/10 border-purple-500/20 text-purple-400'}`}>v8.0</span>
-                </button>
-                <button onClick={() => { onOpenDistTracing?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <Activity className="w-3.5 h-3.5 text-cyan-400" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>OpenTelemetry Distributed Tracing</span>
-                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-cyan-50 border-cyan-200 text-cyan-700' : 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'}`}>v8.0</span>
-                </button>
-                <button onClick={() => { onOpenScorecard?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <Activity className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Health Scorecard (HUD)</span>
-                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}`}>NEW</span>
-                </button>
-                <button onClick={() => { onOpenApiSandbox?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <Terminal className="w-3.5 h-3.5 text-cyan-400" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>API Sandbox & cURL</span>
-                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-cyan-50 border-cyan-200 text-cyan-700' : 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'}`}>NEW</span>
-                </button>
-                <button onClick={() => { onOpenTsGenerator?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <Code2 className="w-3.5 h-3.5 text-blue-400" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Java DTO ➔ TypeScript</span>
-                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-blue-500/10 border-blue-500/20 text-blue-400'}`}>NEW</span>
-                </button>
-                <button onClick={() => { onOpenChaos?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <Flame className="w-3.5 h-3.5 text-rose-400" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Chaos & Resilience Sim</span>
-                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-rose-50 border-rose-200 text-rose-700' : 'bg-rose-500/10 border-rose-500/20 text-rose-400'}`}>NEW</span>
-                </button>
-                <button onClick={() => { onOpenBlueprint?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>4K Blueprint & C4 Exporter</span>
-                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-purple-50 border-purple-200 text-purple-700' : 'bg-purple-500/10 border-purple-500/20 text-purple-400'}`}>NEW</span>
-                </button>
-                <div className={`border-t my-1 ${isLight ? 'border-slate-200' : 'border-slate-800'}`}></div>
-                <button onClick={() => { onOpenReactRuntime?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <Activity className="w-3.5 h-3.5 text-sky-500" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>React 19 Runtime Explorer</span>
-                </button>
-                <button onClick={() => { onOpenRuntimeTracing?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <Activity className="w-3.5 h-3.5 text-cyan-500" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Runtime Tracing (v4.2)</span>
-                </button>
-                <button onClick={() => { onOpenApiMetrics?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <BarChart2 className="w-3.5 h-3.5 text-indigo-500" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>API Metrics Dashboard</span>
-                </button>
-                <button onClick={() => { onOpenSequenceDiagram?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <Zap className="w-3.5 h-3.5 text-amber-500" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Sequence Diagram</span>
-                </button>
-                <button onClick={() => { onOpenLatencyHeatmap?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <Flame className="w-3.5 h-3.5 text-orange-500" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Latency Heatmap (24h)</span>
-                </button>
-                <button onClick={() => { onOpenErDiagram(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <Database className="w-3.5 h-3.5 text-emerald-500" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>ER Diagram Explorer</span>
-                </button>
-                <button onClick={() => { onOpenSecurityFlow(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <ShieldCheck className="w-3.5 h-3.5 text-indigo-500" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Security Pipeline</span>
-                </button>
-                <button onClick={() => { onOpenAiAssistant(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <Bot className="w-3.5 h-3.5 text-sky-500" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>AI Code Assistant</span>
-                </button>
-                <button onClick={() => { onOpenSqlExplorer(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <Database className="w-3.5 h-3.5 text-blue-500" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>SQL Query Explorer</span>
-                </button>
-                <button onClick={() => { onOpenDependencies(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <Package className="w-3.5 h-3.5 text-indigo-400" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Dependencies</span>
-                </button>
-                <button onClick={() => { onOpenFileTree(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                  <FolderTree className="w-3.5 h-3.5 text-cyan-500" />
-                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>File Tree</span>
-                </button>
-                <div className={`border-t my-1 ${isLight ? 'border-slate-200' : 'border-slate-800'}`}></div>
-                <button onClick={() => { onExportMarkdown(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium text-emerald-600 ${getItemHoverClass()}`}>
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Export Markdown</span>
-                </button>
+
+                {/* 2-Column Scrollable Tools Grid */}
+                <div className="overflow-y-auto custom-scrollbar p-3 grid grid-cols-1 sm:grid-cols-2 gap-2 flex-1" style={{ minHeight: 0 }}>
+                  {/* Column 1: Cloud, DevOps & Enterprise Suite */}
+                  <div className="space-y-1">
+                    <div className="px-2 py-1 text-[10px] font-mono font-bold text-sky-400 uppercase tracking-wider">
+                      Cloud & DevOps (v8.0)
+                    </div>
+
+                    <button onClick={() => { onOpenDrift?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <GitPullRequest className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                        <span className="truncate">Git PR Drift</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-amber-500/10 border-amber-500/30 text-amber-400">v8.0</span>
+                    </button>
+
+                    <button onClick={() => { onOpenTestGen?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <CheckSquare className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span className="truncate">Test Generator</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-emerald-500/10 border-emerald-500/30 text-emerald-400">v8.0</span>
+                    </button>
+
+                    <button onClick={() => { onOpenCloudInfra?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Cloud className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                        <span className="truncate">Cloud IaC / Docker</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-sky-500/10 border-sky-500/30 text-sky-400">v8.0</span>
+                    </button>
+
+                    <button onClick={() => { onOpenEventStream?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Radio className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                        <span className="truncate">Kafka & WS Streams</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-purple-500/10 border-purple-500/30 text-purple-400">v8.0</span>
+                    </button>
+
+                    <button onClick={() => { onOpenDistTracing?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Activity className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                        <span className="truncate">OTel Distributed Tracing</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-cyan-500/10 border-cyan-500/30 text-cyan-400">v8.0</span>
+                    </button>
+
+                    <button onClick={() => { onOpenVoiceCopilot?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Mic className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                        <span className="truncate">Voice Copilot</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-rose-500/10 border-rose-500/30 text-rose-400">v8.0</span>
+                    </button>
+
+                    <div className="pt-2 px-2 py-1 text-[10px] font-mono font-bold text-purple-400 uppercase tracking-wider border-t border-slate-800/40">
+                      Enterprise Tools (v7.0)
+                    </div>
+
+                    <button onClick={() => { onOpenScorecard?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Activity className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span className="truncate">Scorecard HUD</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-emerald-500/10 border-emerald-500/30 text-emerald-400">v7.0</span>
+                    </button>
+
+                    <button onClick={() => { onOpenApiSandbox?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Terminal className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                        <span className="truncate">API Sandbox & cURL</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-cyan-500/10 border-cyan-500/30 text-cyan-400">v7.0</span>
+                    </button>
+
+                    <button onClick={() => { onOpenTsGenerator?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Code2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                        <span className="truncate">DTO ➔ TypeScript</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-blue-500/10 border-blue-500/30 text-blue-400">v7.0</span>
+                    </button>
+
+                    <button onClick={() => { onOpenChaos?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Flame className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                        <span className="truncate">Chaos Simulator</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-rose-500/10 border-rose-500/30 text-rose-400">v7.0</span>
+                    </button>
+
+                    <button onClick={() => { onOpenBlueprint?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                        <span className="truncate">4K C4 Blueprint</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-purple-500/10 border-purple-500/30 text-purple-400">v7.0</span>
+                    </button>
+                  </div>
+
+                  {/* Column 2: Runtime, Flows & Core Analysis */}
+                  <div className="space-y-1">
+                    <div className="px-2 py-1 text-[10px] font-mono font-bold text-indigo-400 uppercase tracking-wider">
+                      Runtime & Flow Analysis
+                    </div>
+
+                    <button onClick={() => { onOpenReactRuntime?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Activity className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+                        <span className="truncate">React 19 Runtime</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-sky-500/10 border-sky-500/20 text-sky-400">Fiber</span>
+                    </button>
+
+                    <button onClick={() => { onOpenRuntimeTracing?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Activity className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
+                        <span className="truncate">Runtime Tracing</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-cyan-500/10 border-cyan-500/20 text-cyan-400">VCR</span>
+                    </button>
+
+                    <button onClick={() => { onOpenApiMetrics?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <BarChart2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                        <span className="truncate">API Metrics Dashboard</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-indigo-500/10 border-indigo-500/20 text-indigo-400">P95</span>
+                    </button>
+
+                    <button onClick={() => { onOpenSequenceDiagram?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Zap className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                        <span className="truncate">Sequence Diagram</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-amber-500/10 border-amber-500/20 text-amber-400">7 Lanes</span>
+                    </button>
+
+                    <button onClick={() => { onOpenLatencyHeatmap?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Flame className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                        <span className="truncate">Latency Heatmap</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-orange-500/10 border-orange-500/20 text-orange-400">24h</span>
+                    </button>
+
+                    <button onClick={() => { onOpenErDiagram(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Database className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                        <span className="truncate">ER Diagram Explorer</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-emerald-500/10 border-emerald-500/20 text-emerald-400">Schema</span>
+                    </button>
+
+                    <button onClick={() => { onOpenSecurityFlow(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <ShieldCheck className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                        <span className="truncate">Security Pipeline</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-indigo-500/10 border-indigo-500/20 text-indigo-400">JWT</span>
+                    </button>
+
+                    <button onClick={() => { onOpenAiAssistant(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Bot className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+                        <span className="truncate">AI Code Assistant</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-sky-500/10 border-sky-500/20 text-sky-400">Audit</span>
+                    </button>
+
+                    <button onClick={() => { onOpenSqlExplorer(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Database className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                        <span className="truncate">SQL Query Explorer</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-blue-500/10 border-blue-500/20 text-blue-400">JPA</span>
+                    </button>
+
+                    <button onClick={() => { onOpenDependencies(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <Package className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                        <span className="truncate">Maven Dependencies</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-indigo-500/10 border-indigo-500/20 text-indigo-300">POM</span>
+                    </button>
+
+                    <button onClick={() => { onOpenFileTree(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
+                      <div className="flex items-center space-x-2 truncate">
+                        <FolderTree className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
+                        <span className="truncate">File Tree Visualizer</span>
+                      </div>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-cyan-500/10 border-cyan-500/20 text-cyan-400">5 Views</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Dropdown Footer Action */}
+                <div className={`px-4 py-2 border-t flex items-center justify-between shrink-0 ${
+                  isLight ? 'bg-slate-50 border-slate-200 text-slate-600' : 'bg-[#090d16] border-slate-800 text-slate-400'
+                }`}>
+                  <button
+                    onClick={() => { onExportMarkdown(); setIsToolsOpen(false); }}
+                    className="flex items-center gap-1.5 text-xs font-mono font-bold text-emerald-400 hover:text-emerald-300 transition cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Export Markdown Spec</span>
+                  </button>
+                  <span className="text-[10px] font-mono opacity-60">Press Ctrl+K for Search</span>
+                </div>
               </div>
             )}
           </div>
-        )}
-
-        {onLoadDemo && !currentProjectId && (
-          <button
-            onClick={onLoadDemo}
-            className="hidden md:flex items-center space-x-1.5 px-4 py-1.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-xs font-mono font-bold text-white shadow-md shadow-sky-600/20 transition-all transform hover:scale-[1.02] active:scale-98"
-          >
-            <Sparkles className="w-3.5 h-3.5" /><span>Try Demo</span>
-          </button>
-        )}
-
-        <button onClick={onOpenIngestModal} className={`hidden md:flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl border text-xs font-mono font-semibold transition-all ${
-          isLight
-            ? 'bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200'
-            : 'bg-[#0f172a] border-slate-800 text-slate-200 hover:border-slate-700 hover:text-white'
-        }`}>
-          <Import className="w-3.5 h-3.5 text-sky-400" /><span>Import</span>
-        </button>
-
-        {currentProjectId && (
-          <button onClick={onExitProject} className="hidden md:flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-xs font-mono font-medium text-red-500">
-            <X className="w-3.5 h-3.5" /><span>Exit</span>
-          </button>
         )}
 
         {/* Mobile Action & Menu Toggle Button */}
@@ -513,77 +608,148 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </div>
 
-          {/* ALL 12 ARCHITECTURE TOOLS LIST */}
+          {/* ALL 23 ARCHITECTURE TOOLS LIST */}
           <div className="pt-2">
-            <div className="px-2 pb-1.5 text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-              <span>All 12 Architecture Tools</span>
-              <span className="text-emerald-500">● 100% Offline</span>
+            <div className="px-2 pb-2 text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+              <span>All 23 Architecture Tools</span>
+              <span className="text-emerald-400 font-extrabold">v8.0 Suite</span>
             </div>
-            <div className="space-y-1">
-              <button onClick={() => handleMobileToolClick(onOpenReactRuntime)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900/60 border-slate-800 text-sky-400 hover:bg-slate-800'
+            <div className="space-y-1.5">
+              {/* v8.0 Tools */}
+              <button onClick={() => handleMobileToolClick(onOpenDrift)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-amber-400 hover:bg-slate-800'
               }`}>
-                <div className="flex items-center space-x-2.5"><Activity className="w-4 h-4 text-sky-400" /><span>1. React 19 Runtime Explorer</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/10 border border-sky-500/20 text-sky-400">v5.0</span>
+                <div className="flex items-center space-x-2.5"><GitPullRequest className="w-4 h-4 text-amber-400" /><span>1. Git PR Architecture Drift</span></div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400">v8.0</span>
+              </button>
+              <button onClick={() => handleMobileToolClick(onOpenTestGen)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-emerald-400 hover:bg-slate-800'
+              }`}>
+                <div className="flex items-center space-x-2.5"><CheckSquare className="w-4 h-4 text-emerald-400" /><span>2. Test Suite Generator</span></div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">v8.0</span>
+              </button>
+              <button onClick={() => handleMobileToolClick(onOpenCloudInfra)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-sky-400 hover:bg-slate-800'
+              }`}>
+                <div className="flex items-center space-x-2.5"><Cloud className="w-4 h-4 text-sky-400" /><span>3. Cloud IaC & Docker</span></div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/10 border border-sky-500/20 text-sky-400">v8.0</span>
+              </button>
+              <button onClick={() => handleMobileToolClick(onOpenEventStream)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-purple-400 hover:bg-slate-800'
+              }`}>
+                <div className="flex items-center space-x-2.5"><Radio className="w-4 h-4 text-purple-400" /><span>4. Kafka & WebSocket Streams</span></div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 border border-purple-500/20 text-purple-400">v8.0</span>
+              </button>
+              <button onClick={() => handleMobileToolClick(onOpenDistTracing)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-cyan-400 hover:bg-slate-800'
+              }`}>
+                <div className="flex items-center space-x-2.5"><Activity className="w-4 h-4 text-cyan-400" /><span>5. OpenTelemetry Tracing</span></div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">v8.0</span>
+              </button>
+              <button onClick={() => handleMobileToolClick(onOpenVoiceCopilot)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-rose-400 hover:bg-slate-800'
+              }`}>
+                <div className="flex items-center space-x-2.5"><Mic className="w-4 h-4 text-rose-400" /><span>6. Voice Copilot</span></div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400">v8.0</span>
+              </button>
+
+              {/* v7.0 Tools */}
+              <button onClick={() => handleMobileToolClick(onOpenScorecard)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-emerald-400 hover:bg-slate-800'
+              }`}>
+                <div className="flex items-center space-x-2.5"><Activity className="w-4 h-4 text-emerald-400" /><span>7. Scorecard HUD</span></div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">v7.0</span>
+              </button>
+              <button onClick={() => handleMobileToolClick(onOpenApiSandbox)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-cyan-400 hover:bg-slate-800'
+              }`}>
+                <div className="flex items-center space-x-2.5"><Terminal className="w-4 h-4 text-cyan-400" /><span>8. API Sandbox & cURL</span></div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">v7.0</span>
+              </button>
+              <button onClick={() => handleMobileToolClick(onOpenTsGenerator)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-blue-400 hover:bg-slate-800'
+              }`}>
+                <div className="flex items-center space-x-2.5"><Code2 className="w-4 h-4 text-blue-400" /><span>9. DTO ➔ TypeScript</span></div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400">v7.0</span>
+              </button>
+              <button onClick={() => handleMobileToolClick(onOpenChaos)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-rose-400 hover:bg-slate-800'
+              }`}>
+                <div className="flex items-center space-x-2.5"><Flame className="w-4 h-4 text-rose-400" /><span>10. Chaos Simulator</span></div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400">v7.0</span>
+              </button>
+              <button onClick={() => handleMobileToolClick(onOpenBlueprint)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-cyan-400 hover:bg-slate-800'
+              }`}>
+                <div className="flex items-center space-x-2.5"><Sparkles className="w-4 h-4 text-cyan-400" /><span>11. 4K C4 Blueprint</span></div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 border border-purple-500/20 text-purple-400">v7.0</span>
+              </button>
+
+              {/* Core Tools */}
+              <button onClick={() => handleMobileToolClick(onOpenReactRuntime)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-sky-400 hover:bg-slate-800'
+              }`}>
+                <div className="flex items-center space-x-2.5"><Activity className="w-4 h-4 text-sky-400" /><span>12. React 19 Runtime</span></div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/10 border border-sky-500/20 text-sky-400">Fiber</span>
               </button>
               <button onClick={() => handleMobileToolClick(onOpenRuntimeTracing)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900/60 border-slate-800 text-cyan-400 hover:bg-slate-800'
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-cyan-400 hover:bg-slate-800'
               }`}>
-                <div className="flex items-center space-x-2.5"><Activity className="w-4 h-4 text-cyan-400" /><span>2. Runtime Tracing Replay</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">v4.2</span>
+                <div className="flex items-center space-x-2.5"><Activity className="w-4 h-4 text-cyan-400" /><span>13. Runtime Tracing</span></div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">VCR</span>
               </button>
               <button onClick={() => handleMobileToolClick(onOpenApiMetrics)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900/60 border-slate-800 text-indigo-400 hover:bg-slate-800'
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-indigo-400 hover:bg-slate-800'
               }`}>
-                <div className="flex items-center space-x-2.5"><BarChart2 className="w-4 h-4 text-indigo-400" /><span>3. API Metrics Dashboard</span></div>
+                <div className="flex items-center space-x-2.5"><BarChart2 className="w-4 h-4 text-indigo-400" /><span>14. API Metrics</span></div>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">P95</span>
               </button>
               <button onClick={() => handleMobileToolClick(onOpenSequenceDiagram)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900/60 border-slate-800 text-amber-400 hover:bg-slate-800'
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-amber-400 hover:bg-slate-800'
               }`}>
-                <div className="flex items-center space-x-2.5"><Zap className="w-4 h-4 text-amber-400" /><span>4. Sequence Diagram</span></div>
+                <div className="flex items-center space-x-2.5"><Zap className="w-4 h-4 text-amber-400" /><span>15. Sequence Diagram</span></div>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400">7 Lanes</span>
               </button>
               <button onClick={() => handleMobileToolClick(onOpenLatencyHeatmap)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900/60 border-slate-800 text-orange-400 hover:bg-slate-800'
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-orange-400 hover:bg-slate-800'
               }`}>
-                <div className="flex items-center space-x-2.5"><Flame className="w-4 h-4 text-orange-400" /><span>5. 24h Latency Heatmap</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-orange-500/10 border border-orange-500/20 text-orange-400">Matrix</span>
+                <div className="flex items-center space-x-2.5"><Flame className="w-4 h-4 text-orange-400" /><span>16. Latency Heatmap</span></div>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-orange-500/10 border border-orange-500/20 text-orange-400">24h</span>
               </button>
               <button onClick={() => handleMobileToolClick(onOpenErDiagram)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900/60 border-slate-800 text-emerald-400 hover:bg-slate-800'
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-emerald-400 hover:bg-slate-800'
               }`}>
-                <div className="flex items-center space-x-2.5"><Database className="w-4 h-4 text-emerald-400" /><span>6. Database ERD Explorer</span></div>
+                <div className="flex items-center space-x-2.5"><Database className="w-4 h-4 text-emerald-400" /><span>17. ERD Explorer</span></div>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">Schema</span>
               </button>
               <button onClick={() => handleMobileToolClick(onOpenSecurityFlow)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900/60 border-slate-800 text-indigo-400 hover:bg-slate-800'
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-indigo-400 hover:bg-slate-800'
               }`}>
-                <div className="flex items-center space-x-2.5"><ShieldCheck className="w-4 h-4 text-indigo-400" /><span>7. Security Pipeline</span></div>
+                <div className="flex items-center space-x-2.5"><ShieldCheck className="w-4 h-4 text-indigo-400" /><span>18. Security Pipeline</span></div>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">JWT</span>
               </button>
               <button onClick={() => handleMobileToolClick(onOpenAiAssistant)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900/60 border-slate-800 text-sky-400 hover:bg-slate-800'
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-sky-400 hover:bg-slate-800'
               }`}>
-                <div className="flex items-center space-x-2.5"><Bot className="w-4 h-4 text-sky-400" /><span>8. AI Architecture Assistant</span></div>
+                <div className="flex items-center space-x-2.5"><Bot className="w-4 h-4 text-sky-400" /><span>19. AI Assistant</span></div>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/10 border border-sky-500/20 text-sky-400">Audit</span>
               </button>
               <button onClick={() => handleMobileToolClick(onOpenSqlExplorer)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900/60 border-slate-800 text-blue-400 hover:bg-slate-800'
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-blue-400 hover:bg-slate-800'
               }`}>
-                <div className="flex items-center space-x-2.5"><Database className="w-4 h-4 text-blue-400" /><span>9. Live SQL Explorer</span></div>
+                <div className="flex items-center space-x-2.5"><Database className="w-4 h-4 text-blue-400" /><span>20. Live SQL Explorer</span></div>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400">JPA</span>
               </button>
               <button onClick={() => handleMobileToolClick(onOpenDependencies)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900/60 border-slate-800 text-indigo-300 hover:bg-slate-800'
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-indigo-300 hover:bg-slate-800'
               }`}>
-                <div className="flex items-center space-x-2.5"><Package className="w-4 h-4 text-indigo-300" /><span>10. Dependencies</span></div>
+                <div className="flex items-center space-x-2.5"><Package className="w-4 h-4 text-indigo-300" /><span>21. Dependencies</span></div>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-300">Maven</span>
               </button>
               <button onClick={() => handleMobileToolClick(onOpenFileTree)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900/60 border-slate-800 text-cyan-300 hover:bg-slate-800'
+                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-cyan-300 hover:bg-slate-800'
               }`}>
-                <div className="flex items-center space-x-2.5"><FolderTree className="w-4 h-4 text-cyan-300" /><span>11. File Tree Visualizer</span></div>
+                <div className="flex items-center space-x-2.5"><FolderTree className="w-4 h-4 text-cyan-300" /><span>22. File Tree</span></div>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-300">5 Views</span>
               </button>
             </div>
