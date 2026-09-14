@@ -425,7 +425,7 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
                   {activeFeature?.endpoint}
                 </span>
               </div>
-              <ChevronDown className={`w-3.5 h-3.5 opacity-60 transition-transform ${isDropdownOpen ? 'rotate-180 text-pink-500' : ''}`} />
+              <ChevronDown className={`w-3.5 h-3.5 opacity-60 transition-transform ${isDropdownOpen ? 'rotate-180 text-sky-500' : ''}`} />
             </button>
 
             {/* 100% Solid Opaque Dropdown Menu */}
@@ -482,7 +482,7 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
                           setIsDropdownOpen(false);
                         }}
                         className={`w-full text-left p-3 flex items-start space-x-3 transition-colors font-mono ${
-                          isSel ? 'border-l-4 border-pink-500 font-bold' : ''
+                          isSel ? 'border-l-4 border-sky-500 font-bold bg-sky-500/10' : ''
                         }`}
                         style={{
                           backgroundColor: getDropdownItemBg(isSel),
@@ -522,11 +522,11 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
                   onClick={() => setActiveFeatureId(feat.id)}
                   className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-xl text-xs font-mono border transition-all ${
                     isSel
-                      ? 'border-pink-500 text-pink-500 font-bold shadow-md bg-pink-500/10'
+                      ? 'border-sky-500 text-sky-600 dark:text-sky-400 font-bold shadow-sm bg-sky-500/10'
                       : currentTheme === 'NEUMORPHIC'
                       ? 'bg-[#e0e5ec] text-[#2d3748] shadow-[inset_2px_2px_4px_#a3b1c6,inset_-2px_-2px_4px_#ffffff] border-white/60'
-                      : currentTheme === 'NORMAL'
-                      ? 'bg-slate-100 text-slate-800 border-slate-300'
+                      : currentTheme === 'NORMAL' || currentTheme === 'GLASSMORPHISM'
+                      ? 'bg-slate-100 text-slate-800 border-slate-300 hover:bg-slate-200'
                       : 'bg-slate-900/80 border-slate-800 text-slate-400 hover:text-slate-200'
                   }`}
                 >
@@ -539,7 +539,7 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
             {featureScenarios.length > 3 && (
               <button
                 onClick={() => setIsDropdownOpen(true)}
-                className="px-2.5 py-1 rounded-xl text-[10px] font-mono text-pink-500 bg-pink-500/10 border border-pink-500/30 hover:bg-pink-500/20 transition-all shrink-0 font-bold"
+                className="px-2.5 py-1 rounded-xl text-[10px] font-mono text-sky-600 dark:text-sky-400 bg-sky-500/10 border border-sky-500/20 hover:bg-sky-500/20 transition-all shrink-0 font-bold"
               >
                 +{featureScenarios.length - 3} More
               </button>
@@ -552,7 +552,7 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
           {/* Mode Switcher Segmented Control */}
           <div className={`flex items-center space-x-1 p-1 rounded-xl border ${
             currentTheme === 'NEUMORPHIC' ? 'bg-[#e0e5ec] border-[#c0cbdc] shadow-[inset_3px_3px_6px_#a3b1c6,inset_-3px_-3px_6px_#ffffff]' :
-            currentTheme === 'GLASSMORPHISM' ? 'bg-white/80 border-white text-slate-900' :
+            currentTheme === 'GLASSMORPHISM' ? 'bg-slate-100 border-slate-300 text-slate-900' :
             currentTheme === 'NORMAL' ? 'bg-slate-100 border-slate-300 text-slate-900' :
             'bg-slate-900 border-slate-800'
           }`}>
@@ -560,7 +560,7 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
               onClick={() => setViewMode('HLD_DIAGRAM')}
               className={`flex items-center space-x-1.5 px-3 py-1 rounded-lg text-xs font-semibold font-mono transition-all ${
                 viewMode === 'HLD_DIAGRAM'
-                  ? 'bg-pink-600 text-white shadow-md shadow-pink-600/30 font-bold'
+                  ? 'bg-sky-600 text-white shadow-sm font-bold'
                   : 'opacity-70 hover:opacity-100'
               }`}
             >
@@ -572,7 +572,7 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
               onClick={() => setViewMode('STEP_TIMELINE')}
               className={`flex items-center space-x-1.5 px-3 py-1 rounded-lg text-xs font-semibold font-mono transition-all ${
                 viewMode === 'STEP_TIMELINE'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30 font-bold'
+                  ? 'bg-indigo-600 text-white shadow-sm font-bold'
                   : 'opacity-70 hover:opacity-100'
               }`}
             >
@@ -585,7 +585,7 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white font-bold text-xs font-mono shadow-md shadow-pink-600/30"
+              className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs font-mono shadow-sm transition-all"
             >
               {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-white" />}
               <span>{isPlaying ? 'Pause' : 'Play Flow'}</span>
@@ -593,11 +593,11 @@ export const InteractiveFlowExplorer: React.FC<InteractiveFlowExplorerProps> = (
 
             <div className={`hidden sm:flex items-center space-x-1 text-xs font-mono px-2.5 py-1.5 rounded-xl border ${
               currentTheme === 'NEUMORPHIC' ? 'bg-[#e0e5ec] border-[#c0cbdc] text-[#2d3748]' :
-              currentTheme === 'GLASSMORPHISM' ? 'bg-white/80 border-white text-slate-900' :
+              currentTheme === 'GLASSMORPHISM' ? 'bg-white border-slate-300 text-slate-900' :
               currentTheme === 'NORMAL' ? 'bg-white border-slate-300 text-slate-900' :
               'bg-slate-900 border-slate-800 text-slate-300'
             }`}>
-              <span className="font-bold text-pink-500">{currentStepIndex + 1}</span>
+              <span className="font-bold text-sky-600 dark:text-sky-400">{currentStepIndex + 1}</span>
               <span className="opacity-40">/</span>
               <span className="opacity-70">{activeSteps.length}</span>
             </div>

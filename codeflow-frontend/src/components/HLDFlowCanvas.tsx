@@ -51,6 +51,8 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
 }) => {
   const [selectedBox, setSelectedBox] = useState<BoxNode | null>(null);
 
+  const isLight = currentTheme === 'NORMAL' || currentTheme === 'GLASSMORPHISM' || currentTheme === 'NEUMORPHIC';
+
   const fe = (Array.isArray(graphData.nodes) ? graphData.nodes : []).filter((n) => n.data.layer === 'FRONTEND');
   const ctrl = (Array.isArray(graphData.nodes) ? graphData.nodes : []).filter((n) => n.data.nodeType === 'SPRING_CONTROLLER');
   const svc = (Array.isArray(graphData.nodes) ? graphData.nodes : []).filter((n) => n.data.nodeType === 'SPRING_SERVICE');
@@ -65,7 +67,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
     label: n.data.label,
     sub: 'React Component SPA',
     iconType: 'client',
-    col: '#06b6d4',
+    col: '#0284c7',
     bg: '#083344',
     row: i,
     colIdx: 0,
@@ -79,7 +81,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
     label: 'React Client',
     sub: 'Browser SPA UI',
     iconType: 'client',
-    col: '#06b6d4',
+    col: '#0284c7',
     bg: '#083344',
     row: 0,
     colIdx: 0,
@@ -94,7 +96,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
     label: 'API Gateway',
     sub: 'Spring Security + JWT',
     iconType: 'gateway',
-    col: '#6366f1',
+    col: '#4f46e5',
     bg: '#1e1b4b',
     row: 0,
     colIdx: 1,
@@ -109,7 +111,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
     label: n.data.label,
     sub: n.data.endpointPath || '@RestController',
     iconType: 'controller',
-    col: '#3b82f6',
+    col: '#2563eb',
     bg: '#1e3a8a',
     row: i,
     colIdx: 2,
@@ -123,7 +125,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
     label: 'MainController',
     sub: '/api/v1/resource',
     iconType: 'controller',
-    col: '#3b82f6',
+    col: '#2563eb',
     bg: '#1e3a8a',
     row: 0,
     colIdx: 2,
@@ -138,7 +140,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
     label: n.data.label,
     sub: '@Service + @Transactional',
     iconType: 'service',
-    col: '#a855f7',
+    col: '#7c3aed',
     bg: '#3b0764',
     row: i,
     colIdx: 3,
@@ -152,7 +154,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
     label: 'BusinessService',
     sub: '@Service Business Layer',
     iconType: 'service',
-    col: '#a855f7',
+    col: '#7c3aed',
     bg: '#3b0764',
     row: 0,
     colIdx: 3,
@@ -167,7 +169,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
     label: n.data.label,
     sub: n.data.nodeType === 'SPRING_REPOSITORY' ? 'JpaRepository' : '@Entity Table',
     iconType: 'database',
-    col: '#f59e0b',
+    col: '#d97706',
     bg: '#451a03',
     row: i,
     colIdx: 4,
@@ -181,7 +183,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
     label: 'AppDatabase',
     sub: 'JpaRepository / PostgreSQL',
     iconType: 'database',
-    col: '#f59e0b',
+    col: '#d97706',
     bg: '#451a03',
     row: 0,
     colIdx: 4,
@@ -219,11 +221,11 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
   }
 
   const colLabels = [
-    { title: 'Clients', sub: 'React SPA / UI', icon: Smartphone, col: 'text-cyan-400' },
-    { title: 'Gateway', sub: 'Security & Router', icon: ShieldCheck, col: 'text-indigo-400' },
-    { title: 'Controllers', sub: 'REST Endpoints', icon: Cpu, col: 'text-blue-400' },
-    { title: 'Services', sub: 'Business Logic', icon: Layers, col: 'text-purple-400' },
-    { title: 'Persistence', sub: 'JPA & Databases', icon: Database, col: 'text-amber-400' },
+    { title: 'Clients', sub: 'React SPA / UI', icon: Smartphone, col: 'text-sky-500 dark:text-sky-400' },
+    { title: 'Gateway', sub: 'Security & Router', icon: ShieldCheck, col: 'text-indigo-500 dark:text-indigo-400' },
+    { title: 'Controllers', sub: 'REST Endpoints', icon: Cpu, col: 'text-blue-500 dark:text-blue-400' },
+    { title: 'Services', sub: 'Business Logic', icon: Layers, col: 'text-purple-500 dark:text-purple-400' },
+    { title: 'Persistence', sub: 'JPA & Databases', icon: Database, col: 'text-amber-500 dark:text-amber-400' },
   ];
 
   const getDataFlowSteps = (nodeType: string) => {
@@ -271,7 +273,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
       case 'NEUMORPHIC': return 'bg-[#e0e5ec] text-[#2d3748]';
       case 'GLASSMORPHISM': return 'bg-[#eef2f6] text-slate-900';
       case 'NORMAL': return 'bg-[#f8fafc] text-slate-900';
-      default: return 'bg-[#0a0f1c] text-slate-100';
+      default: return 'bg-[#090d16] text-slate-100';
     }
   };
 
@@ -298,14 +300,20 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
             return (
               <div key={ci} className="flex flex-col gap-5 items-center w-full relative">
                 {/* Sleek Column Header */}
-                <div className="w-full pb-3 mb-1 border-b border-slate-700/30 flex items-center justify-between px-1">
+                <div className={`w-full pb-3 mb-1 border-b flex items-center justify-between px-1 ${
+                  isLight ? 'border-slate-300/80' : 'border-slate-700/40'
+                }`}>
                   <div className="flex items-center space-x-2">
                     <HeaderIcon className={`w-4 h-4 ${colMeta.col}`} />
-                    <span className="font-mono text-xs font-bold uppercase tracking-wider text-slate-300">
+                    <span className={`font-mono text-xs font-bold uppercase tracking-wider ${
+                      isLight ? 'text-slate-800' : 'text-slate-300'
+                    }`}>
                       {colMeta.title}
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono text-slate-500">
+                  <span className={`text-[10px] font-mono ${
+                    isLight ? 'text-slate-500 font-semibold' : 'text-slate-500'
+                  }`}>
                     {colBoxes.length} {colBoxes.length === 1 ? 'node' : 'nodes'}
                   </span>
                 </div>
@@ -320,22 +328,18 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                       onClick={() => setSelectedBox(isSel ? null : b)}
                       className={`relative w-full max-w-[220px] mx-auto p-4 rounded-xl cursor-pointer transition-all duration-200 group ${
                         isSel
-                          ? 'ring-2 ring-indigo-500 shadow-[0_0_25px_rgba(99,102,241,0.35)] scale-[1.02]'
-                          : 'hover:scale-[1.01] hover:shadow-lg'
+                          ? 'ring-2 ring-indigo-500 shadow-xl scale-[1.02]'
+                          : 'hover:scale-[1.01] hover:shadow-md'
                       } ${
                         currentTheme === 'NEUMORPHIC'
                           ? 'bg-[#e0e5ec] shadow-[6px_6px_12px_#a3b1c6,-6px_-6px_12px_#ffffff] border border-white/60 text-slate-800'
                           : currentTheme === 'GLASSMORPHISM'
-                          ? 'bg-white/80 backdrop-blur-xl border border-white/80 shadow-md text-slate-900'
+                          ? 'bg-white/90 backdrop-blur-xl border border-white/90 shadow-sm text-slate-900'
                           : currentTheme === 'NORMAL'
                           ? 'bg-white border border-slate-200 shadow-sm text-slate-900'
                           : 'bg-[#0f172a]/95 border border-slate-800/90 text-slate-100 hover:border-slate-700'
                       }`}
-                      style={
-                        currentTheme === 'NIGHT'
-                          ? { borderLeft: `3px solid ${b.col}` }
-                          : { borderLeft: `3px solid ${b.col}` }
-                      }
+                      style={{ borderLeft: `3px solid ${b.col}` }}
                     >
                       {/* Top Meta Row: Badge & Type */}
                       <div className="flex items-center justify-between gap-2 mb-2.5">
@@ -358,12 +362,16 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                       </div>
 
                       {/* Main Node Label */}
-                      <div className="font-mono text-xs font-bold leading-tight truncate mb-1 text-slate-100 group-hover:text-indigo-300 transition-colors">
+                      <div className={`font-mono text-xs font-bold leading-tight truncate mb-1 transition-colors ${
+                        isLight ? 'text-slate-900 group-hover:text-indigo-600' : 'text-slate-100 group-hover:text-indigo-300'
+                      }`}>
                         {b.label}
                       </div>
 
                       {/* Subtitle / Path */}
-                      <div className="font-mono text-[10px] text-slate-400 truncate opacity-80">
+                      <div className={`font-mono text-[10px] truncate ${
+                        isLight ? 'text-slate-600' : 'text-slate-400 opacity-80'
+                      }`}>
                         {b.sub}
                       </div>
 
@@ -381,13 +389,13 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                               <div
                                 className={`flex-1 h-[2px] ${
                                   isActive
-                                    ? 'bg-gradient-to-r from-pink-500 to-indigo-500 shadow-[0_0_10px_#ec4899] animate-pulse'
-                                    : 'bg-slate-700/70'
+                                    ? 'bg-sky-500 shadow-[0_0_8px_#0ea5e9] animate-pulse'
+                                    : isLight ? 'bg-slate-300' : 'bg-slate-700/70'
                                 }`}
                               />
                               <div
                                 className={`w-2 h-2 ${
-                                  isActive ? 'border-pink-500' : 'border-slate-500'
+                                  isActive ? 'border-sky-500' : isLight ? 'border-slate-400' : 'border-slate-500'
                                 } border-t-2 border-r-2 transform rotate-45 -ml-1`}
                               />
                               {arr.step && (
@@ -395,7 +403,9 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                                   <div
                                     className={`w-5 h-5 rounded-full flex items-center justify-center font-mono text-[10px] font-bold shadow-md ${
                                       isActive
-                                        ? 'bg-gradient-to-r from-pink-500 to-indigo-600 text-white scale-110 ring-2 ring-white/50 animate-bounce'
+                                        ? 'bg-sky-500 text-white scale-110 ring-2 ring-sky-300 animate-bounce'
+                                        : isLight
+                                        ? 'bg-white text-slate-800 border border-slate-300'
                                         : 'bg-slate-900 text-slate-300 border border-slate-700'
                                     }`}
                                   >
@@ -423,14 +433,16 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
             currentTheme === 'NEUMORPHIC'
               ? 'bg-[#e0e5ec] border-[#c0cbdc] text-[#2d3748] shadow-[inset_4px_4px_8px_#a3b1c6]'
               : currentTheme === 'GLASSMORPHISM'
-              ? 'bg-white/95 backdrop-blur-2xl border-white text-slate-900 shadow-2xl'
+              ? 'bg-white border-slate-200 text-slate-900 shadow-2xl'
               : currentTheme === 'NORMAL'
               ? 'bg-white border-slate-200 text-slate-900 shadow-2xl'
               : 'bg-[#0f172a] border-slate-800 text-slate-100 shadow-2xl'
           }`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+          <div className={`flex items-center justify-between border-b pb-4 ${
+            isLight ? 'border-slate-200' : 'border-slate-800'
+          }`}>
             <div className="flex items-center space-x-3">
               <div
                 className="p-2 rounded-xl flex items-center justify-center"
@@ -439,13 +451,17 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 {renderIcon(selectedBox.iconType, selectedBox.col)}
               </div>
               <div>
-                <h3 className="font-bold text-sm font-mono text-slate-100">{selectedBox.label}</h3>
+                <h3 className={`font-bold text-sm font-mono ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                  {selectedBox.label}
+                </h3>
                 <span className="text-[11px] font-mono text-slate-400">{selectedBox.badge}</span>
               </div>
             </div>
             <button
               onClick={() => setSelectedBox(null)}
-              className="p-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+              className={`p-1.5 rounded-lg transition-colors ${
+                isLight ? 'bg-slate-100 hover:bg-slate-200 text-slate-600' : 'bg-slate-800/60 hover:bg-slate-700 text-slate-400 hover:text-white'
+              }`}
             >
               <X className="w-4 h-4" />
             </button>
@@ -453,7 +469,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
 
           {/* Section: Execution Flow Path */}
           <div>
-            <h4 className="text-xs font-mono font-bold uppercase tracking-wider mb-2.5 flex items-center space-x-1.5 text-indigo-400">
+            <h4 className="text-xs font-mono font-bold uppercase tracking-wider mb-2.5 flex items-center space-x-1.5 text-sky-500 dark:text-sky-400">
               <Zap className="w-3.5 h-3.5" />
               <span>Data Flow Execution Path</span>
             </h4>
@@ -461,7 +477,11 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
               {selDataFlow.map((st, i) => (
                 <div
                   key={i}
-                  className="text-xs font-mono p-3 rounded-xl border border-slate-800/80 bg-slate-900/60 leading-relaxed text-slate-300"
+                  className={`text-xs font-mono p-3 rounded-xl border leading-relaxed ${
+                    isLight
+                      ? 'border-slate-200 bg-slate-50 text-slate-700'
+                      : 'border-slate-800/80 bg-slate-900/60 text-slate-300'
+                  }`}
                 >
                   {st}
                 </div>
@@ -472,7 +492,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
           {/* Section: Annotations */}
           {selAnnotations.length > 0 && (
             <div>
-              <h4 className="text-xs font-mono font-bold uppercase tracking-wider mb-2.5 flex items-center space-x-1.5 text-pink-400">
+              <h4 className="text-xs font-mono font-bold uppercase tracking-wider mb-2.5 flex items-center space-x-1.5 text-indigo-500 dark:text-indigo-400">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Framework Annotations</span>
               </h4>
@@ -480,10 +500,14 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 {selAnnotations.map((ann, i) => (
                   <div
                     key={i}
-                    className="p-3 rounded-xl border border-slate-800/80 bg-slate-900/60 space-y-1"
+                    className={`p-3 rounded-xl border space-y-1 ${
+                      isLight
+                        ? 'border-slate-200 bg-slate-50'
+                        : 'border-slate-800/80 bg-slate-900/60'
+                    }`}
                   >
-                    <span className="text-xs font-mono font-bold text-pink-400 block">{ann.name}</span>
-                    <p className="text-xs text-slate-300 leading-relaxed">{ann.whyUsed}</p>
+                    <span className="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 block">{ann.name}</span>
+                    <p className={`text-xs leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>{ann.whyUsed}</p>
                   </div>
                 ))}
               </div>
@@ -493,7 +517,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
           {/* Section: Interview Q&A */}
           {selQA.length > 0 && (
             <div>
-              <h4 className="text-xs font-mono font-bold uppercase tracking-wider mb-2.5 flex items-center space-x-1.5 text-amber-400">
+              <h4 className="text-xs font-mono font-bold uppercase tracking-wider mb-2.5 flex items-center space-x-1.5 text-amber-500 dark:text-amber-400">
                 <BookOpen className="w-3.5 h-3.5" />
                 <span>Interview Deep Dive</span>
               </h4>
@@ -501,10 +525,14 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 {selQA.map((qa, i) => (
                   <div
                     key={i}
-                    className="p-3 rounded-xl border border-slate-800/80 bg-slate-900/60 space-y-1.5"
+                    className={`p-3 rounded-xl border space-y-1.5 ${
+                      isLight
+                        ? 'border-slate-200 bg-slate-50'
+                        : 'border-slate-800/80 bg-slate-900/60'
+                    }`}
                   >
-                    <span className="text-xs font-mono font-bold text-amber-300 block">{qa.question}</span>
-                    <p className="text-xs text-slate-300 leading-relaxed">{qa.answer}</p>
+                    <span className={`text-xs font-mono font-bold block ${isLight ? 'text-amber-700' : 'text-amber-300'}`}>{qa.question}</span>
+                    <p className={`text-xs leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>{qa.answer}</p>
                   </div>
                 ))}
               </div>
