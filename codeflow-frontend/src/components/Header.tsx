@@ -164,7 +164,10 @@ export const Header: React.FC<HeaderProps> = ({
         {searchResults && searchResults.length > 0 && currentProjectId && (
           <div
             className={`absolute top-full mt-2 w-full border rounded-xl shadow-2xl overflow-hidden max-h-64 overflow-y-auto ${getDropdownStyle()}`}
-            style={{ zIndex: 999999 }}
+            style={{
+              backgroundColor: currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : isLight ? '#ffffff' : '#0b0f19',
+              zIndex: 999999,
+            }}
           >
             {searchResults.map((node) => (
               <button
@@ -200,7 +203,10 @@ export const Header: React.FC<HeaderProps> = ({
           {isThemeOpen && (
             <div
               className={`absolute right-0 mt-2 w-48 border rounded-xl shadow-2xl overflow-hidden py-1.5 ${getDropdownStyle()}`}
-              style={{ zIndex: 999999 }}
+              style={{
+                backgroundColor: currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : isLight ? '#ffffff' : '#0b0f19',
+                zIndex: 999999,
+              }}
             >
               <button onClick={() => { onThemeChange('NIGHT'); setIsThemeOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2 text-xs font-mono font-medium ${getItemHoverClass()}`}>
                 <Moon className="w-3.5 h-3.5 text-indigo-400" />
@@ -242,7 +248,10 @@ export const Header: React.FC<HeaderProps> = ({
             {isToolsOpen && (
               <div
                 className={`absolute right-0 mt-2 w-64 border rounded-xl shadow-2xl overflow-hidden py-1.5 ${getDropdownStyle()}`}
-                style={{ zIndex: 999999 }}
+                style={{
+                  backgroundColor: currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : isLight ? '#ffffff' : '#0b0f19',
+                  zIndex: 999999,
+                }}
               >
                 <div className={`px-3.5 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider border-b ${
                   isLight ? 'text-slate-500 border-slate-200' : 'text-slate-400 border-slate-800'
@@ -356,7 +365,10 @@ export const Header: React.FC<HeaderProps> = ({
       {isMobileMenuOpen && (
         <div
           className={`absolute top-16 left-0 right-0 border-b p-4 flex flex-col space-y-3 md:hidden shadow-2xl overflow-y-auto max-h-[85vh] custom-scrollbar ${getDropdownStyle()}`}
-          style={{ zIndex: 999999 }}
+          style={{
+            backgroundColor: currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : isLight ? '#ffffff' : '#0b0f19',
+            zIndex: 999999,
+          }}
         >
           {/* Theme Mode Selector */}
           <div className={`flex items-center justify-between p-2.5 rounded-xl border ${
