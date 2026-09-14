@@ -93,7 +93,7 @@ CodeFlow Studio integrates three modern frontend and interaction design philosop
 ## 📱 Mobile Responsiveness & 1-Tap Access
 
 - **⚡ Mobile 1-Tap Quick-Launch Tools Grid**: 2-column launcher grid displayed directly on mobile screens (<640px).
-- **🍔 Complete Mobile Drawer Navigation**: Slide-out drawer (`<Menu />`) with all 12 tools directly launchable into Demo mode.
+- **🍔 Complete Mobile Drawer Navigation**: Slide-out drawer (`<Menu />`) with all 23 tools directly launchable into Demo mode.
 - **🎨 Contrast-Safe Responsive Layout**: Compact padding (`p-3.5`) and responsive typography across 360px–430px viewports.
 
 ---
@@ -142,11 +142,11 @@ npm run dev
 | **v4.0** | **React 19 + Vite 8** | Platform upgrade to React 19, Vite 8 (Rolldown), TypeScript 7, Lucide React 1.x. |
 | **v4.2** | **Handcrafted UI & Workbench** | Emil Kowalski spring motion, Impeccable obsidian blueprint canvas, Taste Skill 5-view live interactive workbench. |
 | **v5.0** | **React Runtime Explorer** | Virtual DOM Fiber tree reconciliation, Hook state mutation timeline, and Axios request/response interceptors. |
-| **v6.0 (Current)** | **AI Explanations & Spring AI RAG** | Integrated RAG engine powered by Spring AI (Gemini / OpenAI / Ollama) for automated architecture document generation. |
-| **v7.0** | **VS Code Extension** | Native IDE side-panel extension for direct visual execution flow exploration inside VS Code. |
-| **v8.0** | **Chrome Extension** | Browser extension for GitHub repository pages to view interactive flow maps directly on github.com. |
-| **v9.0** | **Team Collaboration** | Multi-user shared workspaces, live architectural annotations, and team review comments. |
-| **v10.0** | **Enterprise Desktop** | Electron / Tauri Desktop app with 100% offline analysis (zero cloud code uploads). |
+| **v6.0** | **AI Explanations & Spring AI RAG** | Integrated RAG engine powered by Spring AI (Gemini / OpenAI / Ollama) for automated architecture document generation. |
+| **v7.0** | **Enterprise Architecture Suite** | Global Command Palette (`Ctrl+K`), Health Scorecard HUD, REST API Sandbox, DTO ➔ TypeScript Generator, Chaos Simulator, 4K C4 Blueprint Exporter. |
+| **v8.0 (Current)** | **Cloud, DevOps & Voice Suite** | Git PR Drift Detection, Automated Test Generator (RestAssured/Playwright), Cloud IaC & Docker Synthesizer, Event Streams (Kafka/WS), Voice Copilot, OTel Distributed Tracing. |
+| **v9.0 (Upcoming)** | **IDE Sidecar & Browser Extensions** | Native VS Code Extension side-panel & Chrome Extension for GitHub repositories to view interactive flow maps directly on github.com. |
+| **v10.0 (Future)** | **Enterprise Desktop & Live Collab** | Multi-user shared live workspaces with real-time WebRTC architecture annotations, plus Electron / Tauri Desktop app with 100% offline air-gapped analysis. |
 
 ---
 
