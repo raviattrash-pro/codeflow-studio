@@ -3,7 +3,8 @@ import axios from 'axios';
 import {
   X, Sparkles, Bot, Send, ShieldCheck, Database, Layers, CheckCircle2,
   Copy, Check, Zap, Package, Code2, Cpu, Trash2, Download, Server,
-  Settings, Key, Eye, EyeOff, RotateCcw, ExternalLink
+  Settings, Key, Eye, EyeOff, RotateCcw, ExternalLink, CheckCircle,
+  ChevronRight, ArrowRight
 } from 'lucide-react';
 import { DEMO_PROJECT_DATA } from '../utils/demoData';
 import { ThemeMode } from './Header';
@@ -35,10 +36,29 @@ const DEFAULT_AI_CONFIG: UserAiConfig = {
   ollamaUrl: 'http://localhost:11434',
 };
 
-const MODEL_OPTIONS: Record<string, string[]> = {
-  gemini: ['gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-1.0-pro'],
-  openai: ['gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo'],
-  ollama: ['codellama', 'deepseek-coder', 'llama3', 'mistral', 'qwen2.5-coder'],
+const PROVIDER_TABS = [
+  { id: 'free', name: 'Free Built-in AI', emoji: '⚡', desc: 'No API key • Instant AST analysis', badge: 'Default' },
+  { id: 'gemini', name: 'Google Gemini', emoji: '🔮', desc: 'Gemini 2.0 Flash / Pro', badge: 'Free API Tier' },
+  { id: 'openai', name: 'OpenAI', emoji: '🧠', desc: 'GPT-4o Mini / GPT-4o', badge: 'BYO Key' },
+  { id: 'ollama', name: 'Local Ollama', emoji: '🦙', desc: '100% Offline / Private', badge: 'Localhost' },
+];
+
+const MODEL_OPTIONS: Record<string, { id: string; name: string; tag: string }[]> = {
+  gemini: [
+    { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', tag: 'Fast & Smart (Recommended)' },
+    { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', tag: 'Deep Reasoning' },
+    { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash', tag: 'Ultra Low Latency' },
+  ],
+  openai: [
+    { id: 'gpt-4o-mini', name: 'GPT-4o Mini', tag: 'Fast & Affordable (Recommended)' },
+    { id: 'gpt-4o', name: 'GPT-4o', tag: 'Flagship Intelligence' },
+    { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', tag: 'Legacy' },
+  ],
+  ollama: [
+    { id: 'codellama', name: 'CodeLlama', tag: 'Meta Code Model' },
+    { id: 'deepseek-coder', name: 'DeepSeek Coder', tag: 'Specialized for Code' },
+    { id: 'llama3', name: 'Llama 3', tag: 'General Purpose' },
+  ],
 };
 
 const QUICK_AUDITS: { label: string; query: string; type: AiAnalysisType; color: string; emoji: string }[] = [
@@ -331,12 +351,12 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
   };
 
   const activeBadge = aiConfig.provider === 'free' || !aiConfig.apiKey.trim()
-    ? { label: '⚡ Free Built-in AI (Default)', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' }
+    ? { label: '⚡ Free Built-in AI (Default)', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' }
     : aiConfig.provider === 'gemini'
-    ? { label: `🔮 Gemini · ${aiConfig.model}`, color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' }
+    ? { label: `🔮 Gemini · ${aiConfig.model}`, color: 'text-blue-400 bg-blue-500/10 border-blue-500/30' }
     : aiConfig.provider === 'openai'
-    ? { label: `🧠 OpenAI · ${aiConfig.model}`, color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' }
-    : { label: `🦙 Ollama · ${aiConfig.model}`, color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' };
+    ? { label: `🧠 OpenAI · ${aiConfig.model}`, color: 'text-purple-400 bg-purple-500/10 border-purple-500/30' }
+    : { label: `🦙 Ollama · ${aiConfig.model}`, color: 'text-amber-400 bg-amber-500/10 border-amber-500/30' };
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -381,17 +401,17 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
                 setTempConfig(aiConfig);
                 setIsSettingsOpen(!isSettingsOpen);
               }}
-              className={`flex items-center space-x-1 px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all ${
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all shadow-sm ${
                 isSettingsOpen
-                  ? 'bg-purple-500/20 text-purple-300 border-purple-500/40 shadow-sm'
+                  ? 'bg-purple-600 text-white border-purple-500 shadow-purple-900/30'
                   : isLight
                   ? 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'
-                  : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-800'
+                  : 'bg-slate-900 hover:bg-slate-800 text-slate-200 border-slate-700'
               }`}
               title="Change AI Model & Configure API Key"
             >
               <Settings className="w-3.5 h-3.5" />
-              <span>Model &amp; Key</span>
+              <span>Model &amp; Key Settings</span>
             </button>
 
             {messages.length > 0 && (
@@ -413,13 +433,13 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
         {/* ═══ Model & API Key Settings Drawer ═══ */}
         {isSettingsOpen && (
           <div className={`p-5 border-b space-y-4 shrink-0 animate-in slide-in-from-top-3 duration-200 ${
-            isLight ? 'bg-purple-50/80 border-purple-200 text-slate-900' : 'bg-slate-900/95 border-purple-500/30 text-slate-100'
+            isLight ? 'bg-slate-100 border-slate-300 text-slate-900' : 'bg-[#070b14] border-purple-500/30 text-slate-100'
           }`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Key className="w-4 h-4 text-purple-400" />
-                <h4 className="text-xs font-bold font-mono uppercase tracking-wider">
-                  AI Model &amp; Provider Settings
+                <h4 className="text-xs font-bold font-mono uppercase tracking-wider text-purple-400">
+                  Select AI Provider &amp; Model
                 </h4>
               </div>
               <button
@@ -431,152 +451,203 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {/* Provider selector */}
-              <div>
-                <label className="block text-[11px] font-bold font-mono mb-1 text-slate-400">
-                  AI Engine / Provider
-                </label>
-                <select
-                  value={tempConfig.provider}
-                  onChange={(e) => {
-                    const p = e.target.value as any;
-                    const defModel = MODEL_OPTIONS[p]?.[0] || 'gemini-2.0-flash';
-                    setTempConfig({ ...tempConfig, provider: p, model: defModel });
-                  }}
-                  className={`w-full px-3 py-2 rounded-xl border text-xs font-mono outline-none ${
-                    isLight ? 'bg-white border-slate-300 text-slate-900' : 'bg-slate-950 border-slate-800 text-slate-200'
-                  }`}
-                >
-                  <option value="free">⚡ Free Built-in AI (No Key Needed)</option>
-                  <option value="gemini">🔮 Google Gemini</option>
-                  <option value="openai">🧠 OpenAI (GPT-4o)</option>
-                  <option value="ollama">🦙 Ollama (Local / Offline)</option>
-                </select>
+            {/* 1. Provider Tab Cards */}
+            <div>
+              <label className={`block text-[11px] font-bold font-mono mb-2 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
+                1. Choose AI Provider
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                {PROVIDER_TABS.map((tab) => {
+                  const isSelected = tempConfig.provider === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => {
+                        const defModel = MODEL_OPTIONS[tab.id]?.[0]?.id || 'gemini-2.0-flash';
+                        setTempConfig({ ...tempConfig, provider: tab.id as any, model: defModel });
+                      }}
+                      className={`p-3 rounded-2xl border text-left transition-all relative ${
+                        isSelected
+                          ? isLight
+                            ? 'bg-purple-50 border-purple-500 ring-2 ring-purple-400/40 text-purple-950 shadow-sm'
+                            : 'bg-purple-950/40 border-purple-500 ring-2 ring-purple-500/40 text-white shadow-md'
+                          : isLight
+                          ? 'bg-white border-slate-300 hover:border-slate-400 text-slate-800'
+                          : 'bg-slate-900/80 border-slate-800 hover:border-slate-700 text-slate-200'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-base">{tab.emoji}</span>
+                        <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-bold ${
+                          isSelected
+                            ? 'bg-purple-500 text-white'
+                            : isLight
+                            ? 'bg-slate-200 text-slate-700'
+                            : 'bg-slate-800 text-slate-400'
+                        }`}>
+                          {tab.badge}
+                        </span>
+                      </div>
+                      <div className="text-xs font-bold font-mono">{tab.name}</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5 truncate">{tab.desc}</div>
+                    </button>
+                  );
+                })}
               </div>
+            </div>
 
-              {/* Model selector */}
+            {/* 2. Model Selection Pills & Credentials */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+              {/* Model selection */}
               <div>
-                <label className="block text-[11px] font-bold font-mono mb-1 text-slate-400">
-                  Model Version
+                <label className={`block text-[11px] font-bold font-mono mb-1.5 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
+                  2. Select Model Version
                 </label>
                 {tempConfig.provider === 'free' ? (
-                  <input
-                    disabled
-                    value="Built-in AST RAG Intelligence"
-                    className={`w-full px-3 py-2 rounded-xl border text-xs font-mono opacity-60 ${
-                      isLight ? 'bg-slate-100 border-slate-200 text-slate-600' : 'bg-slate-950 border-slate-800 text-slate-400'
-                    }`}
-                  />
+                  <div className={`p-3 rounded-xl border text-xs font-mono ${
+                    isLight ? 'bg-white border-slate-300 text-emerald-700' : 'bg-slate-900 border-slate-800 text-emerald-400'
+                  }`}>
+                    ⚡ Built-in CodeFlow AST RAG Engine (Zero Setup / Free)
+                  </div>
                 ) : (
-                  <select
-                    value={tempConfig.model}
-                    onChange={(e) => setTempConfig({ ...tempConfig, model: e.target.value })}
-                    className={`w-full px-3 py-2 rounded-xl border text-xs font-mono outline-none ${
-                      isLight ? 'bg-white border-slate-300 text-slate-900' : 'bg-slate-950 border-slate-800 text-slate-200'
-                    }`}
-                  >
-                    {(MODEL_OPTIONS[tempConfig.provider] || []).map((m) => (
-                      <option key={m} value={m}>{m}</option>
-                    ))}
-                  </select>
+                  <div className="space-y-1.5">
+                    {(MODEL_OPTIONS[tempConfig.provider] || []).map((m) => {
+                      const isSelected = tempConfig.model === m.id;
+                      return (
+                        <button
+                          key={m.id}
+                          type="button"
+                          onClick={() => setTempConfig({ ...tempConfig, model: m.id })}
+                          className={`w-full p-2.5 rounded-xl border text-left flex items-center justify-between text-xs font-mono transition-all ${
+                            isSelected
+                              ? isLight
+                                ? 'bg-purple-100 border-purple-500 text-purple-900 font-bold'
+                                : 'bg-purple-950/60 border-purple-500 text-purple-200 font-bold'
+                              : isLight
+                              ? 'bg-white border-slate-300 hover:bg-slate-50 text-slate-800'
+                              : 'bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-300'
+                          }`}
+                        >
+                          <span>{m.name}</span>
+                          <span className="text-[10px] text-slate-400">{m.tag}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 )}
               </div>
 
               {/* API Key or Ollama URL */}
               <div>
-                <label className="block text-[11px] font-bold font-mono mb-1 text-slate-400">
-                  {tempConfig.provider === 'ollama' ? 'Ollama Base URL' : 'API Key'}
+                <label className={`block text-[11px] font-bold font-mono mb-1.5 ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
+                  3. {tempConfig.provider === 'ollama' ? 'Ollama Host URL' : tempConfig.provider === 'free' ? 'Authentication' : 'Your API Key'}
                 </label>
+
                 {tempConfig.provider === 'free' ? (
-                  <input
-                    disabled
-                    value="Zero setup required"
-                    className={`w-full px-3 py-2 rounded-xl border text-xs font-mono opacity-60 ${
-                      isLight ? 'bg-slate-100 border-slate-200 text-slate-600' : 'bg-slate-950 border-slate-800 text-slate-400'
-                    }`}
-                  />
+                  <div className={`p-3 rounded-xl border text-xs font-mono ${
+                    isLight ? 'bg-white border-slate-300 text-slate-600' : 'bg-slate-900 border-slate-800 text-slate-400'
+                  }`}>
+                    ✅ No API key required. Queries are analyzed locally using parsed project AST.
+                  </div>
                 ) : tempConfig.provider === 'ollama' ? (
-                  <input
-                    type="text"
-                    placeholder="http://localhost:11434"
-                    value={tempConfig.ollamaUrl}
-                    onChange={(e) => setTempConfig({ ...tempConfig, ollamaUrl: e.target.value })}
-                    className={`w-full px-3 py-2 rounded-xl border text-xs font-mono outline-none ${
-                      isLight ? 'bg-white border-slate-300 text-slate-900' : 'bg-slate-950 border-slate-800 text-slate-200'
-                    }`}
-                  />
-                ) : (
-                  <div className="relative">
+                  <div className="space-y-2">
                     <input
-                      type={showApiKey ? 'text' : 'password'}
-                      placeholder={tempConfig.provider === 'gemini' ? 'AIzaSy...' : 'sk-proj-...'}
-                      value={tempConfig.apiKey}
-                      onChange={(e) => setTempConfig({ ...tempConfig, apiKey: e.target.value })}
-                      className={`w-full pl-3 pr-8 py-2 rounded-xl border text-xs font-mono outline-none ${
-                        isLight ? 'bg-white border-slate-300 text-slate-900' : 'bg-slate-950 border-slate-800 text-slate-200'
+                      type="text"
+                      placeholder="http://localhost:11434"
+                      value={tempConfig.ollamaUrl}
+                      onChange={(e) => setTempConfig({ ...tempConfig, ollamaUrl: e.target.value })}
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-mono outline-none ${
+                        isLight
+                          ? 'bg-white border-slate-300 text-slate-900 focus:border-purple-500'
+                          : 'bg-slate-900 border-slate-700 text-white focus:border-purple-500'
                       }`}
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowApiKey(!showApiKey)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
-                    >
-                      {showApiKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                    </button>
+                    <p className="text-[10px] text-slate-400 font-mono">
+                      Make sure Ollama is running: <code className="text-purple-400">ollama serve</code>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <input
+                        type={showApiKey ? 'text' : 'password'}
+                        placeholder={tempConfig.provider === 'gemini' ? 'AIzaSy...' : 'sk-proj-...'}
+                        value={tempConfig.apiKey}
+                        onChange={(e) => setTempConfig({ ...tempConfig, apiKey: e.target.value })}
+                        className={`w-full pl-3.5 pr-9 py-2.5 rounded-xl border text-xs font-mono outline-none ${
+                          isLight
+                            ? 'bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-purple-500'
+                            : 'bg-slate-900 border-slate-700 text-white placeholder-slate-500 focus:border-purple-500'
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowApiKey(!showApiKey)}
+                        className={`absolute right-3 top-1/2 -translate-y-1/2 ${isLight ? 'text-slate-500 hover:text-slate-800' : 'text-slate-400 hover:text-white'}`}
+                      >
+                        {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] font-mono">
+                      {tempConfig.provider === 'gemini' && (
+                        <a
+                          href="https://aistudio.google.com/app/apikey"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-blue-500 hover:underline flex items-center space-x-1 font-semibold"
+                        >
+                          <span>Get Free Gemini API Key from Google AI Studio</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                      {tempConfig.provider === 'openai' && (
+                        <a
+                          href="https://platform.openai.com/api-keys"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-emerald-500 hover:underline flex items-center space-x-1 font-semibold"
+                        >
+                          <span>Get OpenAI API Key from Platform</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Provider helper links & action */}
-            <div className="flex items-center justify-between pt-1">
-              <div className="text-[11px] font-mono text-slate-400 flex items-center space-x-3">
-                {tempConfig.provider === 'gemini' && (
-                  <a
-                    href="https://aistudio.google.com/app/apikey"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-blue-400 hover:underline flex items-center space-x-1"
-                  >
-                    <span>Get Free Gemini API Key from Google AI Studio</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                )}
-                {tempConfig.provider === 'openai' && (
-                  <a
-                    href="https://platform.openai.com/api-keys"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-emerald-400 hover:underline flex items-center space-x-1"
-                  >
-                    <span>Get OpenAI API Key from OpenAI Platform</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                )}
-                {tempConfig.provider === 'ollama' && (
-                  <span>Run `ollama run ${tempConfig.model || 'codellama'}` locally on your machine.</span>
-                )}
-                {tempConfig.provider === 'free' && (
-                  <span>💡 Free Built-in AI generates answers using CodeFlow AST static context.</span>
+            {/* Bottom Actions */}
+            <div className={`flex items-center justify-between pt-3 border-t ${isLight ? 'border-slate-300' : 'border-slate-800'}`}>
+              <div className="text-xs text-slate-400 font-mono">
+                {tempConfig.provider === 'free' || !tempConfig.apiKey.trim() ? (
+                  <span className="text-emerald-500 font-semibold">⚡ Active Mode: Free Built-in AI</span>
+                ) : (
+                  <span className="text-purple-400 font-semibold">
+                    Configuring: {tempConfig.provider.toUpperCase()} ({tempConfig.model})
+                  </span>
                 )}
               </div>
 
               <div className="flex items-center space-x-2">
                 <button
+                  type="button"
                   onClick={() => setIsSettingsOpen(false)}
-                  className={`px-3 py-1.5 rounded-xl border text-xs font-mono ${
-                    isLight ? 'hover:bg-slate-100 border-slate-300 text-slate-700' : 'hover:bg-slate-800 border-slate-700 text-slate-300'
+                  className={`px-3.5 py-1.5 rounded-xl border text-xs font-mono font-semibold ${
+                    isLight ? 'bg-white hover:bg-slate-200 border-slate-300 text-slate-700' : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300'
                   }`}
                 >
                   Cancel
                 </button>
                 <button
+                  type="button"
                   onClick={handleSaveConfig}
                   className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold font-mono shadow-md flex items-center space-x-1.5"
                 >
                   <Check className="w-3.5 h-3.5" />
-                  <span>Apply &amp; Save</span>
+                  <span>Apply &amp; Save Settings</span>
                 </button>
               </div>
             </div>

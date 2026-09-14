@@ -524,3 +524,29 @@ button:active, .btn-tactile:active {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.45);
 }
+
+/* High-contrast form elements across all themes */
+select, option {
+  background-color: #0d1527;
+  color: #f1f5f9;
+}
+
+[data-theme="NORMAL"] select, [data-theme="NORMAL"] option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+[data-theme="NIGHT"] select, [data-theme="NIGHT"] option {
+  background-color: #0d1527 !important;
+  color: #f1f5f9 !important;
+}
+
+[data-theme="GLASSMORPHISM"] select, [data-theme="GLASSMORPHISM"] option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+[data-theme="NEUMORPHIC"] select, [data-theme="NEUMORPHIC"] option {
+  background-color: #e0e5ec !important;
+  color: #1e293b !important;
+}
