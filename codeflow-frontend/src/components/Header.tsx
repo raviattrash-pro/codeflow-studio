@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Layers, Search, Database, ShieldCheck, Bot, Package, Download, X,
   FolderTree, Menu, Import, LogOut, ChevronDown, Activity, Moon, Sun,
-  Sparkles, Box, BarChart2, Flame, Zap, ArrowRight, Terminal, Code2, Mic, GitPullRequest, CheckSquare, Cloud, Radio, Sliders
+  Sparkles, Box, BarChart2, Flame, Zap, ArrowRight, Terminal, Code2, Mic,
+  GitPullRequest, CheckSquare, Cloud, Radio, Cpu, Server, Compass
 } from 'lucide-react';
 import { ProjectNode } from '../types';
 
@@ -83,44 +84,30 @@ export const Header: React.FC<HeaderProps> = ({
   currentTheme,
   onThemeChange,
 }) => {
-  const [isToolsOpen, setIsToolsOpen] = useState(false);
-  const [isThemeOpen, setIsThemeOpen] = useState(false);
+  // 4 Category Dropdown States
+  const [openDropdown, setOpenDropdown] = useState<'devops' | 'arch' | 'runtime' | 'apidata' | 'theme' | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const toolsRef = useRef<HTMLDivElement>(null);
-  const themeRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
 
   const isLight = currentTheme === 'NORMAL' || currentTheme === 'GLASSMORPHISM' || currentTheme === 'NEUMORPHIC';
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (toolsRef.current && !toolsRef.current.contains(event.target as Node)) {
-        setIsToolsOpen(false);
-      }
-      if (themeRef.current && !themeRef.current.contains(event.target as Node)) {
-        setIsThemeOpen(false);
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setOpenDropdown(null);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const getThemeLabel = (t: ThemeMode) => {
-    switch (t) {
-      case 'NIGHT': return 'Night View';
-      case 'NORMAL': return 'Normal View';
-      case 'NEUMORPHIC': return 'Neumorphic View';
-      case 'GLASSMORPHISM': return 'Glassmorphism View';
-    }
+  const toggleDropdown = (name: 'devops' | 'arch' | 'runtime' | 'apidata' | 'theme') => {
+    setOpenDropdown(prev => prev === name ? null : name);
   };
 
-  const getThemeIcon = (t: ThemeMode) => {
-    switch (t) {
-      case 'NIGHT': return <Moon className="w-3.5 h-3.5 text-indigo-400" />;
-      case 'NORMAL': return <Sun className="w-3.5 h-3.5 text-amber-500" />;
-      case 'NEUMORPHIC': return <Box className="w-3.5 h-3.5 text-slate-500" />;
-      case 'GLASSMORPHISM': return <Sparkles className="w-3.5 h-3.5 text-sky-500" />;
-    }
+  const closeDropdowns = () => {
+    setOpenDropdown(null);
   };
 
   const handleMobileToolClick = (toolFn: (() => void) | undefined) => {
@@ -131,32 +118,34 @@ export const Header: React.FC<HeaderProps> = ({
     setIsMobileMenuOpen(false);
   };
 
-  const getDropdownStyle = () => {
+  const getDropdownCardStyle = () => {
     if (currentTheme === 'NEUMORPHIC') {
       return 'bg-[#e0e5ec] border-[#c0cbdc] text-[#2d3748] shadow-2xl';
     }
-    if (currentTheme === 'GLASSMORPHISM' || currentTheme === 'NORMAL') {
+    if (isLight) {
       return 'bg-white border-slate-200 text-slate-900 shadow-2xl';
     }
-    return 'bg-[#0f172a] border-slate-800 text-slate-100 shadow-2xl';
+    return 'bg-[#0f172a] border-slate-700/80 text-slate-100 shadow-2xl';
   };
 
   const getItemHoverClass = () => {
     if (isLight) return 'hover:bg-slate-100 text-slate-800';
-    return 'hover:bg-slate-800/80 text-slate-200';
+    return 'hover:bg-slate-800/90 text-slate-200';
   };
 
   return (
     <header
-      className={`h-16 border-b px-4 md:px-6 flex items-center justify-between sticky top-0 shrink-0 transition-colors duration-200 ${
+      className={`h-16 border-b px-3 md:px-5 flex items-center justify-between sticky top-0 shrink-0 transition-colors duration-200 ${
         currentTheme === 'NEUMORPHIC' ? 'bg-[#e0e5ec] border-[#c0cbdc] text-[#2d3748]' :
         currentTheme === 'GLASSMORPHISM' ? 'bg-white/90 backdrop-blur-xl border-slate-200/80 text-slate-900 shadow-xs' :
         currentTheme === 'NORMAL' ? 'bg-white border-slate-200 text-slate-900 shadow-xs' :
         'bg-[#090d16] border-slate-800/80 text-slate-100'
       }`}
       style={{ zIndex: 99999 }}
+      ref={navRef}
     >
-      <div className="flex items-center space-x-3">
+      {/* Brand Logo & Title */}
+      <div className="flex items-center space-x-2.5 shrink-0">
         <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-md shadow-indigo-500/20">
           <Layers className="w-4 h-4 text-white" />
         </div>
@@ -169,382 +158,379 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 max-w-lg mx-4 flex items-center gap-2 hidden md:flex">
+      {/* Global Search Bar */}
+      <div className="flex-1 max-w-xs lg:max-w-sm mx-3 hidden md:flex items-center gap-2">
         <div className="relative flex-1">
           <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
-            placeholder="Search Controllers, Services, Entities..."
+            placeholder="Search Controllers, Services, SQL..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className={`w-full border rounded-xl pl-9 pr-4 py-1.5 text-xs font-mono focus:outline-none transition-all ${
-              currentTheme === 'NEUMORPHIC' ? 'bg-[#e0e5ec] border-[#babecc] text-[#2d3748] shadow-[inset_2px_2px_5px_#bebebe,inset_-2px_-2px_5px_#ffffff]' :
-              currentTheme === 'GLASSMORPHISM' ? 'bg-slate-100 border-slate-200 text-slate-900 placeholder-slate-500 focus:border-sky-500 focus:bg-white' :
-              currentTheme === 'NORMAL' ? 'bg-slate-100 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:bg-white' :
+            className={`w-full border rounded-xl pl-8 pr-3 py-1 text-xs font-mono focus:outline-none transition-all ${
+              currentTheme === 'NEUMORPHIC' ? 'bg-[#e0e5ec] border-[#babecc] text-[#2d3748]' :
+              isLight ? 'bg-slate-100 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:bg-white' :
               'bg-[#0f172a] border-slate-800 text-slate-200 placeholder-slate-500 focus:border-sky-500'
             }`}
           />
         </div>
 
-        {/* Global Command Palette & Voice Copilot */}
         {onOpenCommandPalette && (
           <button
             onClick={onOpenCommandPalette}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all ${
+            className={`flex items-center gap-1 px-2 py-1 rounded-xl border text-[11px] font-mono font-medium transition cursor-pointer ${
               isLight
                 ? 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
-                : 'bg-slate-900/90 border-slate-700/80 text-slate-300 hover:text-white hover:border-slate-600'
+                : 'bg-slate-900/90 border-slate-700/80 text-slate-300 hover:text-white'
             }`}
-            title="Open Command Palette (Ctrl+K or Cmd+K)"
+            title="Global Command Palette (Ctrl+K)"
           >
-            <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-            <kbd className="px-1.5 py-0.5 text-[10px] font-bold bg-slate-800/80 border border-slate-700 rounded text-slate-300 font-mono shadow-inner">
-              Ctrl K
-            </kbd>
+            <Sparkles className="w-3 h-3 text-purple-400" />
+            <span className="font-bold">Ctrl K</span>
           </button>
         )}
 
         {onOpenVoiceCopilot && (
           <button
             onClick={onOpenVoiceCopilot}
-            className={`p-1.5 rounded-xl border transition-all ${
+            className={`p-1.5 rounded-xl border transition cursor-pointer ${
               isLight
-                ? 'bg-slate-100 border-slate-200 text-purple-600 hover:bg-slate-200'
-                : 'bg-purple-950/40 border-purple-800/50 text-purple-300 hover:bg-purple-900/60 hover:text-white'
+                ? 'bg-slate-100 border-slate-200 text-rose-600 hover:bg-slate-200'
+                : 'bg-rose-950/40 border-rose-800/50 text-rose-300 hover:bg-rose-900/60 hover:text-white'
             }`}
             title="Voice Architecture Copilot"
           >
-            <Mic className="w-4 h-4" />
+            <Mic className="w-3.5 h-3.5" />
           </button>
-        )}
-
-        {searchResults && searchResults.length > 0 && currentProjectId && (
-          <div
-            className={`absolute top-full mt-2 w-full border rounded-xl shadow-2xl overflow-hidden max-h-64 overflow-y-auto ${getDropdownStyle()}`}
-            style={{
-              backgroundColor: currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : isLight ? '#ffffff' : '#0b0f19',
-              zIndex: 999999,
-            }}
-          >
-            {searchResults.map((node) => (
-              <button
-                key={node.id}
-                onClick={() => onSelectSearchResult?.(node.id)}
-                className={`w-full text-left px-4 py-2.5 border-b border-slate-500/10 flex flex-col ${getItemHoverClass()}`}
-              >
-                <span className="text-xs font-mono font-semibold">{node.label}</span>
-                <span className="text-[10px] font-mono opacity-70 mt-0.5">{node.nodeType}</span>
-              </button>
-            ))}
-          </div>
         )}
       </div>
 
-      <div className="flex items-center space-x-2.5">
-        {/* Theme View Mode Selector (Desktop) */}
-        <div className="relative hidden md:block" ref={themeRef} style={{ zIndex: 999999 }}>
+      {/* 4 Dedicated Domain Feature Category Menus (Desktop) */}
+      <div className="hidden lg:flex items-center space-x-1.5">
+        {/* 1. ☁️ DevOps & Cloud (v8.0) */}
+        <div className="relative">
           <button
-            onClick={() => setIsThemeOpen(!isThemeOpen)}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono font-semibold transition-all ${
-              currentTheme === 'NEUMORPHIC' ? 'bg-[#e0e5ec] border-[#c0cbdc] text-[#2d3748] shadow-[3px_3px_6px_#bebebe,-3px_-3px_6px_#ffffff]' :
-              currentTheme === 'GLASSMORPHISM' ? 'bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200/80 shadow-xs' :
-              currentTheme === 'NORMAL' ? 'bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200' :
-              'bg-[#0f172a] border-slate-800 text-slate-300 hover:text-white hover:border-slate-700'
+            onClick={() => toggleDropdown('devops')}
+            className={`flex items-center space-x-1 px-2.5 py-1.5 rounded-xl border text-xs font-mono font-semibold transition-all cursor-pointer ${
+              openDropdown === 'devops'
+                ? 'bg-sky-500/20 border-sky-500/50 text-sky-400'
+                : isLight
+                ? 'bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200'
+                : 'bg-[#0f172a] border-slate-800 text-slate-300 hover:text-white'
             }`}
           >
-            {getThemeIcon(currentTheme)}
-            <span>{getThemeLabel(currentTheme)}</span>
+            <Cloud className="w-3.5 h-3.5 text-sky-400" />
+            <span>DevOps & Cloud</span>
             <ChevronDown className="w-3 h-3 opacity-60" />
           </button>
 
-          {isThemeOpen && (
+          {openDropdown === 'devops' && (
             <div
-              className={`absolute right-0 mt-2 w-48 border rounded-xl shadow-2xl overflow-hidden py-1.5 ${getDropdownStyle()}`}
-              style={{
-                backgroundColor: currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : isLight ? '#ffffff' : '#0b0f19',
-                zIndex: 999999,
-              }}
+              className={`absolute left-0 mt-2 w-72 border rounded-xl shadow-2xl overflow-hidden py-1.5 ${getDropdownCardStyle()}`}
+              style={{ zIndex: 999999, backgroundColor: isLight ? '#ffffff' : '#0f172a' }}
             >
-              <button onClick={() => { onThemeChange('NIGHT'); setIsThemeOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                <Moon className="w-3.5 h-3.5 text-indigo-400" />
-                <span className={isLight ? 'text-slate-800' : 'text-slate-200'}>Night View (Dark)</span>
+              <div className="px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider border-b border-slate-700/50 text-sky-400 flex items-center justify-between">
+                <span>Cloud & DevOps Suite</span>
+                <span className="px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-300 font-extrabold text-[9px]">v8.0</span>
+              </div>
+              <button onClick={() => { onOpenDrift?.(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <GitPullRequest className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span className="font-semibold flex-1">Git PR Architecture Drift</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold">Delta</span>
               </button>
-              <button onClick={() => { onThemeChange('NORMAL'); setIsThemeOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                <Sun className="w-3.5 h-3.5 text-amber-500" />
-                <span className={isLight ? 'text-slate-800' : 'text-slate-200'}>Normal View (Light)</span>
+              <button onClick={() => { onOpenTestGen?.(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <CheckSquare className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span className="font-semibold flex-1">Automated Test Generator</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold">E2E</span>
               </button>
-              <button onClick={() => { onThemeChange('GLASSMORPHISM'); setIsThemeOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                <Sparkles className="w-3.5 h-3.5 text-sky-500" />
-                <span className={isLight ? 'text-slate-800' : 'text-slate-200'}>Glassmorphism View</span>
+              <button onClick={() => { onOpenCloudInfra?.(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Cloud className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                <span className="font-semibold flex-1">Cloud IaC & Docker Compose</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-sky-500/10 border border-sky-500/30 text-sky-400 font-bold">IaC</span>
               </button>
-              <button onClick={() => { onThemeChange('NEUMORPHIC'); setIsThemeOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2 text-xs font-mono font-medium ${getItemHoverClass()}`}>
-                <Box className="w-3.5 h-3.5 text-slate-500" />
-                <span className={isLight ? 'text-slate-800' : 'text-slate-200'}>Neumorphic View</span>
+              <button onClick={() => { onOpenEventStream?.(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Radio className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                <span className="font-semibold flex-1">Kafka & WebSocket Streams</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-purple-500/10 border border-purple-500/30 text-purple-400 font-bold">Event</span>
+              </button>
+              <button onClick={() => { onOpenDistTracing?.(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Activity className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                <span className="font-semibold flex-1">OTel Distributed Tracing</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-bold">Trace</span>
+              </button>
+              <button onClick={() => { onOpenVoiceCopilot?.(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Mic className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                <span className="font-semibold flex-1">Voice Architecture Copilot</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-rose-500/10 border border-rose-500/30 text-rose-400 font-bold">Voice</span>
               </button>
             </div>
           )}
         </div>
 
-        {/* Tools Dropdown (Desktop) */}
-        {currentProjectId && (
-          <div className="relative hidden md:block" ref={toolsRef} style={{ zIndex: 999999 }}>
-            <button
-              onClick={() => setIsToolsOpen(!isToolsOpen)}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono font-semibold transition-all ${
-                currentTheme === 'NEUMORPHIC' ? 'bg-[#e0e5ec] border-[#c0cbdc] text-[#2d3748] shadow-[3px_3px_6px_#bebebe,-3px_-3px_6px_#ffffff]' :
-                currentTheme === 'GLASSMORPHISM' ? 'bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200/80 shadow-xs' :
-                currentTheme === 'NORMAL' ? 'bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200' :
-                'bg-[#0f172a] border-slate-800 text-slate-300 hover:text-white'
-              }`}
+        {/* 2. 🏛️ Architecture & Health */}
+        <div className="relative">
+          <button
+            onClick={() => toggleDropdown('arch')}
+            className={`flex items-center space-x-1 px-2.5 py-1.5 rounded-xl border text-xs font-mono font-semibold transition-all cursor-pointer ${
+              openDropdown === 'arch'
+                ? 'bg-purple-500/20 border-purple-500/50 text-purple-400'
+                : isLight
+                ? 'bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200'
+                : 'bg-[#0f172a] border-slate-800 text-slate-300 hover:text-white'
+            }`}
+          >
+            <Compass className="w-3.5 h-3.5 text-purple-400" />
+            <span>Architecture</span>
+            <ChevronDown className="w-3 h-3 opacity-60" />
+          </button>
+
+          {openDropdown === 'arch' && (
+            <div
+              className={`absolute left-0 mt-2 w-72 border rounded-xl shadow-2xl overflow-hidden py-1.5 ${getDropdownCardStyle()}`}
+              style={{ zIndex: 999999, backgroundColor: isLight ? '#ffffff' : '#0f172a' }}
             >
-              <Layers className="w-3.5 h-3.5 text-sky-500 dark:text-sky-400" />
-              <span>Tools</span>
-              <ChevronDown className="w-3 h-3 opacity-60" />
-            </button>
-
-            {isToolsOpen && (
-              <div
-                className={`absolute right-0 mt-2 w-[620px] max-w-[92vw] border rounded-2xl shadow-2xl overflow-hidden flex flex-col ${getDropdownStyle()}`}
-                style={{
-                  backgroundColor: currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : isLight ? '#ffffff' : '#0b0f19',
-                  maxHeight: 'calc(100vh - 5rem)',
-                  zIndex: 999999,
-                }}
-              >
-                {/* Mega Menu Header */}
-                <div className={`px-4 py-2.5 text-[11px] font-mono font-bold uppercase tracking-wider border-b flex items-center justify-between shrink-0 ${
-                  isLight ? 'text-slate-700 border-slate-200 bg-slate-50' : 'text-slate-300 border-slate-800 bg-[#111827]'
-                }`}>
-                  <div className="flex items-center gap-2">
-                    <Layers className="w-3.5 h-3.5 text-sky-400" />
-                    <span>Architecture Intelligence Suite (v8.0)</span>
-                  </div>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
-                    23 Active Tools
-                  </span>
-                </div>
-
-                {/* 2-Column Scrollable Tools Grid */}
-                <div className="overflow-y-auto custom-scrollbar p-3 grid grid-cols-1 sm:grid-cols-2 gap-2 flex-1" style={{ minHeight: 0 }}>
-                  {/* Column 1: Cloud, DevOps & Enterprise Suite */}
-                  <div className="space-y-1">
-                    <div className="px-2 py-1 text-[10px] font-mono font-bold text-sky-400 uppercase tracking-wider">
-                      Cloud & DevOps (v8.0)
-                    </div>
-
-                    <button onClick={() => { onOpenDrift?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <GitPullRequest className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                        <span className="truncate">Git PR Drift</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-amber-500/10 border-amber-500/30 text-amber-400">v8.0</span>
-                    </button>
-
-                    <button onClick={() => { onOpenTestGen?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <CheckSquare className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        <span className="truncate">Test Generator</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-emerald-500/10 border-emerald-500/30 text-emerald-400">v8.0</span>
-                    </button>
-
-                    <button onClick={() => { onOpenCloudInfra?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Cloud className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                        <span className="truncate">Cloud IaC / Docker</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-sky-500/10 border-sky-500/30 text-sky-400">v8.0</span>
-                    </button>
-
-                    <button onClick={() => { onOpenEventStream?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Radio className="w-3.5 h-3.5 text-purple-400 shrink-0" />
-                        <span className="truncate">Kafka & WS Streams</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-purple-500/10 border-purple-500/30 text-purple-400">v8.0</span>
-                    </button>
-
-                    <button onClick={() => { onOpenDistTracing?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Activity className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                        <span className="truncate">OTel Distributed Tracing</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-cyan-500/10 border-cyan-500/30 text-cyan-400">v8.0</span>
-                    </button>
-
-                    <button onClick={() => { onOpenVoiceCopilot?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Mic className="w-3.5 h-3.5 text-rose-400 shrink-0" />
-                        <span className="truncate">Voice Copilot</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-rose-500/10 border-rose-500/30 text-rose-400">v8.0</span>
-                    </button>
-
-                    <div className="pt-2 px-2 py-1 text-[10px] font-mono font-bold text-purple-400 uppercase tracking-wider border-t border-slate-800/40">
-                      Enterprise Tools (v7.0)
-                    </div>
-
-                    <button onClick={() => { onOpenScorecard?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Activity className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        <span className="truncate">Scorecard HUD</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-emerald-500/10 border-emerald-500/30 text-emerald-400">v7.0</span>
-                    </button>
-
-                    <button onClick={() => { onOpenApiSandbox?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Terminal className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                        <span className="truncate">API Sandbox & cURL</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-cyan-500/10 border-cyan-500/30 text-cyan-400">v7.0</span>
-                    </button>
-
-                    <button onClick={() => { onOpenTsGenerator?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Code2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
-                        <span className="truncate">DTO ➔ TypeScript</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-blue-500/10 border-blue-500/30 text-blue-400">v7.0</span>
-                    </button>
-
-                    <button onClick={() => { onOpenChaos?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Flame className="w-3.5 h-3.5 text-rose-400 shrink-0" />
-                        <span className="truncate">Chaos Simulator</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-rose-500/10 border-rose-500/30 text-rose-400">v7.0</span>
-                    </button>
-
-                    <button onClick={() => { onOpenBlueprint?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                        <span className="truncate">4K C4 Blueprint</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-purple-500/10 border-purple-500/30 text-purple-400">v7.0</span>
-                    </button>
-                  </div>
-
-                  {/* Column 2: Runtime, Flows & Core Analysis */}
-                  <div className="space-y-1">
-                    <div className="px-2 py-1 text-[10px] font-mono font-bold text-indigo-400 uppercase tracking-wider">
-                      Runtime & Flow Analysis
-                    </div>
-
-                    <button onClick={() => { onOpenReactRuntime?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Activity className="w-3.5 h-3.5 text-sky-500 shrink-0" />
-                        <span className="truncate">React 19 Runtime</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-sky-500/10 border-sky-500/20 text-sky-400">Fiber</span>
-                    </button>
-
-                    <button onClick={() => { onOpenRuntimeTracing?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Activity className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
-                        <span className="truncate">Runtime Tracing</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-cyan-500/10 border-cyan-500/20 text-cyan-400">VCR</span>
-                    </button>
-
-                    <button onClick={() => { onOpenApiMetrics?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <BarChart2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-                        <span className="truncate">API Metrics Dashboard</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-indigo-500/10 border-indigo-500/20 text-indigo-400">P95</span>
-                    </button>
-
-                    <button onClick={() => { onOpenSequenceDiagram?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Zap className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                        <span className="truncate">Sequence Diagram</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-amber-500/10 border-amber-500/20 text-amber-400">7 Lanes</span>
-                    </button>
-
-                    <button onClick={() => { onOpenLatencyHeatmap?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Flame className="w-3.5 h-3.5 text-orange-500 shrink-0" />
-                        <span className="truncate">Latency Heatmap</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-orange-500/10 border-orange-500/20 text-orange-400">24h</span>
-                    </button>
-
-                    <button onClick={() => { onOpenErDiagram(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Database className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                        <span className="truncate">ER Diagram Explorer</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-emerald-500/10 border-emerald-500/20 text-emerald-400">Schema</span>
-                    </button>
-
-                    <button onClick={() => { onOpenSecurityFlow(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <ShieldCheck className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-                        <span className="truncate">Security Pipeline</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-indigo-500/10 border-indigo-500/20 text-indigo-400">JWT</span>
-                    </button>
-
-                    <button onClick={() => { onOpenAiAssistant(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Bot className="w-3.5 h-3.5 text-sky-500 shrink-0" />
-                        <span className="truncate">AI Code Assistant</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-sky-500/10 border-sky-500/20 text-sky-400">Audit</span>
-                    </button>
-
-                    <button onClick={() => { onOpenSqlExplorer(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Database className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                        <span className="truncate">SQL Query Explorer</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-blue-500/10 border-blue-500/20 text-blue-400">JPA</span>
-                    </button>
-
-                    <button onClick={() => { onOpenDependencies(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <Package className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-                        <span className="truncate">Maven Dependencies</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-indigo-500/10 border-indigo-500/20 text-indigo-300">POM</span>
-                    </button>
-
-                    <button onClick={() => { onOpenFileTree(); setIsToolsOpen(false); }} className={`w-full text-left px-3 py-2 rounded-xl flex items-center justify-between text-xs font-mono font-medium transition cursor-pointer ${getItemHoverClass()}`}>
-                      <div className="flex items-center space-x-2 truncate">
-                        <FolderTree className="w-3.5 h-3.5 text-cyan-500 shrink-0" />
-                        <span className="truncate">File Tree Visualizer</span>
-                      </div>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded border font-bold bg-cyan-500/10 border-cyan-500/20 text-cyan-400">5 Views</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Dropdown Footer Action */}
-                <div className={`px-4 py-2 border-t flex items-center justify-between shrink-0 ${
-                  isLight ? 'bg-slate-50 border-slate-200 text-slate-600' : 'bg-[#090d16] border-slate-800 text-slate-400'
-                }`}>
-                  <button
-                    onClick={() => { onExportMarkdown(); setIsToolsOpen(false); }}
-                    className="flex items-center gap-1.5 text-xs font-mono font-bold text-emerald-400 hover:text-emerald-300 transition cursor-pointer"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>Export Markdown Spec</span>
-                  </button>
-                  <span className="text-[10px] font-mono opacity-60">Press Ctrl+K for Search</span>
-                </div>
+              <div className="px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider border-b border-slate-700/50 text-purple-400 flex items-center justify-between">
+                <span>Architecture & Design</span>
+                <span className="px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-extrabold text-[9px]">v7.0</span>
               </div>
-            )}
-          </div>
+              <button onClick={() => { onOpenScorecard?.(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Activity className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span className="font-semibold flex-1">Architecture Health Scorecard</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold">HUD</span>
+              </button>
+              <button onClick={() => { onOpenBlueprint?.(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                <span className="font-semibold flex-1">4K C4 Blueprint Exporter</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-bold">SVG</span>
+              </button>
+              <button onClick={() => { onOpenChaos?.(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Flame className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                <span className="font-semibold flex-1">Chaos & Resilience Simulator</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-rose-500/10 border border-rose-500/30 text-rose-400 font-bold">Faults</span>
+              </button>
+              <button onClick={() => { onOpenTsGenerator?.(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Code2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                <span className="font-semibold flex-1">Java DTO ➔ TypeScript</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-blue-500/10 border border-blue-500/30 text-blue-400 font-bold">Gen</span>
+              </button>
+              <button onClick={() => { onOpenAiAssistant(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Bot className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                <span className="font-semibold flex-1">AI Architecture Assistant</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-sky-500/10 border border-sky-500/30 text-sky-400 font-bold">RAG</span>
+              </button>
+              <button onClick={() => { onOpenDependencies(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Package className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                <span className="font-semibold flex-1">Maven Dependency Graph</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 font-bold">POM</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* 3. ⚡ Runtime & Tracing */}
+        <div className="relative">
+          <button
+            onClick={() => toggleDropdown('runtime')}
+            className={`flex items-center space-x-1 px-2.5 py-1.5 rounded-xl border text-xs font-mono font-semibold transition-all cursor-pointer ${
+              openDropdown === 'runtime'
+                ? 'bg-amber-500/20 border-amber-500/50 text-amber-400'
+                : isLight
+                ? 'bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200'
+                : 'bg-[#0f172a] border-slate-800 text-slate-300 hover:text-white'
+            }`}
+          >
+            <Activity className="w-3.5 h-3.5 text-amber-400" />
+            <span>Runtime & Flow</span>
+            <ChevronDown className="w-3 h-3 opacity-60" />
+          </button>
+
+          {openDropdown === 'runtime' && (
+            <div
+              className={`absolute left-0 mt-2 w-72 border rounded-xl shadow-2xl overflow-hidden py-1.5 ${getDropdownCardStyle()}`}
+              style={{ zIndex: 999999, backgroundColor: isLight ? '#ffffff' : '#0f172a' }}
+            >
+              <div className="px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider border-b border-slate-700/50 text-amber-400 flex items-center justify-between">
+                <span>Runtime Execution Flow</span>
+                <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-extrabold text-[9px]">Live</span>
+              </div>
+              <button onClick={() => { onOpenReactRuntime?.(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Activity className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                <span className="font-semibold flex-1">React 19 Runtime Explorer</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-sky-500/10 border border-sky-500/30 text-sky-400 font-bold">Fiber</span>
+              </button>
+              <button onClick={() => { onOpenRuntimeTracing?.(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Activity className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                <span className="font-semibold flex-1">Runtime Tracing Replay</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-bold">VCR</span>
+              </button>
+              <button onClick={() => { onOpenSequenceDiagram?.(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span className="font-semibold flex-1">7-Swimlane Sequence Tracer</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold">7 Lanes</span>
+              </button>
+              <button onClick={() => { onOpenLatencyHeatmap?.(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Flame className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+                <span className="font-semibold flex-1">24h Latency Heatmap</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-orange-500/10 border border-orange-500/30 text-orange-400 font-bold">Quantile</span>
+              </button>
+              <button onClick={() => { onOpenApiMetrics?.(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <BarChart2 className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                <span className="font-semibold flex-1">API Metrics Dashboard</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 font-bold">P95/P99</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* 4. 🗄️ APIs & Database */}
+        <div className="relative">
+          <button
+            onClick={() => toggleDropdown('apidata')}
+            className={`flex items-center space-x-1 px-2.5 py-1.5 rounded-xl border text-xs font-mono font-semibold transition-all cursor-pointer ${
+              openDropdown === 'apidata'
+                ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400'
+                : isLight
+                ? 'bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200'
+                : 'bg-[#0f172a] border-slate-800 text-slate-300 hover:text-white'
+            }`}
+          >
+            <Database className="w-3.5 h-3.5 text-emerald-400" />
+            <span>APIs & Data</span>
+            <ChevronDown className="w-3 h-3 opacity-60" />
+          </button>
+
+          {openDropdown === 'apidata' && (
+            <div
+              className={`absolute right-0 mt-2 w-72 border rounded-xl shadow-2xl overflow-hidden py-1.5 ${getDropdownCardStyle()}`}
+              style={{ zIndex: 999999, backgroundColor: isLight ? '#ffffff' : '#0f172a' }}
+            >
+              <div className="px-3 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider border-b border-slate-700/50 text-emerald-400 flex items-center justify-between">
+                <span>APIs & Database Tier</span>
+                <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-extrabold text-[9px]">Schema</span>
+              </div>
+              <button onClick={() => { onOpenApiSandbox?.(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Terminal className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                <span className="font-semibold flex-1">REST API Sandbox & cURL</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-bold">cURL</span>
+              </button>
+              <button onClick={() => { onOpenErDiagram(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Database className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span className="font-semibold flex-1">Database ERD & Schema</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold">JPA</span>
+              </button>
+              <button onClick={() => { onOpenSqlExplorer(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <Database className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                <span className="font-semibold flex-1">Live SQL Query Logs</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-blue-500/10 border border-blue-500/30 text-blue-400 font-bold">SQL</span>
+              </button>
+              <button onClick={() => { onOpenSecurityFlow(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <ShieldCheck className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                <span className="font-semibold flex-1">Spring Security 6 Pipeline</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 font-bold">JWT</span>
+              </button>
+              <button onClick={() => { onOpenFileTree(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono cursor-pointer ${getItemHoverClass()}`}>
+                <FolderTree className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                <span className="font-semibold flex-1">5-Mode File Tree Explorer</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-bold">AST</span>
+              </button>
+              <button onClick={() => { onExportMarkdown(); closeDropdowns(); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono text-emerald-400 cursor-pointer ${getItemHoverClass()}`}>
+                <Download className="w-3.5 h-3.5 shrink-0" />
+                <span className="font-semibold flex-1">Export Markdown RFC</span>
+                <span className="text-[9px] px-1 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">RFC</span>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Right Controls: Theme Toggle & Actions */}
+      <div className="flex items-center space-x-2">
+        {/* Theme Selector */}
+        <div className="relative hidden sm:block">
+          <button
+            onClick={() => toggleDropdown('theme')}
+            className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-mono font-semibold transition-all cursor-pointer ${
+              openDropdown === 'theme'
+                ? 'bg-indigo-500/20 border-indigo-500/50 text-indigo-400'
+                : isLight
+                ? 'bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200'
+                : 'bg-[#0f172a] border-slate-800 text-slate-300 hover:text-white'
+            }`}
+          >
+            {currentTheme === 'NIGHT' ? <Moon className="w-3.5 h-3.5 text-indigo-400" /> :
+             currentTheme === 'NORMAL' ? <Sun className="w-3.5 h-3.5 text-amber-500" /> :
+             currentTheme === 'GLASSMORPHISM' ? <Sparkles className="w-3.5 h-3.5 text-sky-500" /> :
+             <Box className="w-3.5 h-3.5 text-slate-500" />}
+            <span className="capitalize">{currentTheme.toLowerCase()}</span>
+            <ChevronDown className="w-3 h-3 opacity-60" />
+          </button>
+
+          {openDropdown === 'theme' && (
+            <div
+              className={`absolute right-0 mt-2 w-44 border rounded-xl shadow-2xl overflow-hidden py-1 ${getDropdownCardStyle()}`}
+              style={{ zIndex: 999999, backgroundColor: isLight ? '#ffffff' : '#0f172a' }}
+            >
+              {[
+                { id: 'NIGHT', label: 'Obsidian Night', icon: <Moon className="w-3.5 h-3.5 text-indigo-400" /> },
+                { id: 'NORMAL', label: 'Light Clean', icon: <Sun className="w-3.5 h-3.5 text-amber-500" /> },
+                { id: 'GLASSMORPHISM', label: 'Glassmorphism', icon: <Sparkles className="w-3.5 h-3.5 text-sky-400" /> },
+                { id: 'NEUMORPHIC', label: 'Neumorphic Soft', icon: <Box className="w-3.5 h-3.5 text-slate-400" /> },
+              ].map(t => (
+                <button
+                  key={t.id}
+                  onClick={() => { onThemeChange(t.id as ThemeMode); closeDropdowns(); }}
+                  className={`w-full text-left px-3 py-2 flex items-center space-x-2 text-xs font-mono transition cursor-pointer ${
+                    currentTheme === t.id ? 'bg-indigo-600/20 text-indigo-300 font-bold' : getItemHoverClass()
+                  }`}
+                >
+                  {t.icon}
+                  <span>{t.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Demo Button */}
+        {onLoadDemo && !currentProjectId && (
+          <button
+            onClick={onLoadDemo}
+            className="hidden md:flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-xs font-mono font-bold text-white shadow-md shadow-sky-600/20 transition-all cursor-pointer"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Try Demo</span>
+          </button>
         )}
 
-        {/* Mobile Action & Menu Toggle Button */}
-        <div className="flex md:hidden items-center space-x-2">
+        {/* Import Repo Button */}
+        <button
+          onClick={onOpenIngestModal}
+          className={`hidden md:flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono font-semibold transition-all cursor-pointer ${
+            isLight
+              ? 'bg-slate-100 border-slate-200 text-slate-800 hover:bg-slate-200'
+              : 'bg-[#0f172a] border-slate-800 text-slate-200 hover:border-slate-700 hover:text-white'
+          }`}
+        >
+          <Import className="w-3.5 h-3.5 text-sky-400" />
+          <span>Import</span>
+        </button>
+
+        {currentProjectId && (
+          <button
+            onClick={onExitProject}
+            className="hidden md:flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-xs font-mono font-medium text-red-500 cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+            <span>Exit</span>
+          </button>
+        )}
+
+        {/* Mobile Drawer Hamburger */}
+        <div className="flex lg:hidden items-center space-x-1.5">
           {onLoadDemo && !currentProjectId && (
             <button
               onClick={onLoadDemo}
-              className="flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 text-xs font-mono font-bold text-white shadow-md"
+              className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 text-xs font-mono font-bold text-white shadow-md"
             >
               <Sparkles className="w-3 h-3" />
               <span>Demo</span>
@@ -552,7 +538,7 @@ export const Header: React.FC<HeaderProps> = ({
           )}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`p-2 rounded-xl border transition-colors ${
+            className={`p-2 rounded-xl border transition-colors cursor-pointer ${
               isLight
                 ? 'bg-slate-100 border-slate-200 text-slate-800'
                 : 'bg-slate-900 border-slate-800 text-slate-200'
@@ -564,12 +550,12 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Mobile Slide-down Drawer Menu */}
+      {/* Mobile Slide-down Drawer */}
       {isMobileMenuOpen && (
         <div
-          className={`absolute top-16 left-0 right-0 border-b p-4 flex flex-col space-y-3 md:hidden shadow-2xl overflow-y-auto max-h-[85vh] custom-scrollbar ${getDropdownStyle()}`}
+          className={`absolute top-16 left-0 right-0 border-b p-4 flex flex-col space-y-4 lg:hidden shadow-2xl overflow-y-auto max-h-[85vh] custom-scrollbar ${getDropdownCardStyle()}`}
           style={{
-            backgroundColor: currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : isLight ? '#ffffff' : '#0b0f19',
+            backgroundColor: currentTheme === 'NEUMORPHIC' ? '#e0e5ec' : isLight ? '#ffffff' : '#090d16',
             zIndex: 999999,
           }}
         >
@@ -579,19 +565,19 @@ export const Header: React.FC<HeaderProps> = ({
           }`}>
             <span className="text-xs font-mono font-bold">Theme Mode:</span>
             <div className="flex items-center space-x-1">
-              <button onClick={() => onThemeChange('NIGHT')} className={`p-1.5 rounded-lg ${currentTheme === 'NIGHT' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-indigo-400'}`} title="Night View"><Moon className="w-4 h-4" /></button>
-              <button onClick={() => onThemeChange('NORMAL')} className={`p-1.5 rounded-lg ${currentTheme === 'NORMAL' ? 'bg-amber-500 text-white' : 'bg-slate-200 text-amber-600'}`} title="Normal View"><Sun className="w-4 h-4" /></button>
-              <button onClick={() => onThemeChange('GLASSMORPHISM')} className={`p-1.5 rounded-lg ${currentTheme === 'GLASSMORPHISM' ? 'bg-sky-500 text-white' : 'bg-sky-500/20 text-sky-400'}`} title="Glassmorphism"><Sparkles className="w-4 h-4" /></button>
-              <button onClick={() => onThemeChange('NEUMORPHIC')} className={`p-1.5 rounded-lg ${currentTheme === 'NEUMORPHIC' ? 'bg-slate-600 text-white' : 'bg-[#e0e5ec] text-slate-700'}`} title="Neumorphic"><Box className="w-4 h-4" /></button>
+              <button onClick={() => onThemeChange('NIGHT')} className={`p-1.5 rounded-lg ${currentTheme === 'NIGHT' ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-indigo-400'}`}><Moon className="w-4 h-4" /></button>
+              <button onClick={() => onThemeChange('NORMAL')} className={`p-1.5 rounded-lg ${currentTheme === 'NORMAL' ? 'bg-amber-500 text-white' : 'bg-slate-200 text-amber-600'}`}><Sun className="w-4 h-4" /></button>
+              <button onClick={() => onThemeChange('GLASSMORPHISM')} className={`p-1.5 rounded-lg ${currentTheme === 'GLASSMORPHISM' ? 'bg-sky-500 text-white' : 'bg-sky-500/20 text-sky-400'}`}><Sparkles className="w-4 h-4" /></button>
+              <button onClick={() => onThemeChange('NEUMORPHIC')} className={`p-1.5 rounded-lg ${currentTheme === 'NEUMORPHIC' ? 'bg-slate-600 text-white' : 'bg-[#e0e5ec] text-slate-700'}`}><Box className="w-4 h-4" /></button>
             </div>
           </div>
 
-          {/* Quick Action Buttons */}
+          {/* Quick Actions */}
           <div className="grid grid-cols-2 gap-2">
             {onLoadDemo && (
               <button
                 onClick={() => { onLoadDemo(); setIsMobileMenuOpen(false); }}
-                className="flex items-center justify-center space-x-1.5 p-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 text-white text-xs font-mono font-bold shadow-md"
+                className="flex items-center justify-center space-x-1.5 p-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 text-white text-xs font-mono font-bold shadow-md cursor-pointer"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Load Demo</span>
@@ -599,7 +585,7 @@ export const Header: React.FC<HeaderProps> = ({
             )}
             <button
               onClick={() => { onOpenIngestModal(); setIsMobileMenuOpen(false); }}
-              className={`flex items-center justify-center space-x-1.5 p-2.5 rounded-xl border text-xs font-mono font-bold ${
+              className={`flex items-center justify-center space-x-1.5 p-2.5 rounded-xl border text-xs font-mono font-bold cursor-pointer ${
                 isLight ? 'bg-slate-100 border-slate-200 text-slate-800' : 'bg-slate-900 border-slate-800 text-slate-200'
               }`}
             >
@@ -608,165 +594,64 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           </div>
 
-          {/* ALL 23 ARCHITECTURE TOOLS LIST */}
-          <div className="pt-2">
-            <div className="px-2 pb-2 text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-              <span>All 23 Architecture Tools</span>
-              <span className="text-emerald-400 font-extrabold">v8.0 Suite</span>
-            </div>
-            <div className="space-y-1.5">
-              {/* v8.0 Tools */}
-              <button onClick={() => handleMobileToolClick(onOpenDrift)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-amber-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><GitPullRequest className="w-4 h-4 text-amber-400" /><span>1. Git PR Architecture Drift</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400">v8.0</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenTestGen)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-emerald-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><CheckSquare className="w-4 h-4 text-emerald-400" /><span>2. Test Suite Generator</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">v8.0</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenCloudInfra)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-sky-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Cloud className="w-4 h-4 text-sky-400" /><span>3. Cloud IaC & Docker</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/10 border border-sky-500/20 text-sky-400">v8.0</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenEventStream)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-purple-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Radio className="w-4 h-4 text-purple-400" /><span>4. Kafka & WebSocket Streams</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 border border-purple-500/20 text-purple-400">v8.0</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenDistTracing)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-cyan-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Activity className="w-4 h-4 text-cyan-400" /><span>5. OpenTelemetry Tracing</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">v8.0</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenVoiceCopilot)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-rose-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Mic className="w-4 h-4 text-rose-400" /><span>6. Voice Copilot</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400">v8.0</span>
-              </button>
-
-              {/* v7.0 Tools */}
-              <button onClick={() => handleMobileToolClick(onOpenScorecard)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-emerald-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Activity className="w-4 h-4 text-emerald-400" /><span>7. Scorecard HUD</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">v7.0</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenApiSandbox)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-cyan-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Terminal className="w-4 h-4 text-cyan-400" /><span>8. API Sandbox & cURL</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">v7.0</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenTsGenerator)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-blue-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Code2 className="w-4 h-4 text-blue-400" /><span>9. DTO ➔ TypeScript</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400">v7.0</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenChaos)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-rose-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Flame className="w-4 h-4 text-rose-400" /><span>10. Chaos Simulator</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400">v7.0</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenBlueprint)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-cyan-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Sparkles className="w-4 h-4 text-cyan-400" /><span>11. 4K C4 Blueprint</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/10 border border-purple-500/20 text-purple-400">v7.0</span>
-              </button>
-
-              {/* Core Tools */}
-              <button onClick={() => handleMobileToolClick(onOpenReactRuntime)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-sky-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Activity className="w-4 h-4 text-sky-400" /><span>12. React 19 Runtime</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/10 border border-sky-500/20 text-sky-400">Fiber</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenRuntimeTracing)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-cyan-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Activity className="w-4 h-4 text-cyan-400" /><span>13. Runtime Tracing</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">VCR</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenApiMetrics)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-indigo-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><BarChart2 className="w-4 h-4 text-indigo-400" /><span>14. API Metrics</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">P95</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenSequenceDiagram)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-amber-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Zap className="w-4 h-4 text-amber-400" /><span>15. Sequence Diagram</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400">7 Lanes</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenLatencyHeatmap)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-orange-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Flame className="w-4 h-4 text-orange-400" /><span>16. Latency Heatmap</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-orange-500/10 border border-orange-500/20 text-orange-400">24h</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenErDiagram)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-emerald-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Database className="w-4 h-4 text-emerald-400" /><span>17. ERD Explorer</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">Schema</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenSecurityFlow)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-indigo-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><ShieldCheck className="w-4 h-4 text-indigo-400" /><span>18. Security Pipeline</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">JWT</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenAiAssistant)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-sky-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Bot className="w-4 h-4 text-sky-400" /><span>19. AI Assistant</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/10 border border-sky-500/20 text-sky-400">Audit</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenSqlExplorer)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-blue-400 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Database className="w-4 h-4 text-blue-400" /><span>20. Live SQL Explorer</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 text-blue-400">JPA</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenDependencies)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-indigo-300 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><Package className="w-4 h-4 text-indigo-300" /><span>21. Dependencies</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-300">Maven</span>
-              </button>
-              <button onClick={() => handleMobileToolClick(onOpenFileTree)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-mono font-semibold ${
-                isLight ? 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-cyan-300 hover:bg-slate-800'
-              }`}>
-                <div className="flex items-center space-x-2.5"><FolderTree className="w-4 h-4 text-cyan-300" /><span>22. File Tree</span></div>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-300">5 Views</span>
-              </button>
+          {/* 1. Cloud & DevOps */}
+          <div className="space-y-1.5">
+            <span className="text-[10px] font-mono font-bold text-sky-400 uppercase tracking-wider block px-1">
+              ☁️ Cloud & DevOps (v8.0)
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+              <button onClick={() => handleMobileToolClick(onOpenDrift)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><GitPullRequest className="w-3.5 h-3.5 text-amber-400" /><span>Git PR Drift</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenTestGen)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><CheckSquare className="w-3.5 h-3.5 text-emerald-400" /><span>Test Generator</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenCloudInfra)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Cloud className="w-3.5 h-3.5 text-sky-400" /><span>Cloud IaC / Docker</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenEventStream)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Radio className="w-3.5 h-3.5 text-purple-400" /><span>Kafka Streams</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenDistTracing)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Activity className="w-3.5 h-3.5 text-cyan-400" /><span>OTel Tracing</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenVoiceCopilot)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Mic className="w-3.5 h-3.5 text-rose-400" /><span>Voice Copilot</span></button>
             </div>
           </div>
 
-          {currentProjectId && (
-            <div className="pt-2 border-t border-slate-500/20 flex items-center space-x-2">
-              <button onClick={() => { onExportMarkdown(); setIsMobileMenuOpen(false); }} className="flex-1 flex items-center justify-center space-x-2 p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-xs font-mono font-bold">
-                <Download className="w-4 h-4" />
-                <span>Export MD</span>
-              </button>
-              <button onClick={() => { onExitProject(); setIsMobileMenuOpen(false); }} className="flex items-center justify-center space-x-1 p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-mono font-bold">
-                <LogOut className="w-4 h-4" />
-                <span>Exit</span>
-              </button>
+          {/* 2. Architecture & Design */}
+          <div className="space-y-1.5">
+            <span className="text-[10px] font-mono font-bold text-purple-400 uppercase tracking-wider block px-1">
+              🏛️ Architecture & Health (v7.0)
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+              <button onClick={() => handleMobileToolClick(onOpenScorecard)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Activity className="w-3.5 h-3.5 text-emerald-400" /><span>Scorecard HUD</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenBlueprint)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Sparkles className="w-3.5 h-3.5 text-cyan-400" /><span>4K Blueprint</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenChaos)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Flame className="w-3.5 h-3.5 text-rose-400" /><span>Chaos Simulator</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenTsGenerator)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Code2 className="w-3.5 h-3.5 text-blue-400" /><span>DTO ➔ TS</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenAiAssistant)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Bot className="w-3.5 h-3.5 text-sky-400" /><span>AI Assistant</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenDependencies)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Package className="w-3.5 h-3.5 text-indigo-400" /><span>Dependencies</span></button>
             </div>
-          )}
+          </div>
+
+          {/* 3. Runtime & Tracing */}
+          <div className="space-y-1.5">
+            <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider block px-1">
+              ⚡ Runtime & Flow
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+              <button onClick={() => handleMobileToolClick(onOpenReactRuntime)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Activity className="w-3.5 h-3.5 text-sky-400" /><span>React 19 Runtime</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenRuntimeTracing)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Activity className="w-3.5 h-3.5 text-cyan-400" /><span>Runtime Tracing</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenSequenceDiagram)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Zap className="w-3.5 h-3.5 text-amber-400" /><span>Sequence Tracer</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenLatencyHeatmap)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Flame className="w-3.5 h-3.5 text-orange-400" /><span>Latency Heatmap</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenApiMetrics)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><BarChart2 className="w-3.5 h-3.5 text-indigo-400" /><span>API Metrics</span></button>
+            </div>
+          </div>
+
+          {/* 4. APIs & Database */}
+          <div className="space-y-1.5">
+            <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider block px-1">
+              🗄️ APIs & Database Tier
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+              <button onClick={() => handleMobileToolClick(onOpenApiSandbox)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Terminal className="w-3.5 h-3.5 text-cyan-400" /><span>REST Sandbox</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenErDiagram)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Database className="w-3.5 h-3.5 text-emerald-400" /><span>ERD Explorer</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenSqlExplorer)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><Database className="w-3.5 h-3.5 text-blue-400" /><span>SQL Explorer</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenSecurityFlow)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><ShieldCheck className="w-3.5 h-3.5 text-indigo-400" /><span>Security Flow</span></button>
+              <button onClick={() => handleMobileToolClick(onOpenFileTree)} className="text-left p-2 rounded-xl border border-slate-800/80 bg-slate-900/60 flex items-center space-x-2 text-xs font-mono text-slate-200"><FolderTree className="w-3.5 h-3.5 text-cyan-400" /><span>File Tree</span></button>
+              <button onClick={() => { onExportMarkdown(); setIsMobileMenuOpen(false); }} className="text-left p-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 flex items-center space-x-2 text-xs font-mono text-emerald-400"><Download className="w-3.5 h-3.5" /><span>Export RFC Spec</span></button>
+            </div>
+          </div>
         </div>
       )}
     </header>
