@@ -1,29 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, Suspense, lazy } from 'react';
 import axios from 'axios';
 import {
-  Layers, Sparkles, Play, Activity, BarChart2, Zap, Flame, Database,
-  ShieldCheck, Bot, Package, FolderTree, Code2, ArrowRight, CheckCircle2,
-  Cpu, Moon, Sun, Box, Workflow, ChevronRight, Pause, RotateCcw,
-  Terminal, Shield, FileCode, Clock, Server, Monitor, HardDrive, Check, Copy
+  Sparkles, Layers, ShieldCheck, Database, Play, Pause,
+  RotateCcw, Search, ChevronRight, Server, Globe, Cpu,
+  Flame, CheckCircle2, ArrowRight, Zap, Code2, GitBranch,
+  Terminal, Lock, FileCode, Check, Copy, ExternalLink, Activity,
+  BarChart2, Bot, Package, FolderTree, Shield
 } from 'lucide-react';
 import { Header, ThemeMode } from './components/Header';
-import { IngestionModal } from './components/IngestionModal';
 import { ProjectDashboard } from './components/ProjectDashboard';
 import { InteractiveFlowExplorer } from './components/InteractiveFlowExplorer';
 import { NodeInspectorSidebar } from './components/NodeInspectorSidebar';
-import { MonacoViewerModal } from './components/MonacoViewerModal';
-import { DependencyExplorerModal } from './components/DependencyExplorerModal';
-import { SqlExplorerModal } from './components/SqlExplorerModal';
-import { AiAssistantModal } from './components/AiAssistantModal';
-import { ErDiagramModal } from './components/ErDiagramModal';
-import { SecurityExplorerModal } from './components/SecurityExplorerModal';
-import { FileTreeModal } from './components/FileTreeModal';
-import { RuntimeTracingModal } from './components/RuntimeTracingModal';
-import { ApiMetricsDashboardModal } from './components/ApiMetricsDashboardModal';
-import { SequenceDiagramModal } from './components/SequenceDiagramModal';
-import { LatencyHeatmapModal } from './components/LatencyHeatmapModal';
-import { ReactRuntimeExplorerModal } from './components/ReactRuntimeExplorerModal';
 import { ArchitectureIllustration } from './components/ArchitectureIllustration';
+
+// Lazy-loaded modal bundles for sub-millisecond initial load & chunk splitting
+const IngestionModal = lazy(() => import('./components/IngestionModal').then(m => ({ default: m.IngestionModal })));
+const MonacoViewerModal = lazy(() => import('./components/MonacoViewerModal').then(m => ({ default: m.MonacoViewerModal })));
+const DependencyExplorerModal = lazy(() => import('./components/DependencyExplorerModal').then(m => ({ default: m.DependencyExplorerModal })));
+const SqlExplorerModal = lazy(() => import('./components/SqlExplorerModal').then(m => ({ default: m.SqlExplorerModal })));
+const AiAssistantModal = lazy(() => import('./components/AiAssistantModal').then(m => ({ default: m.AiAssistantModal })));
+const ErDiagramModal = lazy(() => import('./components/ErDiagramModal').then(m => ({ default: m.ErDiagramModal })));
+const SecurityExplorerModal = lazy(() => import('./components/SecurityExplorerModal').then(m => ({ default: m.SecurityExplorerModal })));
+const FileTreeModal = lazy(() => import('./components/FileTreeModal').then(m => ({ default: m.FileTreeModal })));
+const RuntimeTracingModal = lazy(() => import('./components/RuntimeTracingModal').then(m => ({ default: m.RuntimeTracingModal })));
+const ApiMetricsDashboardModal = lazy(() => import('./components/ApiMetricsDashboardModal').then(m => ({ default: m.ApiMetricsDashboardModal })));
+const SequenceDiagramModal = lazy(() => import('./components/SequenceDiagramModal').then(m => ({ default: m.SequenceDiagramModal })));
+const LatencyHeatmapModal = lazy(() => import('./components/LatencyHeatmapModal').then(m => ({ default: m.LatencyHeatmapModal })));
+const ReactRuntimeExplorerModal = lazy(() => import('./components/ReactRuntimeExplorerModal').then(m => ({ default: m.ReactRuntimeExplorerModal })));
 import {
   ReactRuntimeGraphic, TracingGraphic, ApiMetricsGraphic, SequenceGraphic,
   HeatmapGraphic, ErdGraphic, SecurityGraphic, AiGraphic,
@@ -1550,109 +1553,114 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
         )}
       </div>
 
-      {/* Modals */}
-      <IngestionModal
-        isOpen={isIngestModalOpen}
-        onClose={() => setIsIngestModalOpen(false)}
-        onProjectIngested={(projectId) => {
-          setCurrentProjectId(projectId);
-          setSelectedNodeId(undefined);
-        }}
-        currentTheme={currentTheme}
-      />
+      {/* Modals with Suspense Chunk Splitting */}
+      <Suspense fallback={null}>
+        <IngestionModal
+          isOpen={isIngestModalOpen}
+          onClose={() => setIsIngestModalOpen(false)}
+          onProjectIngested={(projectId) => {
+            setCurrentProjectId(projectId);
+            setSelectedNodeId(undefined);
+          }}
+          currentTheme={currentTheme}
+        />
 
-      <MonacoViewerModal
-        projectId={currentProjectId || ''}
-        filePath={viewingFilePath}
-        onClose={() => setViewingFilePath(null)}
-        currentTheme={currentTheme}
-      />
+        <MonacoViewerModal
+          projectId={currentProjectId || ''}
+          filePath={viewingFilePath}
+          onClose={() => setViewingFilePath(null)}
+          currentTheme={currentTheme}
+          onAskAi={(prompt, analysisType) => handleOpenAi(prompt, (analysisType as AiAnalysisType) || 'CODE_REVIEW')}
+        />
 
-      <DependencyExplorerModal
-        projectId={currentProjectId}
-        isOpen={isDependencyModalOpen}
-        onClose={() => setIsDependencyModalOpen(false)}
-        currentTheme={currentTheme}
-        onAskAi={(prompt, analysisType) => handleOpenAi(prompt, (analysisType as AiAnalysisType) || 'DEPENDENCY_AUDIT')}
-      />
+        <DependencyExplorerModal
+          projectId={currentProjectId}
+          isOpen={isDependencyModalOpen}
+          onClose={() => setIsDependencyModalOpen(false)}
+          currentTheme={currentTheme}
+          onAskAi={(prompt, analysisType) => handleOpenAi(prompt, (analysisType as AiAnalysisType) || 'DEPENDENCY_AUDIT')}
+        />
 
-      <SqlExplorerModal
-        projectId={currentProjectId}
-        isOpen={isSqlExplorerOpen}
-        onClose={() => setIsSqlExplorerOpen(false)}
-        currentTheme={currentTheme}
-        onAskAi={(prompt, analysisType) => handleOpenAi(prompt, (analysisType as AiAnalysisType) || 'SQL_OPTIMIZE')}
-      />
+        <SqlExplorerModal
+          projectId={currentProjectId}
+          isOpen={isSqlExplorerOpen}
+          onClose={() => setIsSqlExplorerOpen(false)}
+          currentTheme={currentTheme}
+          onAskAi={(prompt, analysisType) => handleOpenAi(prompt, (analysisType as AiAnalysisType) || 'SQL_OPTIMIZE')}
+        />
 
-      <AiAssistantModal
-        projectId={currentProjectId}
-        isOpen={isAiAssistantOpen}
-        onClose={() => {
-          setIsAiAssistantOpen(false);
-          setAiInitialPrompt(undefined);
-          setAiInitialAnalysisType(undefined);
-        }}
-        currentTheme={currentTheme}
-        initialPrompt={aiInitialPrompt}
-        initialAnalysisType={aiInitialAnalysisType}
-      />
+        <AiAssistantModal
+          projectId={currentProjectId}
+          isOpen={isAiAssistantOpen}
+          onClose={() => {
+            setIsAiAssistantOpen(false);
+            setAiInitialPrompt(undefined);
+            setAiInitialAnalysisType(undefined);
+          }}
+          currentTheme={currentTheme}
+          initialPrompt={aiInitialPrompt}
+          initialAnalysisType={aiInitialAnalysisType}
+        />
 
-      <ErDiagramModal
-        projectId={currentProjectId}
-        isOpen={isErDiagramOpen}
-        onClose={() => setIsErDiagramOpen(false)}
-        currentTheme={currentTheme}
-      />
+        <ErDiagramModal
+          projectId={currentProjectId}
+          isOpen={isErDiagramOpen}
+          onClose={() => setIsErDiagramOpen(false)}
+          currentTheme={currentTheme}
+          onAskAi={(prompt, analysisType) => handleOpenAi(prompt, (analysisType as AiAnalysisType) || 'DATABASE')}
+        />
 
-      <SecurityExplorerModal
-        projectId={currentProjectId}
-        isOpen={isSecurityFlowOpen}
-        onClose={() => setIsSecurityFlowOpen(false)}
-        currentTheme={currentTheme}
-        onAskAi={(prompt, analysisType) => handleOpenAi(prompt, (analysisType as AiAnalysisType) || 'SECURITY')}
-      />
+        <SecurityExplorerModal
+          projectId={currentProjectId}
+          isOpen={isSecurityFlowOpen}
+          onClose={() => setIsSecurityFlowOpen(false)}
+          currentTheme={currentTheme}
+          onAskAi={(prompt, analysisType) => handleOpenAi(prompt, (analysisType as AiAnalysisType) || 'SECURITY')}
+        />
 
-      <FileTreeModal
-        projectId={currentProjectId}
-        isOpen={isFileTreeOpen}
-        onClose={() => setIsFileTreeOpen(false)}
-        onViewCode={(path: string) => {
-          setIsFileTreeOpen(false);
-          setViewingFilePath(path);
-        }}
-        currentTheme={currentTheme}
-      />
+        <FileTreeModal
+          projectId={currentProjectId}
+          isOpen={isFileTreeOpen}
+          onClose={() => setIsFileTreeOpen(false)}
+          onViewCode={(path: string) => {
+            setIsFileTreeOpen(false);
+            setViewingFilePath(path);
+          }}
+          currentTheme={currentTheme}
+        />
 
-      <RuntimeTracingModal
-        projectId={currentProjectId}
-        isOpen={isRuntimeTracingOpen}
-        onClose={() => setIsRuntimeTracingOpen(false)}
-        currentTheme={currentTheme}
-      />
+        <RuntimeTracingModal
+          projectId={currentProjectId}
+          isOpen={isRuntimeTracingOpen}
+          onClose={() => setIsRuntimeTracingOpen(false)}
+          currentTheme={currentTheme}
+        />
 
-      <ApiMetricsDashboardModal
-        isOpen={isApiMetricsOpen}
-        onClose={() => setIsApiMetricsOpen(false)}
-        currentTheme={currentTheme}
-      />
+        <ApiMetricsDashboardModal
+          isOpen={isApiMetricsOpen}
+          onClose={() => setIsApiMetricsOpen(false)}
+          currentTheme={currentTheme}
+        />
 
-      <SequenceDiagramModal
-        isOpen={isSequenceDiagramOpen}
-        onClose={() => setIsSequenceDiagramOpen(false)}
-        currentTheme={currentTheme}
-      />
+        <SequenceDiagramModal
+          isOpen={isSequenceDiagramOpen}
+          onClose={() => setIsSequenceDiagramOpen(false)}
+          currentTheme={currentTheme}
+        />
 
-      <LatencyHeatmapModal
-        isOpen={isLatencyHeatmapOpen}
-        onClose={() => setIsLatencyHeatmapOpen(false)}
-        currentTheme={currentTheme}
-      />
-      <ReactRuntimeExplorerModal
-        isOpen={isReactRuntimeOpen}
-        onClose={() => setIsReactRuntimeOpen(false)}
-        projectId={currentProjectId}
-        currentTheme={currentTheme}
-      />
+        <LatencyHeatmapModal
+          isOpen={isLatencyHeatmapOpen}
+          onClose={() => setIsLatencyHeatmapOpen(false)}
+          currentTheme={currentTheme}
+        />
+
+        <ReactRuntimeExplorerModal
+          isOpen={isReactRuntimeOpen}
+          onClose={() => setIsReactRuntimeOpen(false)}
+          projectId={currentProjectId}
+          currentTheme={currentTheme}
+        />
+      </Suspense>
 
     </div>
   );

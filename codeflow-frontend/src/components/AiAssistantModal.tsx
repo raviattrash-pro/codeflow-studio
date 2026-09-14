@@ -215,6 +215,39 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
 
   if (!isOpen) return null;
 
+  const streamMessage = (fullText: string, analysisType: AiAnalysisType) => {
+    const msgId = `ai-${Date.now()}`;
+    const newMsg: AiMessage = {
+      id: msgId,
+      role: 'assistant',
+      content: '',
+      timestamp: Date.now(),
+      analysisType,
+      isStreaming: true,
+    };
+
+    setMessages(prev => [...prev, newMsg]);
+    setLoading(false);
+
+    const words = fullText.split(' ');
+    let currentIdx = 0;
+
+    const interval = setInterval(() => {
+      currentIdx += 2;
+      if (currentIdx >= words.length) {
+        setMessages(prev =>
+          prev.map(m => (m.id === msgId ? { ...m, content: fullText, isStreaming: false } : m))
+        );
+        clearInterval(interval);
+      } else {
+        const partial = words.slice(0, currentIdx).join(' ');
+        setMessages(prev =>
+          prev.map(m => (m.id === msgId ? { ...m, content: partial } : m))
+        );
+      }
+    }, 18);
+  };
+
   const handleSend = (prompt: string, analysisType: AiAnalysisType = 'GENERAL') => {
     if (!projectId || !prompt.trim()) return;
 
@@ -235,16 +268,8 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
     if (projectId === DEMO_PROJECT_DATA.id || isFree) {
       setTimeout(() => {
         const demo = getDemoAiResponse(prompt, analysisType);
-        const assistantMsg: AiMessage = {
-          id: `ai-${Date.now()}`,
-          role: 'assistant',
-          content: formatApiResponse(demo),
-          timestamp: Date.now(),
-          analysisType,
-        };
-        setMessages(prev => [...prev, assistantMsg]);
-        setLoading(false);
-      }, 700 + Math.random() * 500);
+        streamMessage(formatApiResponse(demo), analysisType);
+      }, 600 + Math.random() * 400);
       return;
     }
 
@@ -257,27 +282,12 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
       ollamaUrl: aiConfig.ollamaUrl,
     })
       .then(res => {
-        const assistantMsg: AiMessage = {
-          id: `ai-${Date.now()}`,
-          role: 'assistant',
-          content: formatApiResponse(res.data),
-          timestamp: Date.now(),
-          analysisType,
-        };
-        setMessages(prev => [...prev, assistantMsg]);
+        streamMessage(formatApiResponse(res.data), analysisType);
       })
       .catch(() => {
         const demo = getDemoAiResponse(prompt, analysisType);
-        const assistantMsg: AiMessage = {
-          id: `ai-${Date.now()}`,
-          role: 'assistant',
-          content: formatApiResponse(demo),
-          timestamp: Date.now(),
-          analysisType,
-        };
-        setMessages(prev => [...prev, assistantMsg]);
-      })
-      .finally(() => setLoading(false));
+        streamMessage(formatApiResponse(demo), analysisType);
+      });
   };
 
   const formatApiResponse = (resp: AiApiResponse): string => {
@@ -733,6 +743,9 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
                     ) : (
                       <div>
                         {renderContent(msg.content)}
+                        {msg.isStreaming && (
+                          <span className="inline-block w-2 h-3.5 ml-1 bg-purple-400 animate-pulse align-middle rounded-sm" />
+                        )}
                         <div className={`flex items-center justify-end mt-3 pt-2 space-x-2 border-t ${isLight ? 'border-slate-100' : 'border-slate-700/30'}`}>
                           <button
                             onClick={() => handleCopy(msg.id, msg.content)}
