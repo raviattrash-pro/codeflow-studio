@@ -179,20 +179,20 @@ export const TestSuiteGeneratorModal: React.FC<TestSuiteGeneratorModalProps> = (
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
       <div
         className={`w-full max-w-5xl max-h-[90vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden border ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900'
             : isGlass
-            ? 'bg-[#0f172a] backdrop-blur-xl border-cyan-500/30 text-white'
+            ? 'bg-[#0f172a] border-cyan-500/40 text-white'
             : isNeumorphic
             ? 'bg-[#1e2330] border-slate-700/50 text-slate-100'
             : 'bg-[#0f172a] border-slate-700 text-white'
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50 bg-slate-800/30">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50 bg-[#1e293b]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-emerald-500/20">
               <CheckSquare className="w-5 h-5" />
@@ -229,7 +229,7 @@ export const TestSuiteGeneratorModal: React.FC<TestSuiteGeneratorModalProps> = (
         {/* Content Layout */}
         <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-12">
           {/* Left Presets */}
-          <div className="md:col-span-4 border-r border-slate-700/50 p-4 space-y-2 overflow-y-auto bg-slate-800/20">
+          <div className="md:col-span-4 border-r border-slate-700/50 p-4 space-y-2 overflow-y-auto bg-[#090d16]">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
               Generated Test Suites
             </span>
@@ -240,7 +240,7 @@ export const TestSuiteGeneratorModal: React.FC<TestSuiteGeneratorModalProps> = (
                 className={`w-full text-left p-3 rounded-xl border transition flex flex-col gap-1 ${
                   selectedPreset.id === preset.id
                     ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
-                    : 'bg-slate-800/40 border-slate-700/40 text-slate-300 hover:bg-slate-800/70'
+                    : 'bg-[#141e33] border-slate-700/40 text-slate-300 hover:bg-slate-800/70'
                 }`}
               >
                 <div className="flex items-center justify-between">

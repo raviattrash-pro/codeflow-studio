@@ -389,7 +389,7 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
       >
         {/* Header */}
         <div className={`px-6 py-4.5 border-b flex items-center justify-between shrink-0 ${
-          isLight ? 'bg-slate-50/90 border-slate-200' : 'bg-slate-950/90 border-slate-800/80'
+          isLight ? 'bg-slate-50/90 border-slate-200' : 'bg-[#070a12] border-slate-800/80'
         }`}>
           <div className="flex items-center space-x-3.5">
             <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-cyan-500/20 to-indigo-500/20 text-cyan-400 border border-cyan-500/30">
@@ -487,7 +487,7 @@ export const FileTreeModal: React.FC<FileTreeModalProps> = ({
         }`}>
           {viewMode === 'interactive' && (
             <div className={`p-4 rounded-2xl border shadow-sm ${
-              isLight ? 'bg-white border-slate-200' : 'bg-slate-900/90 border-slate-800'
+              isLight ? 'bg-white border-slate-200' : 'bg-[#0f172a] border-slate-800'
             }`}>
               {renderInteractiveTree(filteredData)}
               {filteredData.length === 0 && (

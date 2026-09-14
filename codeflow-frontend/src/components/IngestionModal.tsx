@@ -118,7 +118,7 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
       >
         {/* Header */}
         <div className={`px-6 py-4.5 border-b flex items-center justify-between shrink-0 ${
-          isLight ? 'bg-slate-50/95 border-slate-200' : 'bg-slate-950/90 border-slate-800'
+          isLight ? 'bg-slate-50/95 border-slate-200' : 'bg-[#070a12] border-slate-800'
         }`}>
           <div className="flex items-center space-x-3">
             <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 text-cyan-400 border border-cyan-500/30">

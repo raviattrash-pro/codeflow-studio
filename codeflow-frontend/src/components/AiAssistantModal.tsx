@@ -384,7 +384,7 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
       >
         {/* Header */}
         <div className={`px-6 py-4 border-b flex items-center justify-between shrink-0 ${
-          isLight ? 'bg-slate-50/95 border-slate-200' : 'bg-slate-950/90 border-slate-800'
+          isLight ? 'bg-slate-50/95 border-slate-200' : 'bg-[#070a12] border-slate-800'
         }`}>
           <div className="flex items-center space-x-3">
             <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-purple-500/20 to-pink-500/20 text-purple-400 border border-purple-500/30 shadow-lg shadow-purple-950/20">
@@ -736,7 +736,7 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
                         : 'bg-indigo-600/90 text-white rounded-br-md shadow-lg shadow-indigo-950/50'
                       : isLight
                       ? 'bg-white border border-slate-200 rounded-bl-md shadow-sm'
-                      : 'bg-slate-900/90 border border-slate-800 rounded-bl-md shadow-lg'
+                      : 'bg-[#0f172a] border border-slate-800 rounded-bl-md shadow-lg'
                   }`}>
                     {msg.role === 'user' ? (
                       <p className="text-xs leading-relaxed font-sans">{msg.content}</p>
@@ -766,7 +766,7 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
               {loading && (
                 <div className="flex justify-start">
                   <div className={`px-5 py-4 rounded-2xl rounded-bl-md ${
-                    isLight ? 'bg-white border border-slate-200' : 'bg-slate-900/90 border border-slate-800'
+                    isLight ? 'bg-white border border-slate-200' : 'bg-[#0f172a] border border-slate-800'
                   }`}>
                     <div className="flex items-center space-x-2.5">
                       <div className="flex space-x-1">

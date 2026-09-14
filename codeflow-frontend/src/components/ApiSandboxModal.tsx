@@ -255,13 +255,13 @@ print(response.json())`;
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
       <div
         className={`w-full max-w-5xl max-h-[90vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden border ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900'
             : isGlass
-            ? 'bg-[#0f172a] backdrop-blur-xl border-cyan-500/30 text-white'
+            ? 'bg-[#0f172a] border-cyan-500/40 text-white'
             : isNeumorphic
             ? 'bg-[#1e2330] border-slate-700/50 text-slate-100'
             : 'bg-[#0f172a] border-slate-700 text-white'
@@ -422,7 +422,7 @@ print(response.json())`;
                         {copied === 'snippet' ? 'Copied' : 'Copy'}
                       </button>
                     </div>
-                    <pre className="p-3 bg-slate-900/90 border border-slate-700/60 rounded-lg text-xs font-mono text-cyan-300 overflow-x-auto">
+                    <pre className="p-3 bg-[#0f172a] border border-slate-700/60 rounded-lg text-xs font-mono text-cyan-300 overflow-x-auto">
                       {generateSnippet(activeSnippetLang)}
                     </pre>
                   </div>

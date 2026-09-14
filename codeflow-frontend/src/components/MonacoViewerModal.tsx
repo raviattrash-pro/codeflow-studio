@@ -143,7 +143,7 @@ export const MonacoViewerModal: React.FC<MonacoViewerModalProps> = ({
       >
         {/* Header */}
         <div className={`px-6 py-4 border-b flex items-center justify-between shrink-0 font-mono ${
-          isLight ? 'bg-slate-50/95 border-slate-200' : 'bg-slate-950/90 border-slate-800'
+          isLight ? 'bg-slate-50/95 border-slate-200' : 'bg-[#070a12] border-slate-800'
         }`}>
           <div className="flex items-center space-x-3 truncate">
             <div className="p-2.5 rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-md">

@@ -222,13 +222,13 @@ ${FINDINGS.map((f, i) => `### ${i + 1}. [${f.severity}] ${f.title}
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
       <div
         className={`w-full max-w-5xl max-h-[90vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden border ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900'
             : isGlass
-            ? 'bg-[#0f172a] backdrop-blur-xl border-cyan-500/30 text-white'
+            ? 'bg-[#0f172a] border-cyan-500/40 text-white'
             : isNeumorphic
             ? 'bg-[#1e2330] border-slate-700/50 text-slate-100 shadow-[20px_20px_60px_#151922,-20px_-20px_60px_#272d3e]'
             : 'bg-[#0f172a] border-slate-700 text-white'
