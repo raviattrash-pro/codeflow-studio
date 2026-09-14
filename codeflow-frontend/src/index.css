@@ -550,3 +550,96 @@ select, option {
   background-color: #e0e5ec !important;
   color: #1e293b !important;
 }
+
+
+/* ==========================================================================
+   SOLID OPAQUE MODAL SYSTEM (Zero Translucency, Zero Canvas Bleed-through)
+   ========================================================================== */
+.studio-modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999999 !important;
+  background: rgba(4, 7, 15, 0.95) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 1rem !important;
+}
+
+.studio-modal-card {
+  background-color: #0f172a !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+  color: #f8fafc !important;
+  border-radius: 1rem !important;
+  overflow: hidden !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+[data-theme='NORMAL'] .studio-modal-card {
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  color: #0f172a !important;
+}
+
+[data-theme='NEUMORPHIC'] .studio-modal-card {
+  background-color: #1e2330 !important;
+  border: 1px solid #374151 !important;
+  color: #f3f4f6 !important;
+}
+
+.studio-modal-header {
+  background-color: #1e293b !important;
+  border-bottom: 1px solid #334155 !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+[data-theme='NORMAL'] .studio-modal-header {
+  background-color: #f1f5f9 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+.studio-modal-sidebar {
+  background-color: #090d16 !important;
+  border-right: 1px solid #1e293b !important;
+}
+
+[data-theme='NORMAL'] .studio-modal-sidebar {
+  background-color: #f8fafc !important;
+  border-right: 1px solid #e2e8f0 !important;
+}
+
+.studio-modal-content {
+  background-color: #070a12 !important;
+}
+
+[data-theme='NORMAL'] .studio-modal-content {
+  background-color: #ffffff !important;
+}
+
+.studio-modal-item {
+  background-color: #141e33 !important;
+  border: 1px solid #1e293b !important;
+}
+
+[data-theme='NORMAL'] .studio-modal-item {
+  background-color: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.studio-modal-code {
+  background-color: #050811 !important;
+  border: 1px solid #1e293b !important;
+}
+
+[data-theme='NORMAL'] .studio-modal-code {
+  background-color: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+}

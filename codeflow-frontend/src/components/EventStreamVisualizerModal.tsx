@@ -41,8 +41,6 @@ export const EventStreamVisualizerModal: React.FC<EventStreamVisualizerModalProp
   if (!isOpen) return null;
 
   const isLight = currentTheme === 'NORMAL';
-  const isGlass = currentTheme === 'GLASSMORPHISM';
-  const isNeumorphic = currentTheme === 'NEUMORPHIC';
 
   const handlePublish = () => {
     setIsPublishing(true);
@@ -65,20 +63,16 @@ export const EventStreamVisualizerModal: React.FC<EventStreamVisualizerModalProp
   };
 
   return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="studio-modal-overlay">
       <div
-        className={`w-full max-w-5xl max-h-[90vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden border ${
-          isLight
-            ? 'bg-white border-slate-200 text-slate-900'
-            : isGlass
-            ? 'bg-[#0f172a] border-cyan-500/40 text-white'
-            : isNeumorphic
-            ? 'bg-[#1e2330] border-slate-700/50 text-slate-100'
-            : 'bg-[#0f172a] border-slate-700 text-white'
-        }`}
+        className="studio-modal-card w-full max-w-5xl max-h-[90vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden"
+        style={{ backgroundColor: isLight ? '#ffffff' : '#0f172a' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50 bg-[#1e293b]">
+        <div
+          className="studio-modal-header flex items-center justify-between px-6 py-4"
+          style={{ backgroundColor: isLight ? '#f1f5f9' : '#1e293b' }}
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold shadow-lg shadow-purple-500/20">
               <Radio className="w-5 h-5" />
@@ -97,7 +91,7 @@ export const EventStreamVisualizerModal: React.FC<EventStreamVisualizerModalProp
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-700/50 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -106,7 +100,10 @@ export const EventStreamVisualizerModal: React.FC<EventStreamVisualizerModalProp
         {/* Content Layout */}
         <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-12">
           {/* Left Controls */}
-          <div className="md:col-span-4 border-r border-slate-700/50 p-4 space-y-4 overflow-y-auto bg-[#090d16]">
+          <div
+            className="studio-modal-sidebar md:col-span-4 p-4 space-y-4 overflow-y-auto"
+            style={{ backgroundColor: isLight ? '#f8fafc' : '#090d16' }}
+          >
             <div>
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
                 Kafka Topics / Channels
@@ -116,11 +113,11 @@ export const EventStreamVisualizerModal: React.FC<EventStreamVisualizerModalProp
                   <button
                     key={t}
                     onClick={() => setSelectedTopic(t as any)}
-                    className={`w-full text-left p-3 rounded-xl border transition ${
-                      selectedTopic === t
-                        ? 'bg-purple-500/15 border-purple-500/40 text-purple-300'
-                        : 'bg-[#141e33] border-slate-700/40 text-slate-300 hover:bg-slate-800/70'
-                    }`}
+                    className="w-full text-left p-3 rounded-xl border transition cursor-pointer"
+                    style={{
+                      backgroundColor: selectedTopic === t ? (isLight ? '#f3e8ff' : '#1e293b') : (isLight ? '#ffffff' : '#141e33'),
+                      borderColor: selectedTopic === t ? '#c084fc' : (isLight ? '#cbd5e1' : '#334155')
+                    }}
                   >
                     <span className="text-xs font-bold block">{t}</span>
                     <span className="text-[10px] text-slate-400 font-mono">3 Consumer Groups • 0 Lag</span>
@@ -132,7 +129,7 @@ export const EventStreamVisualizerModal: React.FC<EventStreamVisualizerModalProp
             <button
               onClick={handlePublish}
               disabled={isPublishing}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-600/20 hover:from-purple-500 hover:to-pink-500 transition"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-600/20 hover:from-purple-500 hover:to-pink-500 transition cursor-pointer"
             >
               <Send className="w-3.5 h-3.5" />
               {isPublishing ? 'Publishing...' : 'Publish Test Event Payload'}
@@ -140,21 +137,36 @@ export const EventStreamVisualizerModal: React.FC<EventStreamVisualizerModalProp
           </div>
 
           {/* Right Live Stream */}
-          <div className="md:col-span-8 flex flex-col p-5 overflow-y-auto space-y-3">
+          <div
+            className="studio-modal-content md:col-span-8 flex flex-col p-5 overflow-y-auto space-y-3"
+            style={{ backgroundColor: isLight ? '#ffffff' : '#070a12' }}
+          >
             <span className="text-xs font-bold uppercase text-slate-400">
               Live Event Consumer Stream ({events.length})
             </span>
 
             <div className="space-y-2 flex-1">
               {events.map(ev => (
-                <div key={ev.id} className="p-3 rounded-xl border border-slate-700/50 bg-slate-900/60 font-mono text-xs space-y-1.5">
+                <div
+                  key={ev.id}
+                  className="p-3 rounded-xl border font-mono text-xs space-y-1.5"
+                  style={{
+                    backgroundColor: isLight ? '#f8fafc' : '#0f172a',
+                    borderColor: isLight ? '#e2e8f0' : '#1e293b'
+                  }}
+                >
                   <div className="flex items-center justify-between text-slate-400">
                     <span className="text-purple-400 font-bold">{ev.topic}</span>
                     <span className="text-[11px]">{ev.timestamp} ({ev.latencyMs}ms)</span>
                   </div>
-                  <pre className="text-cyan-300 text-[11px] overflow-x-auto">{ev.payload}</pre>
+                  <pre
+                    className="p-2 rounded text-cyan-300 text-[11px] overflow-x-auto"
+                    style={{ backgroundColor: isLight ? '#f1f5f9' : '#050811' }}
+                  >
+                    {ev.payload}
+                  </pre>
                   <div className="flex items-center gap-1 text-[10px] text-emerald-400">
-                    <CheckCircle2 className="w-3 h-3" />
+                    <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>Consumed by: {ev.consumer}</span>
                   </div>
                 </div>

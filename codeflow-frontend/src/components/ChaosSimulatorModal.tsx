@@ -157,9 +157,9 @@ export const ChaosSimulatorModal: React.FC<ChaosSimulatorModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="studio-modal-overlay">
       <div
-        className={`w-full max-w-5xl max-h-[90vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden border ${
+        className={`w-full max-w-5xl max-h-[90vh] flex flex-col studio-modal-card rounded-2xl shadow-2xl overflow-hidden border ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900'
             : isGlass

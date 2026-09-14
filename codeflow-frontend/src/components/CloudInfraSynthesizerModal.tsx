@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  X, Cloud, Server, Database, Copy, Check, Download, Code2, Sparkles, Box
+  X, Cloud, Copy, Check, Download, Layers, Server, Database, CheckCircle2
 } from 'lucide-react';
 import { ThemeMode } from './Header';
 
@@ -21,14 +21,11 @@ export const CloudInfraSynthesizerModal: React.FC<CloudInfraSynthesizerModalProp
   if (!isOpen) return null;
 
   const isLight = currentTheme === 'NORMAL';
-  const isGlass = currentTheme === 'GLASSMORPHISM';
-  const isNeumorphic = currentTheme === 'NEUMORPHIC';
 
   const getCode = () => {
     switch (activeTab) {
       case 'DOCKER':
-        return `# CodeFlow Studio v8.0 — Production Docker Compose
-version: '3.8'
+        return `version: '3.8'
 
 services:
   app:
@@ -141,9 +138,12 @@ spec:
     spec:
       containers:
       - name: codeflow-api
-        image: codeflow/backend:v8.0.0
+        image: registry.codeflow.io/api:8.0.0
         ports:
         - containerPort: 8080
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "prod"
         resources:
           limits:
             cpu: "1000m"
@@ -155,13 +155,20 @@ spec:
           httpGet:
             path: /actuator/health/liveness
             port: 8080
-          initialDelaySeconds: 15
-        readinessProbe:
-          httpGet:
-            path: /actuator/health/readiness
-            port: 8080
-          initialDelaySeconds: 10
----`
+          initialDelaySeconds: 30
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: codeflow-api-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: codeflow-api`;
     }
   };
 
@@ -183,20 +190,16 @@ spec:
   };
 
   return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="studio-modal-overlay">
       <div
-        className={`w-full max-w-5xl max-h-[90vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden border ${
-          isLight
-            ? 'bg-white border-slate-200 text-slate-900'
-            : isGlass
-            ? 'bg-[#0f172a] border-cyan-500/40 text-white'
-            : isNeumorphic
-            ? 'bg-[#1e2330] border-slate-700/50 text-slate-100'
-            : 'bg-[#0f172a] border-slate-700 text-white'
-        }`}
+        className="studio-modal-card w-full max-w-5xl max-h-[90vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden"
+        style={{ backgroundColor: isLight ? '#ffffff' : '#0f172a' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50 bg-[#1e293b]">
+        <div
+          className="studio-modal-header flex items-center justify-between px-6 py-4"
+          style={{ backgroundColor: isLight ? '#f1f5f9' : '#1e293b' }}
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-sky-500/20">
               <Cloud className="w-5 h-5" />
@@ -216,14 +219,14 @@ spec:
           <div className="flex items-center gap-3">
             <button
               onClick={handleDownload}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/40 transition"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/40 transition cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               Download IaC File
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-700/50 transition cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -231,7 +234,10 @@ spec:
         </div>
 
         {/* Content Layout */}
-        <div className="flex-1 overflow-hidden flex flex-col p-5 space-y-4">
+        <div
+          className="studio-modal-content flex-1 overflow-hidden flex flex-col p-5 space-y-4"
+          style={{ backgroundColor: isLight ? '#ffffff' : '#070a12' }}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {[
@@ -242,9 +248,11 @@ spec:
                 <button
                   key={t.id}
                   onClick={() => setActiveTab(t.id as any)}
-                  className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${
-                    activeTab === t.id ? 'bg-sky-500 text-slate-950 shadow' : 'bg-slate-800 text-slate-400 hover:text-white'
-                  }`}
+                  className="px-3 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer"
+                  style={{
+                    backgroundColor: activeTab === t.id ? '#0ea5e9' : (isLight ? '#f1f5f9' : '#1e293b'),
+                    color: activeTab === t.id ? '#000000' : (isLight ? '#334155' : '#94a3b8')
+                  }}
                 >
                   {t.name}
                 </button>
@@ -253,14 +261,17 @@ spec:
 
             <button
               onClick={copyCode}
-              className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700 transition"
+              className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700 transition cursor-pointer"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
               {copied ? 'Copied' : 'Copy IaC'}
             </button>
           </div>
 
-          <div className="border border-slate-700/50 rounded-xl overflow-hidden bg-slate-950 flex-1 flex flex-col shadow-inner">
+          <div
+            className="border border-slate-700/50 rounded-xl overflow-hidden flex-1 flex flex-col shadow-inner"
+            style={{ backgroundColor: '#050811' }}
+          >
             <pre className="p-4 text-xs font-mono text-cyan-300/90 leading-relaxed overflow-x-auto flex-1">
               {getCode()}
             </pre>

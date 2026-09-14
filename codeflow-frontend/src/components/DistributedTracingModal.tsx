@@ -41,26 +41,19 @@ export const DistributedTracingModal: React.FC<DistributedTracingModalProps> = (
   if (!isOpen) return null;
 
   const isLight = currentTheme === 'NORMAL';
-  const isGlass = currentTheme === 'GLASSMORPHISM';
-  const isNeumorphic = currentTheme === 'NEUMORPHIC';
-
   const totalDuration = 48.2;
 
   return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="studio-modal-overlay">
       <div
-        className={`w-full max-w-5xl max-h-[90vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden border ${
-          isLight
-            ? 'bg-white border-slate-200 text-slate-900'
-            : isGlass
-            ? 'bg-[#0f172a] border-cyan-500/40 text-white'
-            : isNeumorphic
-            ? 'bg-[#1e2330] border-slate-700/50 text-slate-100'
-            : 'bg-[#0f172a] border-slate-700 text-white'
-        }`}
+        className="studio-modal-card w-full max-w-5xl max-h-[90vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden"
+        style={{ backgroundColor: isLight ? '#ffffff' : '#0f172a' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50 bg-[#1e293b]">
+        <div
+          className="studio-modal-header flex items-center justify-between px-6 py-4"
+          style={{ backgroundColor: isLight ? '#f1f5f9' : '#1e293b' }}
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-cyan-500/20">
               <Activity className="w-5 h-5" />
@@ -79,77 +72,97 @@ export const DistributedTracingModal: React.FC<DistributedTracingModalProps> = (
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-700/50 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content Layout */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div
+          className="studio-modal-content flex-1 overflow-y-auto p-6 space-y-6"
+          style={{ backgroundColor: isLight ? '#ffffff' : '#070a12' }}
+        >
           {/* Top Trace Summary */}
           <div className="grid grid-cols-3 gap-4">
-            <div className="p-3 rounded-xl border border-slate-700/50 bg-slate-800/30">
+            <div
+              className="p-3 rounded-xl border"
+              style={{ backgroundColor: isLight ? '#f8fafc' : '#141e33', borderColor: isLight ? '#e2e8f0' : '#1e293b' }}
+            >
               <span className="text-[11px] text-slate-400 block">Trace ID</span>
-              <span className="text-xs font-mono font-bold text-cyan-300">4bf92f3577b34da6a3ce929d0e0e4736</span>
+              <span className="text-xs font-mono font-bold text-cyan-400">4bf92f3577b34da6a3ce929d0e0e4736</span>
             </div>
-            <div className="p-3 rounded-xl border border-slate-700/50 bg-slate-800/30">
+            <div
+              className="p-3 rounded-xl border"
+              style={{ backgroundColor: isLight ? '#f8fafc' : '#141e33', borderColor: isLight ? '#e2e8f0' : '#1e293b' }}
+            >
               <span className="text-[11px] text-slate-400 block">Total Latency</span>
               <span className="text-xs font-mono font-bold text-emerald-400">48.2 ms (7 Spans)</span>
             </div>
-            <div className="p-3 rounded-xl border border-rose-500/40 bg-rose-500/10">
-              <span className="text-[11px] text-rose-400 block font-bold">Critical Bottleneck</span>
-              <span className="text-xs font-mono font-bold text-rose-300">payment-service (24.5ms • 51%)</span>
+            <div
+              className="p-3 rounded-xl border border-rose-500/40"
+              style={{ backgroundColor: isLight ? '#fff1f2' : '#1f131a' }}
+            >
+              <span className="text-[11px] text-rose-400 font-bold block">Critical Path Bottleneck</span>
+              <span className="text-xs font-mono font-bold text-rose-300">StripeGatewayClient.charge() (24.5ms • 51%)</span>
             </div>
           </div>
 
-          {/* Span Waterfall Timeline */}
-          <div className="space-y-2 border border-slate-700/50 rounded-xl p-4 bg-slate-950/70">
-            <div className="text-[11px] font-bold uppercase text-slate-400 mb-3 flex items-center justify-between">
-              <span>Service Span Waterfall (0ms ➔ 48.2ms)</span>
-              <span>Duration</span>
-            </div>
+          {/* Span Waterfall */}
+          <div className="space-y-3">
+            <span className="text-xs font-bold uppercase text-slate-400 block">
+              Distributed Span Execution Waterfall
+            </span>
 
-            {SPANS.map(span => {
-              const leftPercent = (span.startOffsetMs / totalDuration) * 100;
-              const widthPercent = Math.max((span.durationMs / totalDuration) * 100, 4);
+            <div className="space-y-2">
+              {SPANS.map(span => {
+                const leftPercent = (span.startOffsetMs / totalDuration) * 100;
+                const widthPercent = Math.max((span.durationMs / totalDuration) * 100, 4);
 
-              return (
-                <div
-                  key={span.id}
-                  onClick={() => setSelectedSpan(span)}
-                  className={`p-2.5 rounded-lg border cursor-pointer transition flex items-center justify-between gap-3 ${
-                    selectedSpan.id === span.id
-                      ? 'bg-cyan-500/15 border-cyan-500/50'
-                      : 'bg-slate-900/60 border-slate-800 hover:bg-slate-800/60'
-                  }`}
-                >
-                  <div className="w-1/3">
-                    <span className="text-xs font-bold font-mono text-slate-200 block truncate">{span.service}</span>
-                    <span className="text-[10px] font-mono text-slate-400 block truncate">{span.operation}</span>
-                  </div>
+                return (
+                  <div
+                    key={span.id}
+                    onClick={() => setSelectedSpan(span)}
+                    className="p-3 rounded-xl border transition cursor-pointer"
+                    style={{
+                      backgroundColor: selectedSpan.id === span.id ? (isLight ? '#e0f2fe' : '#1e293b') : (isLight ? '#f8fafc' : '#0f172a'),
+                      borderColor: selectedSpan.id === span.id ? '#38bdf8' : (isLight ? '#e2e8f0' : '#1e293b')
+                    }}
+                  >
+                    <div className="flex items-center justify-between text-xs mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-cyan-400">{span.service}</span>
+                        <span className="text-slate-400 font-mono text-[11px]">{span.operation}</span>
+                        {span.isBottleneck && (
+                          <span className="px-1.5 py-0.2 text-[10px] font-bold rounded bg-rose-500/20 text-rose-400 border border-rose-500/40">
+                            BOTTLENECK
+                          </span>
+                        )}
+                      </div>
+                      <span className="font-mono text-[11px] text-slate-400">{span.durationMs}ms</span>
+                    </div>
 
-                  {/* Waterfall Bar */}
-                  <div className="flex-1 h-3 bg-slate-800/80 rounded-full relative overflow-hidden">
+                    {/* Waterfall Bar Track */}
                     <div
-                      className={`h-full rounded-full ${
-                        span.isBottleneck
-                          ? 'bg-gradient-to-r from-rose-500 to-amber-500'
-                          : 'bg-gradient-to-r from-cyan-500 to-blue-500'
-                      }`}
-                      style={{
-                        marginLeft: `${leftPercent}%`,
-                        width: `${widthPercent}%`
-                      }}
-                    />
+                      className="w-full h-3 rounded-full relative overflow-hidden"
+                      style={{ backgroundColor: isLight ? '#e2e8f0' : '#090d16' }}
+                    >
+                      <div
+                        className={`absolute top-0 bottom-0 rounded-full transition-all ${
+                          span.isBottleneck
+                            ? 'bg-gradient-to-r from-rose-500 to-amber-500 shadow-md shadow-rose-500/30'
+                            : 'bg-gradient-to-r from-cyan-500 to-blue-500'
+                        }`}
+                        style={{
+                          left: `${leftPercent}%`,
+                          width: `${widthPercent}%`,
+                        }}
+                      />
+                    </div>
                   </div>
-
-                  <span className="text-xs font-mono text-cyan-300 w-16 text-right font-bold">
-                    {span.durationMs}ms
-                  </span>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

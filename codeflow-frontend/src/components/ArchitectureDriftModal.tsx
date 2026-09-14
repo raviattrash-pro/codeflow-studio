@@ -60,7 +60,7 @@ const DRIFT_ITEMS: DriftItem[] = [
     component: 'OrderService.java',
     layer: 'Business / Service',
     impact: 'Changed from READ_COMMITTED to SERIALIZABLE. May increase HikariCP lock contention under > 500 RPS load.',
-    risk: 'HIGH',
+    risk: 'MEDIUM',
     remediation: 'Benchmark under burst traffic or revert to optimistic locking with @Version column.',
   },
   {
@@ -69,9 +69,9 @@ const DRIFT_ITEMS: DriftItem[] = [
     title: 'Deprecated Endpoint: DELETE /api/v0/cart/legacy',
     component: 'LegacyCartController.java',
     layer: 'API / Controller',
-    impact: 'Legacy endpoint successfully excised. 0 active clients detected in API gateway logs.',
+    impact: 'Successfully pruned dead code. No client traffic detected in last 30 days.',
     risk: 'NONE',
-  }
+  },
 ];
 
 export const ArchitectureDriftModal: React.FC<ArchitectureDriftModalProps> = ({
@@ -87,8 +87,6 @@ export const ArchitectureDriftModal: React.FC<ArchitectureDriftModalProps> = ({
   if (!isOpen) return null;
 
   const isLight = currentTheme === 'NORMAL';
-  const isGlass = currentTheme === 'GLASSMORPHISM';
-  const isNeumorphic = currentTheme === 'NEUMORPHIC';
 
   const filteredItems = DRIFT_ITEMS.filter(i => {
     if (filterType === 'ALL') return true;
@@ -130,20 +128,16 @@ ${DRIFT_ITEMS.map(d => `- **[${d.type}]** ${d.component} — ${d.title}
   };
 
   return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="studio-modal-overlay">
       <div
-        className={`w-full max-w-5xl max-h-[90vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden border ${
-          isLight
-            ? 'bg-white border-slate-200 text-slate-900'
-            : isGlass
-            ? 'bg-[#0f172a] border-cyan-500/40 text-white'
-            : isNeumorphic
-            ? 'bg-[#1e2330] border-slate-700/50 text-slate-100'
-            : 'bg-[#0f172a] border-slate-700 text-white'
-        }`}
+        className="studio-modal-card w-full max-w-5xl max-h-[90vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden"
+        style={{ backgroundColor: isLight ? '#ffffff' : '#0f172a' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50 bg-[#1e293b]">
+        <div
+          className="studio-modal-header flex items-center justify-between px-6 py-4"
+          style={{ backgroundColor: isLight ? '#f1f5f9' : '#1e293b' }}
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-rose-500 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-amber-500/20">
               <GitPullRequest className="w-5 h-5" />
@@ -163,14 +157,14 @@ ${DRIFT_ITEMS.map(d => `- **[${d.type}]** ${d.component} — ${d.title}
           <div className="flex items-center gap-3">
             <button
               onClick={copyPrComment}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition cursor-pointer"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
               {copied ? 'Copied PR Comment' : 'Copy GitHub PR Comment'}
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-700/50 transition cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -180,7 +174,10 @@ ${DRIFT_ITEMS.map(d => `- **[${d.type}]** ${d.component} — ${d.title}
         {/* Content Layout */}
         <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-12">
           {/* Left Branch Comparison Card */}
-          <div className="md:col-span-4 border-r border-slate-700/50 p-4 space-y-4 overflow-y-auto bg-[#090d16]">
+          <div
+            className="studio-modal-sidebar md:col-span-4 p-4 space-y-4 overflow-y-auto"
+            style={{ backgroundColor: isLight ? '#f8fafc' : '#090d16' }}
+          >
             <div>
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
                 Pull Request Branch
@@ -193,11 +190,11 @@ ${DRIFT_ITEMS.map(d => `- **[${d.type}]** ${d.component} — ${d.title}
                   <button
                     key={b.id}
                     onClick={() => setSelectedBranch(b.id as any)}
-                    className={`w-full text-left p-3 rounded-xl border transition ${
-                      selectedBranch === b.id
-                        ? 'bg-amber-500/15 border-amber-500/40 text-amber-300'
-                        : 'bg-[#141e33] border-slate-700/40 text-slate-300 hover:bg-slate-800/70'
-                    }`}
+                    className="w-full text-left p-3 rounded-xl border transition cursor-pointer"
+                    style={{
+                      backgroundColor: selectedBranch === b.id ? (isLight ? '#e0f2fe' : '#1e293b') : (isLight ? '#ffffff' : '#141e33'),
+                      borderColor: selectedBranch === b.id ? '#38bdf8' : (isLight ? '#cbd5e1' : '#334155')
+                    }}
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <GitBranch className="w-3.5 h-3.5 text-amber-400" />
@@ -210,18 +207,24 @@ ${DRIFT_ITEMS.map(d => `- **[${d.type}]** ${d.component} — ${d.title}
             </div>
 
             {/* Overall Risk HUD */}
-            <div className="p-4 rounded-xl border border-red-500/30 bg-red-500/10 space-y-2">
+            <div
+              className="p-4 rounded-xl border border-red-500/40 space-y-2"
+              style={{ backgroundColor: isLight ? '#fef2f2' : '#1f1319' }}
+            >
               <span className="text-[11px] font-bold uppercase text-red-400 block">
                 Architecture Impact: HIGH RISK
               </span>
               <p className="text-xs text-slate-300 leading-relaxed">
-                1 Layer Boundary Violation detected: <code className="text-red-300 font-mono">PaymentWebhookController</code> directly queries the persistence layer, bypassing transaction management.
+                1 Layer Boundary Violation detected: <code className="text-red-300 font-mono bg-red-950/60 px-1 py-0.5 rounded">PaymentWebhookController</code> directly queries the persistence layer, bypassing transaction management.
               </p>
             </div>
           </div>
 
           {/* Right Drift Timeline & Items */}
-          <div className="md:col-span-8 flex flex-col overflow-y-auto p-5 space-y-4">
+          <div
+            className="studio-modal-content md:col-span-8 flex flex-col overflow-y-auto p-5 space-y-4"
+            style={{ backgroundColor: isLight ? '#ffffff' : '#070a12' }}
+          >
             {/* Filter Pills */}
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase text-slate-400">
@@ -232,11 +235,12 @@ ${DRIFT_ITEMS.map(d => `- **[${d.type}]** ${d.component} — ${d.title}
                   <button
                     key={k}
                     onClick={() => setFilterType(k)}
-                    className={`px-2.5 py-1 text-xs font-medium rounded-lg transition ${
-                      filterType === k
-                        ? 'bg-amber-500 text-slate-950 font-bold shadow'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-                    }`}
+                    className="px-2.5 py-1 text-xs font-medium rounded-lg transition cursor-pointer"
+                    style={{
+                      backgroundColor: filterType === k ? '#f59e0b' : (isLight ? '#f1f5f9' : '#1e293b'),
+                      color: filterType === k ? '#000000' : (isLight ? '#334155' : '#94a3b8'),
+                      fontWeight: filterType === k ? 700 : 500
+                    }}
                   >
                     {k}
                   </button>
@@ -249,13 +253,15 @@ ${DRIFT_ITEMS.map(d => `- **[${d.type}]** ${d.component} — ${d.title}
               {filteredItems.map(item => (
                 <div
                   key={item.id}
-                  className={`p-4 rounded-xl border transition ${
-                    item.type === 'VIOLATION'
-                      ? 'bg-red-500/5 border-red-500/30'
-                      : isLight
-                      ? 'bg-white border-slate-200'
-                      : 'bg-slate-800/30 border-slate-700/40'
-                  }`}
+                  className="p-4 rounded-xl border transition"
+                  style={{
+                    backgroundColor: item.type === 'VIOLATION'
+                      ? (isLight ? '#fef2f2' : '#1c131a')
+                      : (isLight ? '#f8fafc' : '#0f172a'),
+                    borderColor: item.type === 'VIOLATION'
+                      ? 'rgba(239, 68, 68, 0.4)'
+                      : (isLight ? '#e2e8f0' : '#1e293b')
+                  }}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1.5 flex-1">
@@ -264,7 +270,12 @@ ${DRIFT_ITEMS.map(d => `- **[${d.type}]** ${d.component} — ${d.title}
                         <h4 className="font-semibold text-sm">{item.title}</h4>
                       </div>
                       <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-                        <span className="px-2 py-0.5 rounded bg-slate-800 text-cyan-300">{item.component}</span>
+                        <span
+                          className="px-2 py-0.5 rounded text-cyan-300"
+                          style={{ backgroundColor: isLight ? '#e2e8f0' : '#1e293b' }}
+                        >
+                          {item.component}
+                        </span>
                         <span>•</span>
                         <span>{item.layer}</span>
                       </div>
@@ -279,14 +290,11 @@ ${DRIFT_ITEMS.map(d => `- **[${d.type}]** ${d.component} — ${d.title}
 
                     {onTriggerAi && item.remediation && (
                       <button
-                        onClick={() => {
-                          onClose();
-                          onTriggerAi(`Provide architectural refactor for ${item.component}: ${item.remediation}`);
-                        }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow hover:from-purple-500 hover:to-indigo-500 transition flex-shrink-0"
+                        onClick={() => onTriggerAi(`Analyze and generate code fix for architecture drift violation in ${item.component}: ${item.remediation}`)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/20 transition shrink-0 cursor-pointer"
                       >
                         <Sparkles className="w-3.5 h-3.5" />
-                        Refactor with AI
+                        <span>Refactor with AI</span>
                       </button>
                     )}
                   </div>

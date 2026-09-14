@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  X, Mic, MicOff, Sparkles, Volume2, ArrowRight, CheckCircle2, Command
+  X, Mic, MicOff, Volume2, Sparkles, Terminal, Activity, ArrowRight
 } from 'lucide-react';
 import { ThemeMode } from './Header';
 
@@ -8,7 +8,7 @@ interface VoiceCopilotModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentTheme?: ThemeMode;
-  onExecuteCommand: (action: string) => void;
+  onExecuteCommand: (cmd: string) => void;
 }
 
 export const VoiceCopilotModal: React.FC<VoiceCopilotModalProps> = ({
@@ -19,110 +19,138 @@ export const VoiceCopilotModal: React.FC<VoiceCopilotModalProps> = ({
 }) => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
-  const [matchedIntent, setMatchedIntent] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState('Press mic or select a quick voice command...');
 
   if (!isOpen) return null;
 
   const isLight = currentTheme === 'NORMAL';
-  const isGlass = currentTheme === 'GLASSMORPHISM';
-  const isNeumorphic = currentTheme === 'NEUMORPHIC';
 
-  const handleToggleListen = () => {
-    if (isListening) {
-      setIsListening(false);
+  const triggerVoice = (cmdText: string) => {
+    setTranscript(cmdText);
+    setFeedback(`Executing: "${cmdText}"`);
+    onExecuteCommand(cmdText);
+    setTimeout(() => {
+      onClose();
+    }, 900);
+  };
+
+  const handleStartListening = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setFeedback('Web Speech API not supported in this browser. Please use quick commands below.');
       return;
     }
 
-    setIsListening(true);
-    setTranscript('Listening...');
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.continuous = false;
+      recognition.interimResults = false;
 
-    // Web Speech API fallback simulation
-    setTimeout(() => {
-      const samples = [
-        'Audit database entity relationships',
-        'Simulate Redis connection failure',
-        'Switch to Glassmorphism theme',
-        'Generate TypeScript interface for OrderDto',
-        'Show API latency heatmap',
-      ];
-      const picked = samples[Math.floor(Math.random() * samples.length)];
-      setTranscript(picked);
+      recognition.onstart = () => {
+        setIsListening(true);
+        setFeedback('Listening... Speak an architecture command now');
+      };
+
+      recognition.onresult = (e: any) => {
+        const text = e.results[0][0].transcript;
+        triggerVoice(text);
+      };
+
+      recognition.onerror = () => {
+        setIsListening(false);
+        setFeedback('Could not capture audio. Please select a quick command below.');
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.start();
+    } catch (err) {
       setIsListening(false);
-      setMatchedIntent(picked);
-    }, 1800);
-  };
-
-  const handleExecute = () => {
-    if (matchedIntent) {
-      onClose();
-      onExecuteCommand(matchedIntent);
+      setFeedback('Speech recognition error. Use quick buttons below.');
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="studio-modal-overlay">
       <div
-        className={`w-full max-w-lg p-6 flex flex-col rounded-2xl shadow-2xl border items-center text-center space-y-6 ${
-          isLight
-            ? 'bg-white border-slate-200 text-slate-900'
-            : isGlass
-            ? 'bg-[#0f172a] border-cyan-500/40 text-white'
-            : isNeumorphic
-            ? 'bg-[#1e2330] border-slate-700/50 text-slate-100'
-            : 'bg-[#0f172a] border-slate-700 text-white'
-        }`}
+        className="studio-modal-card w-full max-w-lg flex flex-col rounded-2xl shadow-2xl overflow-hidden"
+        style={{ backgroundColor: isLight ? '#ffffff' : '#0f172a' }}
       >
-        <div className="w-full flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-purple-400" />
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Voice Architecture Copilot</span>
+        {/* Header */}
+        <div
+          className="studio-modal-header flex items-center justify-between px-6 py-4"
+          style={{ backgroundColor: isLight ? '#f1f5f9' : '#1e293b' }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-500 flex items-center justify-center text-white font-bold shadow-lg shadow-rose-500/20">
+              <Mic className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold tracking-tight">Voice Architecture Copilot</h2>
+              <p className="text-xs text-slate-400">Speak natural commands to audit & control</p>
+            </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white">
+          <button
+            onClick={onClose}
+            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-700/50 transition cursor-pointer"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Big Mic Button with Pulsing Wave */}
-        <div className="relative">
-          {isListening && (
-            <div className="absolute inset-0 rounded-full bg-purple-500/30 animate-ping" />
-          )}
-          <button
-            onClick={handleToggleListen}
-            className={`w-20 h-20 rounded-full flex items-center justify-center shadow-xl transition transform hover:scale-105 ${
-              isListening
-                ? 'bg-red-500 text-white animate-pulse'
-                : 'bg-gradient-to-tr from-purple-600 to-indigo-600 text-white'
-            }`}
-          >
-            {isListening ? <MicOff className="w-8 h-8" /> : <Mic className="w-8 h-8" />}
-          </button>
-        </div>
-
-        <div>
-          <h3 className="text-lg font-bold">
-            {isListening ? 'Listening for voice command...' : 'Tap Mic to Speak Architecture Command'}
-          </h3>
-          <p className="text-xs text-slate-400 mt-1 max-w-xs">
-            "Audit database", "Simulate Stripe failure", "Generate TypeScript types", or "Switch to Night view"
-          </p>
-        </div>
-
-        {transcript && (
-          <div className="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-cyan-300">
-            "{transcript}"
+        {/* Body */}
+        <div
+          className="studio-modal-content p-6 space-y-5"
+          style={{ backgroundColor: isLight ? '#ffffff' : '#070a12' }}
+        >
+          <div className="flex flex-col items-center justify-center py-4 space-y-3">
+            <button
+              onClick={handleStartListening}
+              className={`w-20 h-20 rounded-full flex items-center justify-center transition-all shadow-2xl cursor-pointer ${
+                isListening
+                  ? 'bg-rose-500 text-white animate-pulse ring-8 ring-rose-500/30'
+                  : 'bg-gradient-to-tr from-rose-500 to-amber-500 text-white hover:scale-105 shadow-rose-500/30'
+              }`}
+            >
+              {isListening ? <Mic className="w-8 h-8" /> : <Mic className="w-8 h-8" />}
+            </button>
+            <span className="text-xs text-slate-400 font-mono text-center">
+              {feedback}
+            </span>
           </div>
-        )}
 
-        {matchedIntent && (
-          <button
-            onClick={handleExecute}
-            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 font-bold text-xs text-white shadow-lg transition flex items-center justify-center gap-2"
-          >
-            <span>Execute: {matchedIntent}</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-        )}
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
+              Suggested Voice Commands
+            </span>
+            <div className="space-y-1.5">
+              {[
+                'Audit database entity relationships',
+                'Simulate Redis connection failure',
+                'Synthesize Docker Compose setup',
+                'Generate RestAssured test suite',
+                'Switch to Glassmorphism view',
+              ].map(cmd => (
+                <button
+                  key={cmd}
+                  onClick={() => triggerVoice(cmd)}
+                  className="w-full text-left p-2.5 rounded-xl border transition flex items-center justify-between text-xs cursor-pointer"
+                  style={{
+                    backgroundColor: isLight ? '#f8fafc' : '#141e33',
+                    borderColor: isLight ? '#e2e8f0' : '#1e293b',
+                    color: isLight ? '#0f172a' : '#f8fafc'
+                  }}
+                >
+                  <span className="font-mono">"{cmd}"</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
