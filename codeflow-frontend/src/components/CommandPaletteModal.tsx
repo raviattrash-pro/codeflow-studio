@@ -466,7 +466,7 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
                         ? 'bg-indigo-500/20 border-indigo-500/30'
                         : isLight
                         ? 'bg-slate-100 border-slate-200'
-                        : 'bg-slate-900 border-slate-800'
+                        : 'bg-[#0f172a] border-slate-700'
                     }`}>
                       {cmd.icon}
                     </div>

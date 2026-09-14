@@ -590,7 +590,36 @@ export default function App() {
   const [aiInitialPrompt, setAiInitialPrompt] = useState<string | undefined>(undefined);
   const [aiInitialAnalysisType, setAiInitialAnalysisType] = useState<AiAnalysisType | undefined>(undefined);
 
+  const closeAllModals = () => {
+    setIsIngestModalOpen(false);
+    setIsDependencyModalOpen(false);
+    setIsSqlExplorerOpen(false);
+    setIsAiAssistantOpen(false);
+    setIsErDiagramOpen(false);
+    setIsSecurityFlowOpen(false);
+    setIsFileTreeOpen(false);
+    setIsRuntimeTracingOpen(false);
+    setIsApiMetricsOpen(false);
+    setIsSequenceDiagramOpen(false);
+    setIsLatencyHeatmapOpen(false);
+    setIsReactRuntimeOpen(false);
+    setIsCommandPaletteOpen(false);
+    setIsScorecardOpen(false);
+    setIsApiSandboxOpen(false);
+    setIsTsGeneratorOpen(false);
+    setIsChaosOpen(false);
+    setIsBlueprintOpen(false);
+    setIsDriftOpen(false);
+    setIsTestGenOpen(false);
+    setIsCloudInfraOpen(false);
+    setIsEventStreamOpen(false);
+    setIsVoiceCopilotOpen(false);
+    setIsDistTracingOpen(false);
+    setViewingFilePath(null);
+  };
+
   const handleOpenAi = (prompt?: string, analysisType?: AiAnalysisType) => {
+    closeAllModals();
     setAiInitialPrompt(prompt);
     setAiInitialAnalysisType(analysisType);
     setIsAiAssistantOpen(true);
@@ -639,6 +668,7 @@ export default function App() {
           handleLoadDemoProject();
         }
       } else if (e.key === 'i' || e.key === 'I') {
+        closeAllModals();
         setIsIngestModalOpen(true);
       } else if (e.code === 'Space') {
         e.preventDefault();
@@ -664,28 +694,29 @@ export default function App() {
 
   const handleOpenToolDirectly = (toolKey: string) => {
     handleLoadDemoProject();
+    closeAllModals();
     if (toolKey === 'tracing') setIsRuntimeTracingOpen(true);
-    if (toolKey === 'metrics') setIsApiMetricsOpen(true);
-    if (toolKey === 'sequence') setIsSequenceDiagramOpen(true);
-    if (toolKey === 'heatmap') setIsLatencyHeatmapOpen(true);
-    if (toolKey === 'erd') setIsErDiagramOpen(true);
-    if (toolKey === 'security') setIsSecurityFlowOpen(true);
-    if (toolKey === 'sql') setIsSqlExplorerOpen(true);
-    if (toolKey === 'deps') setIsDependencyModalOpen(true);
-    if (toolKey === 'ai') setIsAiAssistantOpen(true);
-    if (toolKey === 'files') setIsFileTreeOpen(true);
-    if (toolKey === 'react' || toolKey === 'fiber') setIsReactRuntimeOpen(true);
-    if (toolKey === 'scorecard') setIsScorecardOpen(true);
-    if (toolKey === 'api-sandbox' || toolKey === 'sandbox') setIsApiSandboxOpen(true);
-    if (toolKey === 'ts-generator' || toolKey === 'ts') setIsTsGeneratorOpen(true);
-    if (toolKey === 'chaos') setIsChaosOpen(true);
-    if (toolKey === 'blueprint' || toolKey === 'export-c4') setIsBlueprintOpen(true);
-    if (toolKey === 'drift') setIsDriftOpen(true);
-    if (toolKey === 'test-gen' || toolKey === 'test') setIsTestGenOpen(true);
-    if (toolKey === 'cloud-infra' || toolKey === 'cloud' || toolKey === 'docker') setIsCloudInfraOpen(true);
-    if (toolKey === 'event-stream' || toolKey === 'kafka' || toolKey === 'events') setIsEventStreamOpen(true);
-    if (toolKey === 'voice' || toolKey === 'copilot') setIsVoiceCopilotOpen(true);
-    if (toolKey === 'dist-tracing' || toolKey === 'otel') setIsDistTracingOpen(true);
+    else if (toolKey === 'metrics') setIsApiMetricsOpen(true);
+    else if (toolKey === 'sequence') setIsSequenceDiagramOpen(true);
+    else if (toolKey === 'heatmap') setIsLatencyHeatmapOpen(true);
+    else if (toolKey === 'erd') setIsErDiagramOpen(true);
+    else if (toolKey === 'security') setIsSecurityFlowOpen(true);
+    else if (toolKey === 'sql') setIsSqlExplorerOpen(true);
+    else if (toolKey === 'deps') setIsDependencyModalOpen(true);
+    else if (toolKey === 'ai') setIsAiAssistantOpen(true);
+    else if (toolKey === 'files') setIsFileTreeOpen(true);
+    else if (toolKey === 'react' || toolKey === 'fiber') setIsReactRuntimeOpen(true);
+    else if (toolKey === 'scorecard') setIsScorecardOpen(true);
+    else if (toolKey === 'api-sandbox' || toolKey === 'sandbox') setIsApiSandboxOpen(true);
+    else if (toolKey === 'ts-generator' || toolKey === 'ts') setIsTsGeneratorOpen(true);
+    else if (toolKey === 'chaos') setIsChaosOpen(true);
+    else if (toolKey === 'blueprint' || toolKey === 'export-c4') setIsBlueprintOpen(true);
+    else if (toolKey === 'drift') setIsDriftOpen(true);
+    else if (toolKey === 'test-gen' || toolKey === 'test') setIsTestGenOpen(true);
+    else if (toolKey === 'cloud-infra' || toolKey === 'cloud' || toolKey === 'docker') setIsCloudInfraOpen(true);
+    else if (toolKey === 'event-stream' || toolKey === 'kafka' || toolKey === 'events') setIsEventStreamOpen(true);
+    else if (toolKey === 'voice' || toolKey === 'copilot') setIsVoiceCopilotOpen(true);
+    else if (toolKey === 'dist-tracing' || toolKey === 'otel') setIsDistTracingOpen(true);
   };
 
   useEffect(() => {
@@ -800,13 +831,13 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
     <div className={`h-screen w-screen overflow-hidden flex flex-col font-sans select-none ${getPageBgClass()}`}>
       <Header
         currentProjectName={project?.name}
-        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+        onOpenCommandPalette={() => { closeAllModals(); setIsCommandPaletteOpen(true); }}
         onOpenScorecard={() => handleOpenToolDirectly('scorecard')}
         onOpenApiSandbox={() => handleOpenToolDirectly('api-sandbox')}
         onOpenTsGenerator={() => handleOpenToolDirectly('ts-generator')}
         onOpenChaos={() => handleOpenToolDirectly('chaos')}
         onOpenBlueprint={() => handleOpenToolDirectly('blueprint')}
-        onOpenVoiceCopilot={() => setIsVoiceCopilotOpen(true)}
+        onOpenVoiceCopilot={() => { closeAllModals(); setIsVoiceCopilotOpen(true); }}
         onOpenDrift={() => handleOpenToolDirectly('drift')}
         onOpenTestGen={() => handleOpenToolDirectly('test-gen')}
         onOpenCloudInfra={() => handleOpenToolDirectly('cloud-infra')}
@@ -814,18 +845,18 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
         onOpenDistTracing={() => handleOpenToolDirectly('dist-tracing')}
         currentProjectId={currentProjectId}
         onLoadDemo={handleLoadDemoProject}
-        onOpenIngestModal={() => setIsIngestModalOpen(true)}
-        onOpenDependencies={() => setIsDependencyModalOpen(true)}
-        onOpenSqlExplorer={() => setIsSqlExplorerOpen(true)}
-        onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
-        onOpenErDiagram={() => setIsErDiagramOpen(true)}
-        onOpenSecurityFlow={() => setIsSecurityFlowOpen(true)}
-        onOpenFileTree={() => setIsFileTreeOpen(true)}
-        onOpenRuntimeTracing={() => setIsRuntimeTracingOpen(true)}
-        onOpenApiMetrics={() => setIsApiMetricsOpen(true)}
-        onOpenSequenceDiagram={() => setIsSequenceDiagramOpen(true)}
-        onOpenLatencyHeatmap={() => setIsLatencyHeatmapOpen(true)}
-        onOpenReactRuntime={() => setIsReactRuntimeOpen(true)}
+        onOpenIngestModal={() => { closeAllModals(); setIsIngestModalOpen(true); }}
+        onOpenDependencies={() => handleOpenToolDirectly('deps')}
+        onOpenSqlExplorer={() => handleOpenToolDirectly('sql')}
+        onOpenAiAssistant={() => handleOpenAi()}
+        onOpenErDiagram={() => handleOpenToolDirectly('erd')}
+        onOpenSecurityFlow={() => handleOpenToolDirectly('security')}
+        onOpenFileTree={() => handleOpenToolDirectly('files')}
+        onOpenRuntimeTracing={() => handleOpenToolDirectly('tracing')}
+        onOpenApiMetrics={() => handleOpenToolDirectly('metrics')}
+        onOpenSequenceDiagram={() => handleOpenToolDirectly('sequence')}
+        onOpenLatencyHeatmap={() => handleOpenToolDirectly('heatmap')}
+        onOpenReactRuntime={() => handleOpenToolDirectly('react')}
         onExportMarkdown={handleExportMarkdown}
         onExitProject={handleExitProject}
         searchQuery={searchQuery}

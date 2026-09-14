@@ -60,16 +60,16 @@ export const VoiceCopilotModal: React.FC<VoiceCopilotModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
       <div
         className={`w-full max-w-lg p-6 flex flex-col rounded-2xl shadow-2xl border items-center text-center space-y-6 ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900'
             : isGlass
-            ? 'bg-slate-900/90 backdrop-blur-xl border-cyan-500/30 text-white'
+            ? 'bg-[#0f172a] backdrop-blur-xl border-cyan-500/30 text-white'
             : isNeumorphic
             ? 'bg-[#1e2330] border-slate-700/50 text-slate-100'
-            : 'bg-slate-900 border-slate-800 text-white'
+            : 'bg-[#0f172a] border-slate-700 text-white'
         }`}
       >
         <div className="w-full flex items-center justify-between">
