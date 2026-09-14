@@ -261,3 +261,95 @@ export const BlueprintGraphic: React.FC<GraphicProps> = ({ isLight }) => (
     <text x="205" y="38" textAnchor="middle" fill="#d8b4fe" fontSize="5.5" fontFamily="monospace">DB</text>
   </svg>
 );
+
+export const DriftGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <rect x="25" y="14" width="70" height="32" rx="4" fill={isLight ? '#f8fafc' : '#0f172a'} stroke="#f59e0b" strokeWidth="1" />
+    <text x="60" y="28" textAnchor="middle" fill="#f59e0b" fontSize="7" fontWeight="bold" fontFamily="monospace">main (v7.0)</text>
+    <text x="60" y="38" textAnchor="middle" fill="#94a3b8" fontSize="6" fontFamily="monospace">Clean Layers</text>
+
+    <line x1="95" y1="30" x2="140" y2="30" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="2 2" />
+    <text x="117" y="24" textAnchor="middle" fill="#ef4444" fontSize="7.5" fontWeight="bold">⚠️ DRIFT</text>
+
+    <rect x="140" y="14" width="75" height="32" rx="4" fill={isLight ? '#fef2f2' : '#450a0a'} stroke="#ef4444" strokeWidth="1.5" />
+    <text x="177" y="28" textAnchor="middle" fill="#f87171" fontSize="7" fontWeight="bold" fontFamily="monospace">feat/pr-142</text>
+    <text x="177" y="38" textAnchor="middle" fill="#fca5a5" fontSize="6" fontFamily="monospace">1 Layer Breach</text>
+  </svg>
+);
+
+export const TestGenGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <rect x="25" y="12" width="85" height="36" rx="4" fill={isLight ? '#f0fdf4' : '#064e3b'} stroke="#10b981" strokeWidth="1" />
+    <text x="67" y="25" textAnchor="middle" fill="#34d399" fontSize="7" fontWeight="bold" fontFamily="monospace">RestAssuredTest</text>
+    <text x="67" y="38" textAnchor="middle" fill="#6ee7b7" fontSize="6" fontFamily="monospace">given().when().then()</text>
+
+    <text x="125" y="34" textAnchor="middle" fill="#38bdf8" fontSize="12" fontWeight="bold">+</text>
+
+    <rect x="140" y="12" width="75" height="36" rx="4" fill={isLight ? '#eff6ff' : '#172554'} stroke="#3b82f6" strokeWidth="1" />
+    <text x="177" y="25" textAnchor="middle" fill="#60a5fa" fontSize="7" fontWeight="bold" fontFamily="monospace">Playwright TS</text>
+    <text x="177" y="38" textAnchor="middle" fill="#93c5fd" fontSize="6" fontFamily="monospace">expect(201 Created)</text>
+  </svg>
+);
+
+export const CloudInfraGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <rect x="25" y="15" width="55" height="30" rx="4" fill={isLight ? '#f0f9ff' : '#082f49'} stroke="#0ea5e9" strokeWidth="1" />
+    <text x="52" y="32" textAnchor="middle" fill="#38bdf8" fontSize="7.5" fontWeight="bold" fontFamily="monospace">Docker</text>
+
+    <text x="95" y="34" textAnchor="middle" fill="#94a3b8" fontSize="10">•</text>
+
+    <rect x="110" y="15" width="55" height="30" rx="4" fill={isLight ? '#faf5ff' : '#3b0764'} stroke="#a855f7" strokeWidth="1" />
+    <text x="137" y="32" textAnchor="middle" fill="#c084fc" fontSize="7.5" fontWeight="bold" fontFamily="monospace">Terraform</text>
+
+    <text x="180" y="34" textAnchor="middle" fill="#94a3b8" fontSize="10">•</text>
+
+    <circle cx="202" cy="30" r="14" fill={isLight ? '#eff6ff' : '#172554'} stroke="#3b82f6" strokeWidth="1" />
+    <text x="202" y="33" textAnchor="middle" fill="#60a5fa" fontSize="7" fontWeight="bold" fontFamily="monospace">K8s</text>
+  </svg>
+);
+
+export const EventStreamGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <circle cx="40" cy="30" r="14" fill={isLight ? '#faf5ff' : '#3b0764'} stroke="#a855f7" strokeWidth="1.2" />
+    <text x="40" y="33" textAnchor="middle" fill="#c084fc" fontSize="7" fontWeight="bold" fontFamily="monospace">Pub</text>
+
+    <line x1="54" y1="30" x2="110" y2="30" stroke="#a855f7" strokeWidth="2" strokeDasharray="3 3" />
+    <text x="82" y="24" textAnchor="middle" fill="#a855f7" fontSize="6.5" fontFamily="monospace">orders.topic</text>
+
+    <rect x="110" y="16" width="50" height="28" rx="4" fill={isLight ? '#fdf4ff' : '#4a044e'} stroke="#d946ef" strokeWidth="1" />
+    <text x="135" y="33" textAnchor="middle" fill="#f0abfc" fontSize="7" fontWeight="bold" fontFamily="monospace">Kafka</text>
+
+    <line x1="160" y1="30" x2="195" y2="30" stroke="#d946ef" strokeWidth="2" />
+
+    <circle cx="205" cy="30" r="12" fill={isLight ? '#f0fdf4' : '#064e3b'} stroke="#10b981" strokeWidth="1" />
+    <text x="205" y="33" textAnchor="middle" fill="#34d399" fontSize="6.5" fontWeight="bold" fontFamily="monospace">Sub</text>
+  </svg>
+);
+
+export const VoiceCopilotGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <circle cx="60" cy="30" r="16" fill={isLight ? '#faf5ff' : '#3b0764'} stroke="#a855f7" strokeWidth="1.5" />
+    <text x="60" y="34" textAnchor="middle" fill="#c084fc" fontSize="12">🎙️</text>
+
+    {[12, 20, 28, 20, 14, 26, 18, 10].map((h, i) => (
+      <rect key={i} x={95 + i * 8} y={30 - h / 2} width="4" height={h} rx="2" fill="#a855f7" />
+    ))}
+
+    <text x="185" y="34" fill="#c084fc" fontSize="7.5" fontWeight="bold" fontFamily="monospace">&quot;Audit DB&quot;</text>
+  </svg>
+);
+
+export const DistributedTracingGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <rect x="30" y="14" width="160" height="6" rx="3" fill="#06b6d4" />
+    <text x="198" y="20" fill="#06b6d4" fontSize="6.5" fontFamily="monospace">48ms</text>
+
+    <rect x="50" y="24" width="110" height="6" rx="3" fill="#3b82f6" />
+    <text x="168" y="30" fill="#3b82f6" fontSize="6.5" fontFamily="monospace">38ms</text>
+
+    <rect x="80" y="34" width="70" height="6" rx="3" fill="#ef4444" />
+    <text x="158" y="40" fill="#ef4444" fontSize="6.5" fontWeight="bold" fontFamily="monospace">24ms ⚠️</text>
+
+    <rect x="150" y="44" width="20" height="6" rx="3" fill="#10b981" />
+  </svg>
+);

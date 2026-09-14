@@ -3,7 +3,7 @@ import {
   Search, X, Sparkles, Terminal, Database, ShieldCheck,
   Zap, Code2, Layers, Flame, Activity, FolderTree,
   Cpu, ArrowRight, Play, Moon, Sun, Key, Bot, HelpCircle,
-  FileCode, Box, ExternalLink, RefreshCw
+  FileCode, Box, ExternalLink, RefreshCw, GitPullRequest, CheckSquare, Cloud, Radio, Mic, Sliders
 } from 'lucide-react';
 import { ThemeMode } from './Header';
 
@@ -54,6 +54,66 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
 
   const allCommands: CommandItem[] = useMemo(() => [
     // Tools
+    {
+      id: 'tool-drift',
+      title: 'Git PR Architecture Drift Inspector',
+      subtitle: 'Compare pull request branches against main to detect layer boundary breaches',
+      category: 'Tools',
+      icon: <GitPullRequest className="w-4 h-4 text-amber-400" />,
+      shortcut: 'G',
+      action: () => { onClose(); onSelectTool('drift'); },
+      badge: 'v8.0',
+    },
+    {
+      id: 'tool-test-gen',
+      title: 'Automated E2E Test Suite Generator',
+      subtitle: 'Generate RestAssured and Playwright API tests from discovered AST endpoints',
+      category: 'Tools',
+      icon: <CheckSquare className="w-4 h-4 text-emerald-400" />,
+      shortcut: 'E',
+      action: () => { onClose(); onSelectTool('test-gen'); },
+      badge: 'v8.0',
+    },
+    {
+      id: 'tool-cloud-infra',
+      title: 'Cloud Infrastructure & Docker / Terraform',
+      subtitle: 'Auto-synthesize Docker Compose, AWS Terraform modules & Kubernetes manifests',
+      category: 'Tools',
+      icon: <Cloud className="w-4 h-4 text-sky-400" />,
+      shortcut: 'D',
+      action: () => { onClose(); onSelectTool('cloud-infra'); },
+      badge: 'v8.0',
+    },
+    {
+      id: 'tool-event-stream',
+      title: 'Event Streams & Kafka / WebSockets',
+      subtitle: 'Visualizes Kafka topic consumer groups and live WebSocket / SSE channels',
+      category: 'Tools',
+      icon: <Radio className="w-4 h-4 text-purple-400" />,
+      shortcut: 'K',
+      action: () => { onClose(); onSelectTool('event-stream'); },
+      badge: 'v8.0',
+    },
+    {
+      id: 'tool-dist-tracing',
+      title: 'OpenTelemetry (OTel) Distributed Tracing',
+      subtitle: 'Multi-service span waterfall with automated critical-path bottleneck isolation',
+      category: 'Tools',
+      icon: <Activity className="w-4 h-4 text-cyan-400" />,
+      shortcut: 'O',
+      action: () => { onClose(); onSelectTool('dist-tracing'); },
+      badge: 'v8.0',
+    },
+    {
+      id: 'tool-voice',
+      title: 'Voice Architecture Copilot',
+      subtitle: 'Speak natural hands-free commands to audit DB, simulate chaos & trigger AI',
+      category: 'Tools',
+      icon: <Mic className="w-4 h-4 text-pink-400" />,
+      shortcut: 'V',
+      action: () => { onClose(); onSelectTool('voice'); },
+      badge: 'v8.0',
+    },
     {
       id: 'tool-ai',
       title: 'AI Architecture Assistant',

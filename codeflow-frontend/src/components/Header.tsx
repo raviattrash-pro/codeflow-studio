@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Layers, Search, Database, ShieldCheck, Bot, Package, Download, X,
   FolderTree, Menu, Import, LogOut, ChevronDown, Activity, Moon, Sun,
-  Sparkles, Box, BarChart2, Flame, Zap, ArrowRight, Terminal, Code2
+  Sparkles, Box, BarChart2, Flame, Zap, ArrowRight, Terminal, Code2, Mic, GitPullRequest, CheckSquare, Cloud, Radio, Sliders
 } from 'lucide-react';
 import { ProjectNode } from '../types';
 
@@ -30,6 +30,12 @@ interface HeaderProps {
   onOpenTsGenerator?: () => void;
   onOpenChaos?: () => void;
   onOpenBlueprint?: () => void;
+  onOpenVoiceCopilot?: () => void;
+  onOpenDrift?: () => void;
+  onOpenTestGen?: () => void;
+  onOpenCloudInfra?: () => void;
+  onOpenEventStream?: () => void;
+  onOpenDistTracing?: () => void;
   onExportMarkdown: () => void;
   onExitProject: () => void;
   searchQuery: string;
@@ -62,6 +68,12 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenTsGenerator,
   onOpenChaos,
   onOpenBlueprint,
+  onOpenVoiceCopilot,
+  onOpenDrift,
+  onOpenTestGen,
+  onOpenCloudInfra,
+  onOpenEventStream,
+  onOpenDistTracing,
   onExportMarkdown,
   onExitProject,
   searchQuery,
@@ -174,7 +186,7 @@ export const Header: React.FC<HeaderProps> = ({
           />
         </div>
 
-        {/* Global Command Palette Spotlight Button */}
+        {/* Global Command Palette & Voice Copilot */}
         {onOpenCommandPalette && (
           <button
             onClick={onOpenCommandPalette}
@@ -189,6 +201,20 @@ export const Header: React.FC<HeaderProps> = ({
             <kbd className="px-1.5 py-0.5 text-[10px] font-bold bg-slate-800/80 border border-slate-700 rounded text-slate-300 font-mono shadow-inner">
               Ctrl K
             </kbd>
+          </button>
+        )}
+
+        {onOpenVoiceCopilot && (
+          <button
+            onClick={onOpenVoiceCopilot}
+            className={`p-1.5 rounded-xl border transition-all ${
+              isLight
+                ? 'bg-slate-100 border-slate-200 text-purple-600 hover:bg-slate-200'
+                : 'bg-purple-950/40 border-purple-800/50 text-purple-300 hover:bg-purple-900/60 hover:text-white'
+            }`}
+            title="Voice Architecture Copilot"
+          >
+            <Mic className="w-4 h-4" />
           </button>
         )}
 
@@ -288,8 +314,33 @@ export const Header: React.FC<HeaderProps> = ({
                   isLight ? 'text-slate-500 border-slate-200' : 'text-slate-400 border-slate-800'
                 }`}>
                   <span>Architecture Suite (v7.0)</span>
-                  <span className="text-purple-400 font-black">17 Tools</span>
+                  <span className="text-purple-400 font-black">23 Tools</span>
                 </div>
+                <button onClick={() => { onOpenDrift?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
+                  <GitPullRequest className="w-3.5 h-3.5 text-amber-400" />
+                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Git PR Architecture Drift</span>
+                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-amber-500/10 border-amber-500/20 text-amber-400'}`}>v8.0</span>
+                </button>
+                <button onClick={() => { onOpenTestGen?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
+                  <CheckSquare className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Automated Test Generator</span>
+                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'}`}>v8.0</span>
+                </button>
+                <button onClick={() => { onOpenCloudInfra?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
+                  <Cloud className="w-3.5 h-3.5 text-sky-400" />
+                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Cloud IaC & Docker Synthesizer</span>
+                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-sky-50 border-sky-200 text-sky-700' : 'bg-sky-500/10 border-sky-500/20 text-sky-400'}`}>v8.0</span>
+                </button>
+                <button onClick={() => { onOpenEventStream?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
+                  <Radio className="w-3.5 h-3.5 text-purple-400" />
+                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Kafka / WebSocket Streams</span>
+                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-purple-50 border-purple-200 text-purple-700' : 'bg-purple-500/10 border-purple-500/20 text-purple-400'}`}>v8.0</span>
+                </button>
+                <button onClick={() => { onOpenDistTracing?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
+                  <Activity className="w-3.5 h-3.5 text-cyan-400" />
+                  <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>OpenTelemetry Distributed Tracing</span>
+                  <span className={`ml-auto text-[9px] px-1.5 py-0.5 rounded border font-bold ${isLight ? 'bg-cyan-50 border-cyan-200 text-cyan-700' : 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'}`}>v8.0</span>
+                </button>
                 <button onClick={() => { onOpenScorecard?.(); setIsToolsOpen(false); }} className={`w-full text-left px-3.5 py-2 flex items-center space-x-2.5 text-xs font-mono font-medium ${getItemHoverClass()}`}>
                   <Activity className="w-3.5 h-3.5 text-emerald-400" />
                   <span className={isLight ? 'text-slate-800 font-semibold' : 'text-slate-200'}>Health Scorecard (HUD)</span>

@@ -33,11 +33,18 @@ const ApiSandboxModal = lazy(() => import('./components/ApiSandboxModal').then(m
 const TypeScriptGeneratorModal = lazy(() => import('./components/TypeScriptGeneratorModal').then(m => ({ default: m.TypeScriptGeneratorModal })));
 const ChaosSimulatorModal = lazy(() => import('./components/ChaosSimulatorModal').then(m => ({ default: m.ChaosSimulatorModal })));
 const ArchitectureBlueprintExportModal = lazy(() => import('./components/ArchitectureBlueprintExportModal').then(m => ({ default: m.ArchitectureBlueprintExportModal })));
+const ArchitectureDriftModal = lazy(() => import('./components/ArchitectureDriftModal').then(m => ({ default: m.ArchitectureDriftModal })));
+const TestSuiteGeneratorModal = lazy(() => import('./components/TestSuiteGeneratorModal').then(m => ({ default: m.TestSuiteGeneratorModal })));
+const CloudInfraSynthesizerModal = lazy(() => import('./components/CloudInfraSynthesizerModal').then(m => ({ default: m.CloudInfraSynthesizerModal })));
+const EventStreamVisualizerModal = lazy(() => import('./components/EventStreamVisualizerModal').then(m => ({ default: m.EventStreamVisualizerModal })));
+const VoiceCopilotModal = lazy(() => import('./components/VoiceCopilotModal').then(m => ({ default: m.VoiceCopilotModal })));
+const DistributedTracingModal = lazy(() => import('./components/DistributedTracingModal').then(m => ({ default: m.DistributedTracingModal })));
 import {
   ReactRuntimeGraphic, TracingGraphic, ApiMetricsGraphic, SequenceGraphic,
   HeatmapGraphic, ErdGraphic, SecurityGraphic, AiGraphic,
   SqlGraphic, DepsGraphic, FileTreeGraphic, ExportGraphic,
-  ScorecardGraphic, SandboxGraphic, TsGenGraphic, ChaosGraphic, BlueprintGraphic
+  ScorecardGraphic, SandboxGraphic, TsGenGraphic, ChaosGraphic, BlueprintGraphic,
+  DriftGraphic, TestGenGraphic, CloudInfraGraphic, EventStreamGraphic, VoiceCopilotGraphic, DistributedTracingGraphic
 } from './components/ToolPreviewGraphics';
 import { Project, GraphData, NodeDetail, ProjectNode, AiAnalysisType } from './types';
 import { DEMO_PROJECT_DATA, DEMO_GRAPH_DATA } from './utils/demoData';
@@ -521,6 +528,33 @@ VALUES (NOW(), 'tenant_88', 'checkout.latency', 28.4, 200);`,
 };
 
 export default function App() {
+  const handleVoiceCommand = (command: string) => {
+    const c = command.toLowerCase();
+    if (c.includes('database') || c.includes('entity') || c.includes('erd')) {
+      handleOpenToolDirectly('erd');
+    } else if (c.includes('chaos') || c.includes('redis') || c.includes('failure') || c.includes('simulate')) {
+      handleOpenToolDirectly('chaos');
+    } else if (c.includes('glassmorphism')) {
+      setCurrentTheme('GLASSMORPHISM');
+    } else if (c.includes('night') || c.includes('dark')) {
+      setCurrentTheme('NIGHT');
+    } else if (c.includes('normal') || c.includes('light')) {
+      setCurrentTheme('NORMAL');
+    } else if (c.includes('neumorphic')) {
+      setCurrentTheme('NEUMORPHIC');
+    } else if (c.includes('typescript') || c.includes('dto')) {
+      handleOpenToolDirectly('ts-generator');
+    } else if (c.includes('heatmap') || c.includes('latency')) {
+      handleOpenToolDirectly('heatmap');
+    } else if (c.includes('test')) {
+      handleOpenToolDirectly('test-gen');
+    } else if (c.includes('docker') || c.includes('terraform') || c.includes('cloud')) {
+      handleOpenToolDirectly('cloud-infra');
+    } else {
+      handleOpenAi(command, 'ARCHITECTURE');
+    }
+  };
+
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
   const [project, setProject] = useState<Project | null>(null);
   const [graphData, setGraphData] = useState<GraphData>({ nodes: [], edges: [] });
@@ -546,6 +580,12 @@ export default function App() {
   const [isTsGeneratorOpen, setIsTsGeneratorOpen] = useState(false);
   const [isChaosOpen, setIsChaosOpen] = useState(false);
   const [isBlueprintOpen, setIsBlueprintOpen] = useState(false);
+  const [isDriftOpen, setIsDriftOpen] = useState(false);
+  const [isTestGenOpen, setIsTestGenOpen] = useState(false);
+  const [isCloudInfraOpen, setIsCloudInfraOpen] = useState(false);
+  const [isEventStreamOpen, setIsEventStreamOpen] = useState(false);
+  const [isVoiceCopilotOpen, setIsVoiceCopilotOpen] = useState(false);
+  const [isDistTracingOpen, setIsDistTracingOpen] = useState(false);
   const [viewingFilePath, setViewingFilePath] = useState<string | null>(null);
   const [aiInitialPrompt, setAiInitialPrompt] = useState<string | undefined>(undefined);
   const [aiInitialAnalysisType, setAiInitialAnalysisType] = useState<AiAnalysisType | undefined>(undefined);
@@ -640,6 +680,12 @@ export default function App() {
     if (toolKey === 'ts-generator' || toolKey === 'ts') setIsTsGeneratorOpen(true);
     if (toolKey === 'chaos') setIsChaosOpen(true);
     if (toolKey === 'blueprint' || toolKey === 'export-c4') setIsBlueprintOpen(true);
+    if (toolKey === 'drift') setIsDriftOpen(true);
+    if (toolKey === 'test-gen' || toolKey === 'test') setIsTestGenOpen(true);
+    if (toolKey === 'cloud-infra' || toolKey === 'cloud' || toolKey === 'docker') setIsCloudInfraOpen(true);
+    if (toolKey === 'event-stream' || toolKey === 'kafka' || toolKey === 'events') setIsEventStreamOpen(true);
+    if (toolKey === 'voice' || toolKey === 'copilot') setIsVoiceCopilotOpen(true);
+    if (toolKey === 'dist-tracing' || toolKey === 'otel') setIsDistTracingOpen(true);
   };
 
   useEffect(() => {
@@ -760,6 +806,12 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
         onOpenTsGenerator={() => handleOpenToolDirectly('ts-generator')}
         onOpenChaos={() => handleOpenToolDirectly('chaos')}
         onOpenBlueprint={() => handleOpenToolDirectly('blueprint')}
+        onOpenVoiceCopilot={() => setIsVoiceCopilotOpen(true)}
+        onOpenDrift={() => handleOpenToolDirectly('drift')}
+        onOpenTestGen={() => handleOpenToolDirectly('test-gen')}
+        onOpenCloudInfra={() => handleOpenToolDirectly('cloud-infra')}
+        onOpenEventStream={() => handleOpenToolDirectly('event-stream')}
+        onOpenDistTracing={() => handleOpenToolDirectly('dist-tracing')}
         currentProjectId={currentProjectId}
         onLoadDemo={handleLoadDemoProject}
         onOpenIngestModal={() => setIsIngestModalOpen(true)}
@@ -1361,7 +1413,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
             <div className="w-full max-w-5xl mb-12">
               <div className="text-center mb-8">
                 <h3 className={`text-xl md:text-2xl font-bold font-mono ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                  17 Specialized Visual Architecture Tools
+                  23 Specialized Visual Architecture Tools
                 </h3>
                 <p className="text-xs md:text-sm text-slate-400 font-mono mt-1">
                   Click any card to launch interactive demo mode directly into that tool
@@ -1529,6 +1581,66 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     badge: 'NEW Vector',
                     graphic: BlueprintGraphic,
                     preview: '🖼️ C4 Level 1/2/3 Diagram & 4K SVG Export'
+                  },
+                  {
+                    title: 'Git PR Architecture Drift',
+                    desc: 'Compare pull request branches against main to detect layer boundary breaches and API drift.',
+                    icon: GitBranch,
+                    col: 'text-amber-400',
+                    key: 'drift',
+                    badge: 'v8.0 Drift',
+                    graphic: DriftGraphic,
+                    preview: '⚠️ 1 Layer Violation in PaymentWebhook'
+                  },
+                  {
+                    title: 'Automated E2E Test Suite Generator',
+                    desc: 'Generate RestAssured Java tests and Playwright TypeScript suites with auth headers & status assertions.',
+                    icon: CheckCircle2,
+                    col: 'text-emerald-400',
+                    key: 'test-gen',
+                    badge: 'v8.0 Test',
+                    graphic: TestGenGraphic,
+                    preview: '🧪 RestAssured & Playwright Contract Tests'
+                  },
+                  {
+                    title: 'Cloud IaC & Docker Synthesizer',
+                    desc: 'Auto-synthesize multi-container Docker Compose, AWS Terraform modules & Kubernetes manifests.',
+                    icon: Server,
+                    col: 'text-sky-400',
+                    key: 'cloud-infra',
+                    badge: 'v8.0 Cloud',
+                    graphic: CloudInfraGraphic,
+                    preview: '🐳 Docker Compose + AWS ECS Terraform'
+                  },
+                  {
+                    title: 'Kafka & WebSocket Event Streams',
+                    desc: 'Visualize Kafka topics, consumer groups, and live WebSocket / SSE channels with test payload publisher.',
+                    icon: Zap,
+                    col: 'text-purple-400',
+                    key: 'event-stream',
+                    badge: 'v8.0 Events',
+                    graphic: EventStreamGraphic,
+                    preview: '📻 orders.created (3 Consumer Groups • 0 Lag)'
+                  },
+                  {
+                    title: 'OpenTelemetry Distributed Tracing',
+                    desc: 'Multi-service span waterfall with automated critical-path bottleneck isolation and W3C TraceContext.',
+                    icon: Activity,
+                    col: 'text-cyan-400',
+                    key: 'dist-tracing',
+                    badge: 'v8.0 OTel',
+                    graphic: DistributedTracingGraphic,
+                    preview: '📊 48.2ms Total Latency (7 Spans Breakdown)'
+                  },
+                  {
+                    title: 'Voice Architecture Copilot',
+                    desc: 'Speak natural hands-free commands to audit DB, simulate chaos, switch themes & trigger AI remediation.',
+                    icon: Sparkles,
+                    col: 'text-pink-400',
+                    key: 'voice',
+                    badge: 'v8.0 Voice',
+                    graphic: VoiceCopilotGraphic,
+                    preview: '🎙️ &quot;Audit database entity relationships&quot;'
                   }
                 ].map((f, i) => {
                   const Icon = f.icon;
@@ -1784,6 +1896,44 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
         <ArchitectureBlueprintExportModal
           isOpen={isBlueprintOpen}
           onClose={() => setIsBlueprintOpen(false)}
+          currentTheme={currentTheme}
+        />
+
+        <ArchitectureDriftModal
+          isOpen={isDriftOpen}
+          onClose={() => setIsDriftOpen(false)}
+          currentTheme={currentTheme}
+          onTriggerAi={(prompt) => handleOpenAi(prompt, 'ARCHITECTURE')}
+        />
+
+        <TestSuiteGeneratorModal
+          isOpen={isTestGenOpen}
+          onClose={() => setIsTestGenOpen(false)}
+          currentTheme={currentTheme}
+        />
+
+        <CloudInfraSynthesizerModal
+          isOpen={isCloudInfraOpen}
+          onClose={() => setIsCloudInfraOpen(false)}
+          currentTheme={currentTheme}
+        />
+
+        <EventStreamVisualizerModal
+          isOpen={isEventStreamOpen}
+          onClose={() => setIsEventStreamOpen(false)}
+          currentTheme={currentTheme}
+        />
+
+        <VoiceCopilotModal
+          isOpen={isVoiceCopilotOpen}
+          onClose={() => setIsVoiceCopilotOpen(false)}
+          currentTheme={currentTheme}
+          onExecuteCommand={handleVoiceCommand}
+        />
+
+        <DistributedTracingModal
+          isOpen={isDistTracingOpen}
+          onClose={() => setIsDistTracingOpen(false)}
           currentTheme={currentTheme}
         />
       </Suspense>
