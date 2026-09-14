@@ -47,6 +47,8 @@ import {
   DriftGraphic, TestGenGraphic, CloudInfraGraphic, EventStreamGraphic, VoiceCopilotGraphic, DistributedTracingGraphic
 } from './components/ToolPreviewGraphics';
 import { Project, GraphData, NodeDetail, ProjectNode, AiAnalysisType } from './types';
+import { useToast } from './components/ToastNotification';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { DEMO_PROJECT_DATA, DEMO_GRAPH_DATA } from './utils/demoData';
 
 type ScenarioKey = 'checkout' | 'auth' | 'cache' | 'burst';
@@ -528,6 +530,7 @@ VALUES (NOW(), 'tenant_88', 'checkout.latency', 28.4, 200);`,
 };
 
 export default function App() {
+  const { showToast } = useToast();
   const handleVoiceCommand = (command: string) => {
     const c = command.toLowerCase();
     if (c.includes('database') || c.includes('entity') || c.includes('erd')) {
@@ -653,10 +656,35 @@ export default function App() {
     return () => clearInterval(interval);
   }, [currentProjectId, isPlayingTrace, scenario.nodes.length]);
 
-  // Global Keyboard Shortcuts (D for Demo, I for Ingest, Space for Step)
+  // Global Dialog State for Scroll Lock
+  const isAnyModalOpen = isIngestModalOpen || isDependencyModalOpen || isSqlExplorerOpen ||
+    isAiAssistantOpen || isErDiagramOpen || isSecurityFlowOpen || isFileTreeOpen ||
+    isRuntimeTracingOpen || isApiMetricsOpen || isSequenceDiagramOpen || isLatencyHeatmapOpen ||
+    isReactRuntimeOpen || isCommandPaletteOpen || isScorecardOpen || isApiSandboxOpen ||
+    isTsGeneratorOpen || isChaosOpen || isBlueprintOpen || isDriftOpen || isTestGenOpen ||
+    isCloudInfraOpen || isEventStreamOpen || isVoiceCopilotOpen || isDistTracingOpen || viewingFilePath !== null;
+
+  // Body Scroll Lock when modal is active (prevents background jumping)
+  useEffect(() => {
+    if (isAnyModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isAnyModalOpen]);
+
+  // Global Keyboard Shortcuts (Esc = Close Modals, Ctrl+K = Command Palette, D = Demo, I = Ingest, Space = Scrubber)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) return;
+
+      if (e.key === 'Escape') {
+        closeAllModals();
+        return;
+      }
 
       if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
         e.preventDefault();
@@ -1776,6 +1804,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
       </div>
 
       {/* Modals with Suspense Chunk Splitting */}
+      <ErrorBoundary fallbackTitle="Modal Component Boundary" fallbackMessage="Could not render requested modal component.">
       <Suspense fallback={null}>
         <IngestionModal
           isOpen={isIngestModalOpen}
@@ -1968,6 +1997,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
           currentTheme={currentTheme}
         />
       </Suspense>
+      </ErrorBoundary>
 
     </div>
   );
