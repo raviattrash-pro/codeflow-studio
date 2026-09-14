@@ -141,3 +141,41 @@ export interface ReactRuntimeScenario {
   steps: HookMutationStep[];
   interceptorPipeline: ClientInterceptorTrace[];
 }
+
+// ═══════════════════════════════════════════════════════
+// v6.0 — AI Intelligence Engine Types
+// ═══════════════════════════════════════════════════════
+
+export type AiAnalysisType =
+  | 'ARCHITECTURE'
+  | 'SECURITY'
+  | 'DATABASE'
+  | 'CODE_REVIEW'
+  | 'INTERVIEW'
+  | 'SQL_OPTIMIZE'
+  | 'DEPENDENCY_AUDIT'
+  | 'GENERAL';
+
+export interface AiMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: number;
+  analysisType?: AiAnalysisType;
+  isStreaming?: boolean;
+}
+
+export interface AiProviderStatus {
+  provider: 'gemini' | 'openai' | 'ollama' | 'none';
+  model: string;
+  isConnected: boolean;
+}
+
+export interface AiResponse {
+  title: string;
+  explanation: string;
+  keyComponents?: string[];
+  recommendations?: string[];
+  codeQualityScore?: number;
+  securityIssues?: string[];
+}

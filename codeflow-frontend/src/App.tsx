@@ -29,7 +29,7 @@ import {
   HeatmapGraphic, ErdGraphic, SecurityGraphic, AiGraphic,
   SqlGraphic, DepsGraphic, FileTreeGraphic, ExportGraphic
 } from './components/ToolPreviewGraphics';
-import { Project, GraphData, NodeDetail, ProjectNode } from './types';
+import { Project, GraphData, NodeDetail, ProjectNode, AiAnalysisType } from './types';
 import { DEMO_PROJECT_DATA, DEMO_GRAPH_DATA } from './utils/demoData';
 
 type ScenarioKey = 'checkout' | 'auth' | 'cache' | 'burst';
@@ -531,6 +531,14 @@ export default function App() {
   const [isLatencyHeatmapOpen, setIsLatencyHeatmapOpen] = useState(false);
   const [isReactRuntimeOpen, setIsReactRuntimeOpen] = useState(false);
   const [viewingFilePath, setViewingFilePath] = useState<string | null>(null);
+  const [aiInitialPrompt, setAiInitialPrompt] = useState<string | undefined>(undefined);
+  const [aiInitialAnalysisType, setAiInitialAnalysisType] = useState<AiAnalysisType | undefined>(undefined);
+
+  const handleOpenAi = (prompt?: string, analysisType?: AiAnalysisType) => {
+    setAiInitialPrompt(prompt);
+    setAiInitialAnalysisType(analysisType);
+    setIsAiAssistantOpen(true);
+  };
 
   const [currentTheme, setCurrentTheme] = useState<ThemeMode>('NIGHT');
 
@@ -1534,6 +1542,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                   onClose={() => setSelectedNodeId(undefined)}
                   onViewCode={(path) => setViewingFilePath(path)}
                   currentTheme={currentTheme}
+                  onAskAi={(prompt) => handleOpenAi(prompt, 'CODE_REVIEW')}
                 />
               )}
             </div>
@@ -1564,6 +1573,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
         isOpen={isDependencyModalOpen}
         onClose={() => setIsDependencyModalOpen(false)}
         currentTheme={currentTheme}
+        onAskAi={(prompt, analysisType) => handleOpenAi(prompt, (analysisType as AiAnalysisType) || 'DEPENDENCY_AUDIT')}
       />
 
       <SqlExplorerModal
@@ -1571,13 +1581,20 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
         isOpen={isSqlExplorerOpen}
         onClose={() => setIsSqlExplorerOpen(false)}
         currentTheme={currentTheme}
+        onAskAi={(prompt, analysisType) => handleOpenAi(prompt, (analysisType as AiAnalysisType) || 'SQL_OPTIMIZE')}
       />
 
       <AiAssistantModal
         projectId={currentProjectId}
         isOpen={isAiAssistantOpen}
-        onClose={() => setIsAiAssistantOpen(false)}
+        onClose={() => {
+          setIsAiAssistantOpen(false);
+          setAiInitialPrompt(undefined);
+          setAiInitialAnalysisType(undefined);
+        }}
         currentTheme={currentTheme}
+        initialPrompt={aiInitialPrompt}
+        initialAnalysisType={aiInitialAnalysisType}
       />
 
       <ErDiagramModal
@@ -1592,6 +1609,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
         isOpen={isSecurityFlowOpen}
         onClose={() => setIsSecurityFlowOpen(false)}
         currentTheme={currentTheme}
+        onAskAi={(prompt, analysisType) => handleOpenAi(prompt, (analysisType as AiAnalysisType) || 'SECURITY')}
       />
 
       <FileTreeModal

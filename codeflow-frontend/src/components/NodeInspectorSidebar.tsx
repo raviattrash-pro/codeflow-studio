@@ -2,7 +2,7 @@ import React from 'react';
 import { NodeDetail } from '../types';
 import { getAnnotationDetails } from '../utils/annotationDictionary';
 import { getInterviewQuestionsForNode } from '../utils/interviewQuestions';
-import { X, Code2, ArrowUpRight, ArrowDownLeft, FileText, Sparkles, BookOpen } from 'lucide-react';
+import { X, Code2, ArrowUpRight, ArrowDownLeft, FileText, Sparkles, BookOpen, Bot } from 'lucide-react';
 import { ThemeMode } from './Header';
 
 interface NodeInspectorSidebarProps {
@@ -10,6 +10,7 @@ interface NodeInspectorSidebarProps {
   onClose: () => void;
   onViewCode: (filePath: string) => void;
   currentTheme?: ThemeMode;
+  onAskAi?: (prompt: string) => void;
 }
 
 export const NodeInspectorSidebar: React.FC<NodeInspectorSidebarProps> = ({
@@ -17,6 +18,7 @@ export const NodeInspectorSidebar: React.FC<NodeInspectorSidebarProps> = ({
   onClose,
   onViewCode,
   currentTheme = 'NIGHT',
+  onAskAi,
 }) => {
   if (!nodeDetail) return null;
 
@@ -61,7 +63,7 @@ export const NodeInspectorSidebar: React.FC<NodeInspectorSidebarProps> = ({
       </div>
 
       <div className="p-5 space-y-6">
-        {/* Source File & Monaco View Button */}
+        {/* Source File & Monaco View Button + AI Analysis */}
         {node.filePath && (
           <div className={`p-4 rounded-2xl border space-y-2.5 shadow-inner ${
             isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-900/90 border-slate-800'
@@ -74,13 +76,24 @@ export const NodeInspectorSidebar: React.FC<NodeInspectorSidebarProps> = ({
               <span className={`text-[11px] font-mono ${isLight ? 'text-slate-500' : 'text-slate-500'}`}>Line {node.lineNumber || 1}</span>
             </div>
             <p className={`text-xs font-mono break-all ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>{node.filePath}</p>
-            <button
-              onClick={() => onViewCode(node.filePath!)}
-              className="w-full mt-2 flex items-center justify-center space-x-2 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-semibold transition-all shadow-md shadow-indigo-950/40"
-            >
-              <Code2 className="w-4 h-4" />
-              <span>Open in Monaco Code Editor</span>
-            </button>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <button
+                onClick={() => onViewCode(node.filePath!)}
+                className="flex items-center justify-center space-x-1.5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-[11px] font-semibold transition-all shadow-md shadow-indigo-950/40"
+              >
+                <Code2 className="w-3.5 h-3.5" />
+                <span>Open Code</span>
+              </button>
+              {onAskAi && (
+                <button
+                  onClick={() => onAskAi(`Explain the architectural role, mechanics, and design patterns used in ${node.label} (${node.filePath || ''})`)}
+                  className="flex items-center justify-center space-x-1.5 py-2 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-400 text-[11px] font-semibold transition-all"
+                >
+                  <Bot className="w-3.5 h-3.5" />
+                  <span>Ask AI</span>
+                </button>
+              )}
+            </div>
           </div>
         )}
 

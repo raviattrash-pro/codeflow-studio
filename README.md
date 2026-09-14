@@ -1,7 +1,7 @@
-# CodeFlow Studio 🚀 (v5.0.0 Release)
-> **Observe, Replay & Master Real Code Execution — From React 19 Virtual DOM Reconciliation down to Hibernate SQL in Milliseconds.**
+# CodeFlow Studio 🚀 (v6.0.0 Release)
+> **Observe, Replay & Master Real Code Execution — AI Architecture Intelligence, React 19 Fiber Reconciliation & Spring Boot 3 AST in Milliseconds.**
 
-[![Version](https://img.shields.io/badge/version-5.0.0-indigo.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-6.0.0-indigo.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2%2B-green.svg)](https://spring.io/projects/spring-boot)
 [![React](https://img.shields.io/badge/React-19.2-blue.svg)](https://react.dev/)
@@ -15,23 +15,35 @@
 
 ![CodeFlow Studio Live Demo](docs/media/codeflow.gif)
 
-> 💡 *CodeFlow Studio v5.0 brings full-stack observability to Spring Boot 3 + React 19 architectures. Step through client-side React Fiber re-renders, Hook mutations, and Axios interceptors, alongside backend Spring Security filter chains, JPA execution traces, and database schemas.*
+> 💡 *CodeFlow Studio v6.0 introduces deep codebase intelligence powered by RAG context injection from parsed AST nodes, combined with React 19 Fiber reconciliation, Hook state mutation scrubbing, Spring Security inspection, and JPA execution tracing.*
 
 ---
 
-## ✨ What's New in v5.0.0 (React Runtime Explorer Release)
+## ✨ What's New in v6.0.0 (AI Architecture Intelligence & RAG Release)
 
-### 1. ⚛️ React 19 Virtual DOM & Fiber Tree Visualizer (NEW)
+### 1. 🤖 Context-Aware AI Intelligence Engine (NEW)
+- **RAG Context Injection from AST**: Synthesizes parsed `@RestController` endpoints, `@Service` beans, `@Entity` models, Maven dependencies, and SQL query logs into prompt context.
+- **3 AI Provider Support**: Strategy pattern supporting **Google Gemini 2.0 Flash**, **OpenAI GPT-4o Mini**, and **Local Ollama** (`codellama`, `deepseek-coder`).
+- **8 Pre-Built Analysis Modes**: Architecture Overview, Security Audit, Database Performance, SQL Optimization, Dependency Scan, Code Quality Review, REST API Design, and Technical Interview Prep.
+
+### 2. 💬 Interactive Conversation Thread UI (NEW)
+- **Chat Thread Experience**: Natural conversation history with markdown-like code block formatting and senior architect recommendations.
+- **1-Click AI Triggers Across Tools**: Direct "Ask AI" buttons embedded inside the Node Inspector Sidebar, SQL Query Explorer, Security Flow Explorer, and Maven Dependency Explorer.
+- **Export to Markdown**: 1-click download of full architectural review transcripts as `.md` documents.
+
+---
+
+## ✨ Features from v5.0.0 (React Runtime Explorer)
+
+### 1. ⚛️ React 19 Virtual DOM & Fiber Tree Visualizer
 - **Component Hierarchy & Re-render Diagnostics**: Visualizes the live React 19 Fiber tree (`App` ➔ `QueryClientProvider` ➔ `CheckoutPage` ➔ `OrderSummary` ➔ `PaymentForm` ➔ `SubmitButton`).
 - **Re-render Cause Analysis**: Color-coded render indicators with exact causal breakdowns (*State update in useMutation*, *Prop change: isLoading*, *Context broadcast*).
-- **Sub-Millisecond Timing Metrics**: Mount and re-render duration gauges for every individual component node.
 
-### 2. 🪝 Hook Lifecycle & State Mutation Scrubber (NEW)
+### 2. 🪝 Hook Lifecycle & State Mutation Scrubber
 - **Interactive VCR Timeline Player**: Step forward and backward through React state transitions (`useState`, `useReducer`, `useMutation`, `useEffect`, `useOptimistic`).
 - **State Diff Inspector**: Side-by-side visual diffs comparing `stateBefore` and `stateAfter` with syntax highlighting.
-- **Source Code Snippet Viewer**: Embedded code previews with 1-click clipboard copying.
 
-### 3. 🌐 Full Client-Side Axios & Fetch Interceptor Pipeline (NEW)
+### 3. 🌐 Full Client-Side Axios & Fetch Interceptor Pipeline
 - **6-Stage Client Execution Flow**: `USER_EVENT` ➔ `REQUEST_INTERCEPTOR` (JWT Bearer injection) ➔ `NETWORK_TRANSPORT` (28.4ms TLS 1.3) ➔ `RESPONSE_INTERCEPTOR` ➔ `CACHE_UPDATE` (TanStack Query invalidation) ➔ `DOM_COMMIT`.
 
 ---
@@ -118,8 +130,8 @@ npm run dev
 | **v3.0** | **Runtime Tracing** | Live Controller ➔ Service ➔ Repository ➔ DB execution tracing, interactive replay player. |
 | **v4.0** | **React 19 + Vite 8** | Platform upgrade to React 19, Vite 8 (Rolldown), TypeScript 7, Lucide React 1.x. |
 | **v4.2** | **Handcrafted UI & Workbench** | Emil Kowalski spring motion, Impeccable obsidian blueprint canvas, Taste Skill 5-view live interactive workbench. |
-| **v5.0 (Current)** | **React Runtime Explorer** | Virtual DOM Fiber tree reconciliation, Hook state mutation timeline, and Axios request/response interceptors. |
-| **v6.0** | **AI Explanations & Spring AI RAG** | Integrated RAG engine powered by Spring AI (Gemini / OpenAI / Ollama) for automated architecture document generation. |
+| **v5.0** | **React Runtime Explorer** | Virtual DOM Fiber tree reconciliation, Hook state mutation timeline, and Axios request/response interceptors. |
+| **v6.0 (Current)** | **AI Explanations & Spring AI RAG** | Integrated RAG engine powered by Spring AI (Gemini / OpenAI / Ollama) for automated architecture document generation. |
 | **v7.0** | **VS Code Extension** | Native IDE side-panel extension for direct visual execution flow exploration inside VS Code. |
 | **v8.0** | **Chrome Extension** | Browser extension for GitHub repository pages to view interactive flow maps directly on github.com. |
 | **v9.0** | **Team Collaboration** | Multi-user shared workspaces, live architectural annotations, and team review comments. |

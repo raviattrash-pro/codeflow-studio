@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { X, ShieldCheck, Lock, ArrowDown, CheckCircle2 } from 'lucide-react';
+import { X, ShieldCheck, Lock, ArrowDown, CheckCircle2, Bot } from 'lucide-react';
 
 import { DEMO_SECURITY_DATA, DEMO_PROJECT_DATA } from '../utils/demoData';
 
@@ -24,6 +24,7 @@ interface SecurityExplorerModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentTheme?: ThemeMode;
+  onAskAi?: (prompt: string, analysisType?: string) => void;
 }
 
 export const SecurityExplorerModal: React.FC<SecurityExplorerModalProps> = ({
@@ -31,6 +32,7 @@ export const SecurityExplorerModal: React.FC<SecurityExplorerModalProps> = ({
   isOpen,
   onClose,
   currentTheme = 'NIGHT',
+  onAskAi,
 }) => {
   const [data, setData] = useState<SecurityData | null>(null);
   const isLight = currentTheme === 'NORMAL' || currentTheme === 'GLASSMORPHISM' || currentTheme === 'NEUMORPHIC';
@@ -88,12 +90,23 @@ export const SecurityExplorerModal: React.FC<SecurityExplorerModalProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className={`p-2 rounded-xl transition-all ${isLight ? 'hover:bg-slate-200 text-slate-500' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center space-x-2">
+            {onAskAi && (
+              <button
+                onClick={() => onAskAi('Perform a comprehensive security audit on this Spring Security filter chain and JWT authentication setup.', 'SECURITY')}
+                className="px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-bold flex items-center space-x-1.5 transition-all"
+              >
+                <Bot className="w-3.5 h-3.5 text-red-400" />
+                <span>AI Security Audit</span>
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className={`p-2 rounded-xl transition-all ${isLight ? 'hover:bg-slate-200 text-slate-500' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Pipeline Steps */}

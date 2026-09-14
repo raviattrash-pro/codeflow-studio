@@ -38,3 +38,13 @@ logging:
   level:
     root: INFO
     com.codeflow.studio: DEBUG
+
+# AI Provider Configuration
+codeflow:
+  ai:
+    provider: none  # Options: gemini, openai, ollama, none
+    api-key: ""     # Your Gemini or OpenAI API key
+    model: gemini-2.0-flash  # gemini-2.0-flash, gpt-4o-mini, codellama
+    ollama-url: http://localhost:11434
+    max-context-tokens: 2000
+    temperature: 0.3

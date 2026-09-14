@@ -13,7 +13,7 @@
 
     <groupId>com.codeflow</groupId>
     <artifactId>codeflow-backend</artifactId>
-    <version>3.0.0</version>
+    <version>4.0.0</version>
     <name>codeflow-backend</name>
     <description>Visual Code Intelligence Engine for Java Spring Boot + React Projects</description>
 
@@ -77,6 +77,18 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+
+        <!-- Spring WebFlux for non-blocking AI API calls -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
+        <!-- Jackson for JSON processing -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

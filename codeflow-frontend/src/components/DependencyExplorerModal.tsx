@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { X, Package, Search, HelpCircle, Code, ExternalLink, Sparkles, BookOpen, CheckCircle2, ChevronRight } from 'lucide-react';
+import { X, Package, Search, HelpCircle, Code, ExternalLink, Sparkles, BookOpen, CheckCircle2, ChevronRight, Bot } from 'lucide-react';
 import axios from 'axios';
 import { ProjectDependency } from '../types';
 import { DEMO_DEPENDENCIES, DEMO_PROJECT_DATA } from '../utils/demoData';
@@ -10,6 +10,7 @@ interface DependencyExplorerModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentTheme?: ThemeMode;
+  onAskAi?: (prompt: string, analysisType?: string) => void;
 }
 
 interface DetailedDepInfo {
@@ -87,6 +88,7 @@ export const DependencyExplorerModal: React.FC<DependencyExplorerModalProps> = (
   isOpen,
   onClose,
   currentTheme = 'NIGHT',
+  onAskAi,
 }) => {
   const [dependencies, setDependencies] = useState<ProjectDependency[]>([]);
   const [selectedDep, setSelectedDep] = useState<ProjectDependency | null>(null);
@@ -166,12 +168,23 @@ export const DependencyExplorerModal: React.FC<DependencyExplorerModalProps> = (
               <p className="text-xs text-slate-400 font-mono">Parsed Spring Boot Starters, Internal Working &amp; Interview Guides</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className={`p-1.5 rounded-xl transition-all ${isLight ? 'hover:bg-slate-200 text-slate-500' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center space-x-2">
+            {onAskAi && (
+              <button
+                onClick={() => onAskAi('Analyze all Maven dependencies in this project for potential version conflicts, security risks, and optimization opportunities.', 'DEPENDENCY_AUDIT')}
+                className="px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-400 text-xs font-bold flex items-center space-x-1.5 transition-all font-mono"
+              >
+                <Bot className="w-3.5 h-3.5 text-purple-400" />
+                <span>AI Dependency Audit</span>
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className={`p-1.5 rounded-xl transition-all ${isLight ? 'hover:bg-slate-200 text-slate-500' : 'hover:bg-slate-800 text-slate-400 hover:text-white'}`}
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Content Layout */}
