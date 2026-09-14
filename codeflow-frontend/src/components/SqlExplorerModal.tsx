@@ -89,7 +89,7 @@ export const SqlExplorerModal: React.FC<SqlExplorerModalProps> = ({
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div
-        className={`modal-pop-in w-full max-w-4xl h-[85vh] max-h-[85vh] rounded-3xl border shadow-2xl overflow-hidden flex flex-col my-auto font-mono ${getModalBg()}`}
+        className={`modal-pop-in w-full max-w-4xl h-[85vh]  rounded-3xl border shadow-2xl overflow-hidden flex flex-col my-auto font-mono ${getModalBg()}`}
         onClick={(e) => e.stopPropagation()}
         style={{ zIndex: 999999 }}
       >

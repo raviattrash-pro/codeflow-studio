@@ -130,7 +130,7 @@ ${DRIFT_ITEMS.map(d => `- **[${d.type}]** ${d.component} — ${d.title}
   return (
     <div className="studio-modal-overlay">
       <div
-        className="studio-modal-card w-full max-w-5xl max-h-[90vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden"
+        className="studio-modal-card w-full max-w-5xl flex flex-col rounded-2xl shadow-2xl overflow-hidden"
         style={{ backgroundColor: isLight ? '#ffffff' : '#0f172a' }}
       >
         {/* Header */}

@@ -192,7 +192,7 @@ spec:
   return (
     <div className="studio-modal-overlay">
       <div
-        className="studio-modal-card w-full max-w-5xl max-h-[90vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden"
+        className="studio-modal-card w-full max-w-5xl flex flex-col rounded-2xl shadow-2xl overflow-hidden"
         style={{ backgroundColor: isLight ? '#ffffff' : '#0f172a' }}
       >
         {/* Header */}
@@ -235,10 +235,10 @@ spec:
 
         {/* Content Layout */}
         <div
-          className="studio-modal-content flex-1 overflow-hidden flex flex-col p-5 space-y-4"
-          style={{ backgroundColor: isLight ? '#ffffff' : '#070a12' }}
+          className="studio-modal-content flex-1 flex flex-col p-5 space-y-4"
+          style={{ backgroundColor: isLight ? '#ffffff' : '#070a12', minHeight: 0 }}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
               {[
                 { id: 'DOCKER', name: 'Docker Compose (Multi-Container)' },
@@ -270,9 +270,9 @@ spec:
 
           <div
             className="border border-slate-700/50 rounded-xl overflow-hidden flex-1 flex flex-col shadow-inner"
-            style={{ backgroundColor: '#050811' }}
+            style={{ backgroundColor: '#050811', minHeight: 0 }}
           >
-            <pre className="p-4 text-xs font-mono text-cyan-300/90 leading-relaxed overflow-x-auto flex-1">
+            <pre className="p-4 text-xs font-mono text-cyan-300/90 leading-relaxed overflow-auto flex-1">
               {getCode()}
             </pre>
           </div>

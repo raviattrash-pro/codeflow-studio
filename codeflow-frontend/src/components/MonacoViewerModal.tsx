@@ -130,7 +130,7 @@ export const MonacoViewerModal: React.FC<MonacoViewerModalProps> = ({
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div
-        className={`w-full max-w-5xl h-[85vh] max-h-[85vh] rounded-3xl overflow-hidden shadow-2xl flex flex-col border my-auto ${
+        className={`w-full max-w-5xl h-[85vh]  rounded-3xl overflow-hidden shadow-2xl flex flex-col border my-auto ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900'
             : isGlass

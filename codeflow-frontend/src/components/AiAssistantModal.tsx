@@ -371,7 +371,7 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div
-        className={`modal-pop-in w-full max-w-4xl h-[90vh] max-h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col my-auto border ${
+        className={`modal-pop-in w-full max-w-4xl h-[90vh]  rounded-3xl shadow-2xl overflow-hidden flex flex-col my-auto border ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900'
             : isGlass

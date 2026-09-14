@@ -89,7 +89,7 @@ export const ErDiagramModal: React.FC<ErDiagramModalProps> = ({
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div
-        className={`modal-pop-in w-full max-w-5xl h-[85vh] max-h-[85vh] rounded-3xl border shadow-2xl overflow-hidden flex flex-col my-auto font-mono ${
+        className={`modal-pop-in w-full max-w-5xl h-[85vh]  rounded-3xl border shadow-2xl overflow-hidden flex flex-col my-auto font-mono ${
           isLight ? 'bg-white border-slate-200 text-slate-900 shadow-2xl' : 'bg-[#0b101d] text-slate-100 border-slate-800 shadow-[0_25px_80px_rgba(0,0,0,0.95)]'
         }`}
         onClick={(e) => e.stopPropagation()}

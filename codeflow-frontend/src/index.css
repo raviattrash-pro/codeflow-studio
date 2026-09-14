@@ -553,7 +553,7 @@ select, option {
 
 
 /* ==========================================================================
-   SOLID OPAQUE MODAL SYSTEM (Zero Translucency, Zero Canvas Bleed-through)
+   SOLID OPAQUE MODAL SYSTEM (Zero Translucency, Zero Canvas Bleed, Zero Overflow)
    ========================================================================== */
 .studio-modal-overlay {
   position: fixed !important;
@@ -565,7 +565,9 @@ select, option {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  padding: 1rem !important;
+  padding: 1.5rem !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
 }
 
 .studio-modal-card {
@@ -577,6 +579,23 @@ select, option {
   overflow: hidden !important;
   position: relative !important;
   z-index: 10 !important;
+  max-height: 88vh !important;
+  max-width: 72rem !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  box-sizing: border-box !important;
+}
+
+@media (max-width: 768px) {
+  .studio-modal-overlay {
+    padding: 0.75rem !important;
+  }
+  .studio-modal-card {
+    max-height: 94vh !important;
+    max-width: 100% !important;
+  }
 }
 
 [data-theme='NORMAL'] .studio-modal-card {
@@ -597,6 +616,7 @@ select, option {
   border-bottom: 1px solid #334155 !important;
   position: relative !important;
   z-index: 10 !important;
+  flex-shrink: 0 !important;
 }
 
 [data-theme='NORMAL'] .studio-modal-header {
@@ -608,6 +628,8 @@ select, option {
 .studio-modal-sidebar {
   background-color: #090d16 !important;
   border-right: 1px solid #1e293b !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
 }
 
 [data-theme='NORMAL'] .studio-modal-sidebar {
@@ -617,6 +639,11 @@ select, option {
 
 .studio-modal-content {
   background-color: #070a12 !important;
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 [data-theme='NORMAL'] .studio-modal-content {
@@ -636,6 +663,9 @@ select, option {
 .studio-modal-code {
   background-color: #050811 !important;
   border: 1px solid #1e293b !important;
+  overflow: auto !important;
+  min-height: 0 !important;
+  flex: 1 1 0% !important;
 }
 
 [data-theme='NORMAL'] .studio-modal-code {

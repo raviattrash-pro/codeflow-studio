@@ -257,7 +257,7 @@ print(response.json())`;
   return (
     <div className="studio-modal-overlay">
       <div
-        className={`w-full max-w-5xl max-h-[90vh] flex flex-col studio-modal-card rounded-2xl shadow-2xl overflow-hidden border ${
+        className={`w-full max-w-5xl  flex flex-col studio-modal-card rounded-2xl shadow-2xl overflow-hidden border ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900'
             : isGlass
