@@ -2,11 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import {
   X, Sparkles, Bot, Send, ShieldCheck, Database, Layers, CheckCircle2,
-  Copy, Check, Zap, Package, Code2, Cpu, Trash2, Download, Server
+  Copy, Check, Zap, Package, Code2, Cpu, Trash2, Download, Server,
+  Settings, Key, Eye, EyeOff, RotateCcw, ExternalLink
 } from 'lucide-react';
 import { DEMO_PROJECT_DATA } from '../utils/demoData';
 import { ThemeMode } from './Header';
-import { AiMessage, AiAnalysisType, AiProviderStatus } from '../types';
+import { AiMessage, AiAnalysisType, AiProviderStatus, UserAiConfig } from '../types';
 
 interface AiAssistantModalProps {
   projectId: string | null;
@@ -24,6 +25,21 @@ interface AiApiResponse {
   recommendation?: string;
   recommendations?: string[];
 }
+
+const STORAGE_KEY = 'codeflow_user_ai_config';
+
+const DEFAULT_AI_CONFIG: UserAiConfig = {
+  provider: 'free',
+  apiKey: '',
+  model: 'gemini-2.0-flash',
+  ollamaUrl: 'http://localhost:11434',
+};
+
+const MODEL_OPTIONS: Record<string, string[]> = {
+  gemini: ['gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-1.0-pro'],
+  openai: ['gpt-4o-mini', 'gpt-4o', 'gpt-4-turbo', 'gpt-3.5-turbo'],
+  ollama: ['codellama', 'deepseek-coder', 'llama3', 'mistral', 'qwen2.5-coder'],
+};
 
 const QUICK_AUDITS: { label: string; query: string; type: AiAnalysisType; color: string; emoji: string }[] = [
   { label: 'Architecture', emoji: '🏗️', query: 'Explain the full-stack architecture, layer boundaries, and data flow patterns', type: 'ARCHITECTURE', color: 'text-cyan-500' },
@@ -129,9 +145,21 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
   const [messages, setMessages] = useState<AiMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [providerStatus, setProviderStatus] = useState<AiProviderStatus>({ provider: 'none', model: 'demo', isConnected: false });
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [showApiKey, setShowApiKey] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // User AI Configuration State (stored in localStorage)
+  const [aiConfig, setAiConfig] = useState<UserAiConfig>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return DEFAULT_AI_CONFIG;
+  });
+
+  const [tempConfig, setTempConfig] = useState<UserAiConfig>(aiConfig);
 
   const isLight = currentTheme === 'NORMAL';
   const isGlass = currentTheme === 'GLASSMORPHISM';
@@ -142,18 +170,28 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
   }, [messages]);
 
   useEffect(() => {
-    if (isOpen) {
-      axios.get<AiProviderStatus>('/api/v1/ai/status')
-        .then(res => setProviderStatus(res.data))
-        .catch(() => setProviderStatus({ provider: 'none', model: 'demo', isConnected: false }));
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
     if (isOpen && initialPrompt && messages.length === 0) {
       handleSend(initialPrompt, initialAnalysisType || 'GENERAL');
     }
   }, [isOpen, initialPrompt]);
+
+  const handleSaveConfig = () => {
+    setAiConfig(tempConfig);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tempConfig));
+    } catch {}
+    setIsSettingsOpen(false);
+  };
+
+  const handleResetToFree = () => {
+    const reset: UserAiConfig = { ...DEFAULT_AI_CONFIG, provider: 'free', apiKey: '' };
+    setTempConfig(reset);
+    setAiConfig(reset);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(reset));
+    } catch {}
+    setIsSettingsOpen(false);
+  };
 
   if (!isOpen) return null;
 
@@ -172,7 +210,9 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
     setInput('');
     setLoading(true);
 
-    if (projectId === DEMO_PROJECT_DATA.id || providerStatus.provider === 'none') {
+    const isFree = aiConfig.provider === 'free' || !aiConfig.apiKey.trim();
+
+    if (projectId === DEMO_PROJECT_DATA.id || isFree) {
       setTimeout(() => {
         const demo = getDemoAiResponse(prompt, analysisType);
         const assistantMsg: AiMessage = {
@@ -184,13 +224,17 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
         };
         setMessages(prev => [...prev, assistantMsg]);
         setLoading(false);
-      }, 800 + Math.random() * 600);
+      }, 700 + Math.random() * 500);
       return;
     }
 
     axios.post<AiApiResponse>(`/api/v1/projects/${projectId}/ai/explain`, {
       prompt: prompt.trim(),
       analysisType,
+      provider: aiConfig.provider,
+      apiKey: aiConfig.apiKey,
+      model: aiConfig.model,
+      ollamaUrl: aiConfig.ollamaUrl,
     })
       .then(res => {
         const assistantMsg: AiMessage = {
@@ -286,13 +330,13 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
     });
   };
 
-  const providerBadge = providerStatus.provider === 'none'
-    ? { label: 'Demo Mode', color: 'text-amber-500 bg-amber-500/10 border-amber-500/20' }
-    : providerStatus.provider === 'gemini'
-    ? { label: `Gemini · ${providerStatus.model}`, color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' }
-    : providerStatus.provider === 'openai'
-    ? { label: `OpenAI · ${providerStatus.model}`, color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' }
-    : { label: `Ollama · ${providerStatus.model}`, color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' };
+  const activeBadge = aiConfig.provider === 'free' || !aiConfig.apiKey.trim()
+    ? { label: '⚡ Free Built-in AI (Default)', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' }
+    : aiConfig.provider === 'gemini'
+    ? { label: `🔮 Gemini · ${aiConfig.model}`, color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' }
+    : aiConfig.provider === 'openai'
+    ? { label: `🧠 OpenAI · ${aiConfig.model}`, color: 'text-purple-400 bg-purple-500/10 border-purple-500/20' }
+    : { label: `🦙 Ollama · ${aiConfig.model}`, color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' };
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -321,17 +365,35 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
                 <h3 className={`text-base font-bold font-mono ${isLight ? 'text-slate-900' : 'text-white'}`}>
                   AI Architecture Intelligence
                 </h3>
-                <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border ${providerBadge.color}`}>
-                  {providerBadge.label}
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold border ${activeBadge.color}`}>
+                  {activeBadge.label}
                 </span>
               </div>
               <p className={`text-xs mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                Deep codebase analysis powered by RAG context injection from your parsed AST
+                Context-aware AST reasoning • Free by default • Custom model &amp; API keys supported
               </p>
             </div>
           </div>
 
           <div className="flex items-center space-x-1.5 shrink-0">
+            <button
+              onClick={() => {
+                setTempConfig(aiConfig);
+                setIsSettingsOpen(!isSettingsOpen);
+              }}
+              className={`flex items-center space-x-1 px-3 py-1.5 rounded-xl border text-xs font-mono font-bold transition-all ${
+                isSettingsOpen
+                  ? 'bg-purple-500/20 text-purple-300 border-purple-500/40 shadow-sm'
+                  : isLight
+                  ? 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'
+                  : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-800'
+              }`}
+              title="Change AI Model & Configure API Key"
+            >
+              <Settings className="w-3.5 h-3.5" />
+              <span>Model &amp; Key</span>
+            </button>
+
             {messages.length > 0 && (
               <>
                 <button onClick={handleExportMarkdown} className={`p-2 rounded-xl transition-all ${isLight ? 'hover:bg-slate-200 text-slate-500' : 'hover:bg-slate-800 text-slate-400'}`} title="Export as Markdown">
@@ -347,6 +409,179 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
             </button>
           </div>
         </div>
+
+        {/* ═══ Model & API Key Settings Drawer ═══ */}
+        {isSettingsOpen && (
+          <div className={`p-5 border-b space-y-4 shrink-0 animate-in slide-in-from-top-3 duration-200 ${
+            isLight ? 'bg-purple-50/80 border-purple-200 text-slate-900' : 'bg-slate-900/95 border-purple-500/30 text-slate-100'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Key className="w-4 h-4 text-purple-400" />
+                <h4 className="text-xs font-bold font-mono uppercase tracking-wider">
+                  AI Model &amp; Provider Settings
+                </h4>
+              </div>
+              <button
+                onClick={handleResetToFree}
+                className="text-[11px] font-mono text-purple-400 hover:text-purple-300 flex items-center space-x-1 underline"
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span>Reset to Free Built-in AI</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {/* Provider selector */}
+              <div>
+                <label className="block text-[11px] font-bold font-mono mb-1 text-slate-400">
+                  AI Engine / Provider
+                </label>
+                <select
+                  value={tempConfig.provider}
+                  onChange={(e) => {
+                    const p = e.target.value as any;
+                    const defModel = MODEL_OPTIONS[p]?.[0] || 'gemini-2.0-flash';
+                    setTempConfig({ ...tempConfig, provider: p, model: defModel });
+                  }}
+                  className={`w-full px-3 py-2 rounded-xl border text-xs font-mono outline-none ${
+                    isLight ? 'bg-white border-slate-300 text-slate-900' : 'bg-slate-950 border-slate-800 text-slate-200'
+                  }`}
+                >
+                  <option value="free">⚡ Free Built-in AI (No Key Needed)</option>
+                  <option value="gemini">🔮 Google Gemini</option>
+                  <option value="openai">🧠 OpenAI (GPT-4o)</option>
+                  <option value="ollama">🦙 Ollama (Local / Offline)</option>
+                </select>
+              </div>
+
+              {/* Model selector */}
+              <div>
+                <label className="block text-[11px] font-bold font-mono mb-1 text-slate-400">
+                  Model Version
+                </label>
+                {tempConfig.provider === 'free' ? (
+                  <input
+                    disabled
+                    value="Built-in AST RAG Intelligence"
+                    className={`w-full px-3 py-2 rounded-xl border text-xs font-mono opacity-60 ${
+                      isLight ? 'bg-slate-100 border-slate-200 text-slate-600' : 'bg-slate-950 border-slate-800 text-slate-400'
+                    }`}
+                  />
+                ) : (
+                  <select
+                    value={tempConfig.model}
+                    onChange={(e) => setTempConfig({ ...tempConfig, model: e.target.value })}
+                    className={`w-full px-3 py-2 rounded-xl border text-xs font-mono outline-none ${
+                      isLight ? 'bg-white border-slate-300 text-slate-900' : 'bg-slate-950 border-slate-800 text-slate-200'
+                    }`}
+                  >
+                    {(MODEL_OPTIONS[tempConfig.provider] || []).map((m) => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
+              {/* API Key or Ollama URL */}
+              <div>
+                <label className="block text-[11px] font-bold font-mono mb-1 text-slate-400">
+                  {tempConfig.provider === 'ollama' ? 'Ollama Base URL' : 'API Key'}
+                </label>
+                {tempConfig.provider === 'free' ? (
+                  <input
+                    disabled
+                    value="Zero setup required"
+                    className={`w-full px-3 py-2 rounded-xl border text-xs font-mono opacity-60 ${
+                      isLight ? 'bg-slate-100 border-slate-200 text-slate-600' : 'bg-slate-950 border-slate-800 text-slate-400'
+                    }`}
+                  />
+                ) : tempConfig.provider === 'ollama' ? (
+                  <input
+                    type="text"
+                    placeholder="http://localhost:11434"
+                    value={tempConfig.ollamaUrl}
+                    onChange={(e) => setTempConfig({ ...tempConfig, ollamaUrl: e.target.value })}
+                    className={`w-full px-3 py-2 rounded-xl border text-xs font-mono outline-none ${
+                      isLight ? 'bg-white border-slate-300 text-slate-900' : 'bg-slate-950 border-slate-800 text-slate-200'
+                    }`}
+                  />
+                ) : (
+                  <div className="relative">
+                    <input
+                      type={showApiKey ? 'text' : 'password'}
+                      placeholder={tempConfig.provider === 'gemini' ? 'AIzaSy...' : 'sk-proj-...'}
+                      value={tempConfig.apiKey}
+                      onChange={(e) => setTempConfig({ ...tempConfig, apiKey: e.target.value })}
+                      className={`w-full pl-3 pr-8 py-2 rounded-xl border text-xs font-mono outline-none ${
+                        isLight ? 'bg-white border-slate-300 text-slate-900' : 'bg-slate-950 border-slate-800 text-slate-200'
+                      }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowApiKey(!showApiKey)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                    >
+                      {showApiKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Provider helper links & action */}
+            <div className="flex items-center justify-between pt-1">
+              <div className="text-[11px] font-mono text-slate-400 flex items-center space-x-3">
+                {tempConfig.provider === 'gemini' && (
+                  <a
+                    href="https://aistudio.google.com/app/apikey"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-blue-400 hover:underline flex items-center space-x-1"
+                  >
+                    <span>Get Free Gemini API Key from Google AI Studio</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+                {tempConfig.provider === 'openai' && (
+                  <a
+                    href="https://platform.openai.com/api-keys"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-emerald-400 hover:underline flex items-center space-x-1"
+                  >
+                    <span>Get OpenAI API Key from OpenAI Platform</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+                {tempConfig.provider === 'ollama' && (
+                  <span>Run `ollama run ${tempConfig.model || 'codellama'}` locally on your machine.</span>
+                )}
+                {tempConfig.provider === 'free' && (
+                  <span>💡 Free Built-in AI generates answers using CodeFlow AST static context.</span>
+                )}
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setIsSettingsOpen(false)}
+                  className={`px-3 py-1.5 rounded-xl border text-xs font-mono ${
+                    isLight ? 'hover:bg-slate-100 border-slate-300 text-slate-700' : 'hover:bg-slate-800 border-slate-700 text-slate-300'
+                  }`}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveConfig}
+                  className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold font-mono shadow-md flex items-center space-x-1.5"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Apply &amp; Save</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Chat Thread */}
         <div className={`flex-1 min-h-0 overflow-y-auto custom-scrollbar ${isLight ? 'bg-slate-100/50' : 'bg-slate-950/30'}`}>
@@ -399,7 +634,7 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
                     { icon: '🔍', text: 'RAG Context from AST' },
                     { icon: '🛡️', text: 'Security Scan' },
                     { icon: '⚡', text: 'SQL Optimization' },
-                    { icon: '📝', text: 'Export as Markdown' },
+                    { icon: '🔑', text: 'Custom Key & Model Support' },
                   ].map((f, i) => (
                     <div key={i} className="flex items-center space-x-1.5">
                       <span>{f.icon}</span>
@@ -456,7 +691,7 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
                         <div className="w-2 h-2 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: '300ms' }} />
                       </div>
                       <span className={`text-xs font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                        Analyzing codebase context...
+                        {aiConfig.provider === 'free' ? 'Analyzing codebase AST...' : `Querying ${aiConfig.provider} (${aiConfig.model})...`}
                       </span>
                     </div>
                   </div>

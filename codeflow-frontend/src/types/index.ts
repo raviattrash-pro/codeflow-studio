@@ -179,3 +179,11 @@ export interface AiResponse {
   codeQualityScore?: number;
   securityIssues?: string[];
 }
+
+export interface UserAiConfig {
+  provider: 'free' | 'gemini' | 'openai' | 'ollama';
+  apiKey: string;
+  model: string;
+  ollamaUrl: string;
+}
+

@@ -86,7 +86,21 @@ public class AiService {
     }
 
     public String generateAiResponse(String projectId, String userPrompt, String analysisType) {
-        if ("none".equalsIgnoreCase(aiConfig.getProvider())) {
+        return generateAiResponse(projectId, userPrompt, analysisType, null, null, null, null);
+    }
+
+    public String generateAiResponse(String projectId, String userPrompt, String analysisType,
+                                     String customProvider, String customApiKey, String customModel, String customOllamaUrl) {
+        String activeProvider = (customProvider != null && !customProvider.trim().isEmpty()) 
+            ? customProvider : aiConfig.getProvider();
+        String activeApiKey = (customApiKey != null && !customApiKey.trim().isEmpty()) 
+            ? customApiKey : aiConfig.getApiKey();
+        String activeModel = (customModel != null && !customModel.trim().isEmpty()) 
+            ? customModel : aiConfig.getModel();
+        String activeOllamaUrl = (customOllamaUrl != null && !customOllamaUrl.trim().isEmpty()) 
+            ? customOllamaUrl : aiConfig.getOllamaUrl();
+
+        if ("none".equalsIgnoreCase(activeProvider) || "free".equalsIgnoreCase(activeProvider)) {
             return fallbackResponseString(userPrompt, projectId);
         }
 
@@ -100,13 +114,13 @@ public class AiService {
         );
 
         try {
-            switch (aiConfig.getProvider().toLowerCase()) {
+            switch (activeProvider.toLowerCase()) {
                 case "gemini":
-                    return callGemini(systemPrompt, userPrompt);
+                    return callGemini(systemPrompt, userPrompt, activeApiKey, activeModel);
                 case "openai":
-                    return callOpenAi(systemPrompt, userPrompt);
+                    return callOpenAi(systemPrompt, userPrompt, activeApiKey, activeModel);
                 case "ollama":
-                    return callOllama(systemPrompt, userPrompt);
+                    return callOllama(systemPrompt, userPrompt, activeOllamaUrl, activeModel);
                 default:
                     return fallbackResponseString(userPrompt, projectId);
             }
@@ -116,8 +130,9 @@ public class AiService {
         }
     }
 
-    private String callGemini(String systemPrompt, String userPrompt) throws JsonProcessingException {
-        String url = "https://generativelanguage.googleapis.com/v1beta/models/" + aiConfig.getModel() + ":generateContent?key=" + aiConfig.getApiKey();
+    private String callGemini(String systemPrompt, String userPrompt, String apiKey, String model) throws JsonProcessingException {
+        String effectiveModel = (model != null && !model.isEmpty()) ? model : "gemini-2.0-flash";
+        String url = "https://generativelanguage.googleapis.com/v1beta/models/" + effectiveModel + ":generateContent?key=" + apiKey;
         String fullPrompt = systemPrompt + "\n\nUser Request: " + userPrompt;
         
         Map<String, Object> body = Map.of(
@@ -138,7 +153,6 @@ public class AiService {
             .bodyToMono(String.class)
             .block();
 
-        // Very basic parsing for simplicity, ideally map to proper DTO
         try {
             Map<String, Object> resMap = objectMapper.readValue(response, Map.class);
             List<Map<String, Object>> candidates = (List<Map<String, Object>>) resMap.get("candidates");
@@ -150,11 +164,12 @@ public class AiService {
         }
     }
 
-    private String callOpenAi(String systemPrompt, String userPrompt) throws JsonProcessingException {
+    private String callOpenAi(String systemPrompt, String userPrompt, String apiKey, String model) throws JsonProcessingException {
+        String effectiveModel = (model != null && !model.isEmpty()) ? model : "gpt-4o-mini";
         String url = "https://api.openai.com/v1/chat/completions";
         
         Map<String, Object> body = Map.of(
-            "model", aiConfig.getModel(),
+            "model", effectiveModel,
             "messages", List.of(
                 Map.of("role", "system", "content", systemPrompt),
                 Map.of("role", "user", "content", userPrompt)
@@ -164,7 +179,7 @@ public class AiService {
 
         String response = webClient.post()
             .uri(url)
-            .header("Authorization", "Bearer " + aiConfig.getApiKey())
+            .header("Authorization", "Bearer " + apiKey)
             .bodyValue(body)
             .retrieve()
             .bodyToMono(String.class)
@@ -180,12 +195,14 @@ public class AiService {
         }
     }
 
-    private String callOllama(String systemPrompt, String userPrompt) throws JsonProcessingException {
-        String url = aiConfig.getOllamaUrl() + "/api/generate";
+    private String callOllama(String systemPrompt, String userPrompt, String ollamaUrl, String model) throws JsonProcessingException {
+        String effectiveUrl = (ollamaUrl != null && !ollamaUrl.isEmpty()) ? ollamaUrl : "http://localhost:11434";
+        String effectiveModel = (model != null && !model.isEmpty()) ? model : "codellama";
+        String url = effectiveUrl + "/api/generate";
         String fullPrompt = systemPrompt + "\n\nUser Request: " + userPrompt;
         
         Map<String, Object> body = Map.of(
-            "model", aiConfig.getModel(),
+            "model", effectiveModel,
             "prompt", fullPrompt,
             "stream", false
         );
@@ -207,7 +224,7 @@ public class AiService {
 
     private String fallbackResponseString(String prompt, String projectId) {
         List<ProjectNode> nodes = nodeRepository.findByProjectId(projectId);
-        return "AI provider not configured or unavailable. The project contains " + nodes.size() + " parsed components. Please check AI settings.";
+        return "AI provider not configured or running in free built-in mode. The project contains " + nodes.size() + " parsed components.";
     }
 
     public Map<String, Object> getProviderStatus() {
