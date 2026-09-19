@@ -137,6 +137,12 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
   }, [domainWorkflows, selectedDomain]);
 
   // Derived dynamic labels for the active project
+  const isThinkSwipe = useMemo(() => {
+    const p = (projectName || '').toLowerCase();
+    return p.includes('thinkswipe') || p.includes('think-swipe') || p.includes('think_swipe') ||
+      nodes.some(n => (n.data?.label || '').toLowerCase().includes('thinkswipe') || (n.data?.filePath || '').toLowerCase().includes('thinkswipe') || (n.data?.filePath || '').toLowerCase().includes('main.jsx') || (n.data?.label || '').toLowerCase().includes('answerservice'));
+  }, [projectName, nodes]);
+
   const formattedProjectName = useMemo(() => {
     if (!projectName || projectName === 'Repository') return 'Spring Boot & React';
     if (projectName.toLowerCase() === 'vps') return 'School ERP';
@@ -487,820 +493,811 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
         >
           {/* SVG CONNECTED ARCHITECTURE CANVAS */}
           <div className="w-full max-w-[1140px] flex justify-center">
-            <svg
-              viewBox="0 0 1120 1200"
-              className="w-full h-auto drop-shadow-sm select-none"
-              style={{ minWidth: '320px', maxWidth: '1120px' }}
-            >
-              <defs>
-                {/* Marker Arrowheads */}
-                <marker id="arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" />
-                </marker>
-                <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#3b82f6" />
-                </marker>
-                <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f59e0b" />
-                </marker>
-                <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#22c55e" />
-                </marker>
-                <marker id="arrow-rose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f43f5e" />
-                </marker>
-                <marker id="arrow-indigo" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#6366f1" />
-                </marker>
-                <filter id="nodeHover" x="-10%" y="-10%" width="120%" height="120%">
-                  <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.12" />
-                </filter>
-              </defs>
-
-              {/* ─────────────────────────────────────────────────────────────
-                  STEP 1: TOP ACTOR NODE (Dynamic Project Users)
-                 ───────────────────────────────────────────────────────────── */}
-              <g
-                className="cursor-pointer group"
-                onClick={() => setSelectedNode({
-                  id: 'users',
-                  label: actorLabel,
-                  sub: `${formattedProjectName} Web Browser & Mobile App End Users`,
-                  category: 'CLIENT',
-                  type: 'USER',
-                  color: '#1e40af',
-                  bg: '#dbeafe',
-                  border: '#3b82f6'
-                })}
+            {isThinkSwipe ? (
+              /* ═══════════════════════════════════════════════════════════════════
+                 THINKSWIPE ARCHITECTURE CANVAS (EXACT MATCH TO GITDIAGRAM SCREENSHOTS)
+                 ═══════════════════════════════════════════════════════════════════ */
+              <svg
+                viewBox="0 0 1120 1380"
+                className="w-full h-auto drop-shadow-sm select-none"
+                style={{ minWidth: '320px', maxWidth: '1120px' }}
               >
-                <rect
-                  x="440"
-                  y="16"
-                  width="240"
-                  height="44"
-                  rx="22"
-                  fill="#dbeafe"
-                  stroke="#3b82f6"
-                  strokeWidth="2"
-                  className="transition-all group-hover:stroke-blue-700 group-hover:brightness-95"
-                />
-                <text
-                  x="560"
-                  y="43"
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fill="#1e40af"
-                  fontSize="12.5"
-                  fontFamily="ui-monospace, monospace"
-                  fontWeight="bold"
+                <defs>
+                  <marker id="ts-arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" />
+                  </marker>
+                  <marker id="ts-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#3b82f6" />
+                  </marker>
+                  <marker id="ts-arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#22c55e" />
+                  </marker>
+                  <marker id="ts-arrow-indigo" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#6366f1" />
+                  </marker>
+                  <marker id="ts-arrow-rose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f43f5e" />
+                  </marker>
+                </defs>
+
+                {/* ─── 1. CIRCULAR ACTOR NODES ─── */}
+                {/* Visitor Circle */}
+                <g
+                  className="cursor-pointer group"
+                  onClick={() => setSelectedNode({
+                    id: 'ts_visitor',
+                    label: 'Visitor',
+                    sub: 'Anonymous Web Browser Clients',
+                    category: 'CLIENT',
+                    type: 'USER',
+                    color: '#1e40af',
+                    bg: '#dbeafe',
+                    border: '#60a5fa'
+                  })}
                 >
-                  {actorLabel}
+                  <circle cx="650" cy="40" r="22" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1.5" className="transition group-hover:stroke-blue-600" />
+                  <text x="650" y="44" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="600">
+                    Visitor
+                  </text>
+                </g>
+
+                {/* Admin User Circle */}
+                <g
+                  className="cursor-pointer group"
+                  onClick={() => setSelectedNode({
+                    id: 'ts_admin_user',
+                    label: 'Admin User',
+                    sub: 'ThinkSwipe Dashboard & Content Administrators',
+                    category: 'CLIENT',
+                    type: 'USER',
+                    color: '#1e40af',
+                    bg: '#dbeafe',
+                    border: '#60a5fa'
+                  })}
+                >
+                  <circle cx="730" cy="40" r="27" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1.5" className="transition group-hover:stroke-blue-600" />
+                  <text x="730" y="44" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="10.5" fontFamily="ui-monospace, monospace" fontWeight="600">
+                    Admin User
+                  </text>
+                </g>
+
+                {/* Visitor Line -> React Bootstrap */}
+                <path d="M 650 62 L 650 120 L 730 120 L 730 148" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="625" y="80" width="55" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="652" y="90" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="9" fontFamily="ui-monospace, monospace" fontWeight="600">opens app</text>
+                <circle r="3" fill="#3b82f6"><animateMotion path="M 650 62 L 650 120 L 730 120 L 730 148" dur="1.8s" repeatCount="indefinite" /></circle>
+
+                {/* Admin User Line -> React Bootstrap */}
+                <path d="M 730 67 L 730 148" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="702" y="80" width="62" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="733" y="90" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="9" fontFamily="ui-monospace, monospace" fontWeight="600">opens admin</text>
+                <circle r="3" fill="#3b82f6"><animateMotion path="M 730 67 L 730 148" dur="1.6s" repeatCount="indefinite" /></circle>
+
+                {/* ─── 2. CONTAINER 1: CLIENT EXPERIENCE ─── */}
+                <rect x="360" y="115" width="540" height="420" rx="8" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.5" />
+                <text x="630" y="136" textAnchor="middle" fill="#64748b" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="600">
+                  Client Experience
                 </text>
-              </g>
 
-              {/* Connector: Users -> Client Experience */}
-              <path
-                d="M 560 60 L 560 115"
-                fill="none"
-                stroke="#64748b"
-                strokeWidth="1.5"
-                markerEnd="url(#arrow-slate)"
-              />
-              <rect x="542" y="78" width="36" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-              <text x="560" y="91" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="10.5" fontFamily="ui-monospace, monospace" fontWeight="600">
-                uses
-              </text>
-              <circle r="3.5" fill="#3b82f6">
-                <animateMotion path="M 560 60 L 560 115" dur="1.6s" repeatCount="indefinite" />
-              </circle>
+                {/* React Bootstrap [main.jsx] */}
+                <g
+                  className="cursor-pointer group"
+                  onClick={() => setSelectedNode({
+                    id: 'ts_main_jsx',
+                    label: 'React Bootstrap [main.jsx]',
+                    sub: 'Vite React Entry Point & Root Mount',
+                    category: 'CLIENT',
+                    type: 'REACT_APP',
+                    filePath: 'src/main.jsx',
+                    color: '#1e40af',
+                    bg: '#dbeafe',
+                    border: '#60a5fa'
+                  })}
+                >
+                  <rect x="660" y="148" width="130" height="46" rx="4" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1.5" className="transition group-hover:stroke-blue-600" />
+                  <text x="725" y="165" textAnchor="middle" fill="#1e40af" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">React Bootstrap</text>
+                  <text x="725" y="180" textAnchor="middle" fill="#1e40af" fontSize="9.5" fontFamily="ui-monospace, monospace" opacity="0.8">[main.jsx]</text>
+                </g>
 
-              {/* ─────────────────────────────────────────────────────────────
-                  STEP 2: CONTAINER 1 - Client Experience (Light Container)
-                 ───────────────────────────────────────────────────────────── */}
-              <rect
-                x="160"
-                y="115"
-                width="800"
-                height="195"
-                rx="8"
-                fill="#ffffff"
-                stroke="#cbd5e1"
-                strokeWidth="1.5"
-              />
-              <text
-                x="185"
-                y="138"
-                fill="#64748b"
-                fontSize="12"
-                fontFamily="ui-monospace, monospace"
-                fontWeight="600"
-              >
-                Client Experience
-              </text>
+                {/* Main -> Swipe Experience (mounts) */}
+                <path d="M 660 171 L 530 171 L 530 225" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="580" y="163" width="46" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="603" y="173" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">mounts</text>
 
-              {/* React Application [App.jsx] */}
-              <g
-                className="cursor-pointer group"
-                onClick={() => setSelectedNode({
-                  id: 'react_app',
-                  label: `${formattedProjectName} App (App.jsx)`,
-                  sub: `${projectName} React 19 Frontend SPA`,
-                  category: 'CLIENT',
-                  type: 'REACT_APP',
-                  filePath: 'src/App.jsx',
-                  color: '#1e40af',
-                  bg: '#dbeafe',
-                  border: '#60a5fa'
-                })}
-              >
-                <rect
-                  x="190"
-                  y="152"
-                  width="340"
-                  height="52"
-                  rx="6"
-                  fill="#dbeafe"
-                  stroke="#60a5fa"
-                  strokeWidth="1.5"
-                  className="transition group-hover:stroke-blue-600 group-hover:brightness-95"
-                />
-                <text x="360" y="174" textAnchor="middle" fill="#1e40af" fontSize="12.5" fontFamily="ui-monospace, monospace" fontWeight="bold">
-                  {formattedProjectName} Application
-                </text>
-                <text x="360" y="192" textAnchor="middle" fill="#1e40af" fontSize="10.5" fontFamily="ui-monospace, monospace" opacity="0.85">
-                  [App.jsx]
-                </text>
-              </g>
+                {/* Main -> PWA Service Worker (registers) */}
+                <path d="M 760 194 L 760 225" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="735" y="202" width="50" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="760" y="212" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">registers</text>
 
-              {/* ERP Feature Views */}
-              <g
-                className="cursor-pointer group"
-                onClick={() => setSelectedNode({
-                  id: 'fe_views',
-                  label: clientViewsLabel,
-                  sub: `${formattedProjectName} Modular View Layer`,
-                  category: 'CLIENT',
-                  type: 'FE_VIEW',
-                  color: '#1e40af',
-                  bg: '#dbeafe',
-                  border: '#60a5fa'
-                })}
-              >
-                <rect
-                  x="570"
-                  y="152"
-                  width="360"
-                  height="52"
-                  rx="6"
-                  fill="#dbeafe"
-                  stroke="#60a5fa"
-                  strokeWidth="1.5"
-                  className="transition group-hover:stroke-blue-600 group-hover:brightness-95"
-                />
-                <text x="750" y="183" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="12.5" fontFamily="ui-monospace, monospace" fontWeight="bold">
-                  {clientViewsLabel}
-                </text>
-              </g>
+                {/* Swipe Experience [App.jsx] */}
+                <g
+                  className="cursor-pointer group"
+                  onClick={() => setSelectedNode({
+                    id: 'ts_app_jsx',
+                    label: 'Swipe Experience [App.jsx]',
+                    sub: 'Tinder-like Card Swiping & Question State',
+                    category: 'CLIENT',
+                    type: 'REACT_APP',
+                    filePath: 'src/App.jsx',
+                    color: '#1e40af',
+                    bg: '#dbeafe',
+                    border: '#60a5fa'
+                  })}
+                >
+                  <rect x="465" y="225" width="130" height="46" rx="4" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1.5" className="transition group-hover:stroke-blue-600" />
+                  <text x="530" y="242" textAnchor="middle" fill="#1e40af" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Swipe Experience</text>
+                  <text x="530" y="257" textAnchor="middle" fill="#1e40af" fontSize="9.5" fontFamily="ui-monospace, monospace" opacity="0.8">[App.jsx]</text>
+                </g>
 
-              {/* Auth Context [AuthContext.jsx] */}
-              <g
-                className="cursor-pointer group"
-                onClick={() => setSelectedNode({
-                  id: 'auth_context',
-                  label: 'Auth Context [AuthContext.jsx]',
-                  sub: 'State Management & JWT Storage',
-                  category: 'CLIENT',
-                  type: 'AUTH_CONTEXT',
-                  filePath: 'src/context/AuthContext.jsx',
-                  color: '#1e40af',
-                  bg: '#dbeafe',
-                  border: '#60a5fa'
-                })}
-              >
-                <rect
-                  x="190"
-                  y="238"
-                  width="340"
-                  height="52"
-                  rx="6"
-                  fill="#dbeafe"
-                  stroke="#60a5fa"
-                  strokeWidth="1.5"
-                  className="transition group-hover:stroke-blue-600 group-hover:brightness-95"
-                />
-                <text x="360" y="260" textAnchor="middle" fill="#1e40af" fontSize="13" fontFamily="ui-monospace, monospace" fontWeight="bold">
-                  Auth Context
-                </text>
-                <text x="360" y="278" textAnchor="middle" fill="#1e40af" fontSize="10.5" fontFamily="ui-monospace, monospace" opacity="0.85">
-                  [AuthContext.jsx]
-                </text>
-              </g>
+                {/* PWA Service Worker [sw.js] */}
+                <g
+                  className="cursor-pointer group"
+                  onClick={() => setSelectedNode({
+                    id: 'ts_sw_js',
+                    label: 'PWA Service Worker [sw.js]',
+                    sub: 'Offline Caching & Background Push Notifications',
+                    category: 'CLIENT',
+                    type: 'FE_VIEW',
+                    filePath: 'public/sw.js',
+                    color: '#1e40af',
+                    bg: '#dbeafe',
+                    border: '#60a5fa'
+                  })}
+                >
+                  <rect x="690" y="225" width="140" height="46" rx="4" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1.5" className="transition group-hover:stroke-blue-600" />
+                  <text x="760" y="242" textAnchor="middle" fill="#1e40af" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">PWA Service Worker</text>
+                  <text x="760" y="257" textAnchor="middle" fill="#1e40af" fontSize="9.5" fontFamily="ui-monospace, monospace" opacity="0.8">[sw.js]</text>
+                </g>
 
-              {/* Internal Connector: React App -> Auth Context */}
-              <path
-                d="M 360 204 L 360 238"
-                fill="none"
-                stroke="#64748b"
-                strokeWidth="1.5"
-                markerEnd="url(#arrow-slate)"
-              />
-              <rect x="323" y="212" width="74" height="17" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-              <text x="360" y="224" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="600">
-                reads auth
-              </text>
+                {/* Renders Bus from Swipe Experience to 4 Sub-Components */}
+                <path d="M 530 271 L 530 300" fill="none" stroke="#64748b" strokeWidth="1.5" />
+                <path d="M 430 300 L 835 300" fill="none" stroke="#64748b" strokeWidth="1.5" />
 
-              {/* ─────────────────────────────────────────────────────────────
-                  STEP 3: CONNECTOR TO API ACCESS (sends requests)
-                 ───────────────────────────────────────────────────────────── */}
-              <path
-                d="M 360 290 L 360 325 L 560 325 L 560 355"
-                fill="none"
-                stroke="#64748b"
-                strokeWidth="1.5"
-                markerEnd="url(#arrow-slate)"
-              />
-              <rect x="415" y="316" width="94" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-              <text x="462" y="329" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="10.5" fontFamily="ui-monospace, monospace" fontWeight="600">
-                sends requests
-              </text>
-              <circle r="3.5" fill="#f59e0b">
-                <animateMotion path="M 360 290 L 360 325 L 560 325 L 560 355" dur="2.4s" repeatCount="indefinite" />
-              </circle>
+                {[
+                  { x: 430, label: 'Question Search', file: '[SearchBar.jsx]', id: 'ts_search' },
+                  { x: 565, label: 'Leaderboard UI', file: '[Leaderboard.jsx]', id: 'ts_lead' },
+                  { x: 700, label: 'Admin Panel', file: '[AdminPanel.jsx]', id: 'ts_admin_panel' },
+                  { x: 835, label: 'User Submissions', file: '[UserSubmit.jsx]', id: 'ts_submit' },
+                ].map((item, idx) => (
+                  <g key={`fe-comp-${idx}`}>
+                    <path d={`M ${item.x} 300 L ${item.x} 325`} fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                    <rect x={item.x - 20} y="293" width="40" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                    <text x={item.x} y="301" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">renders</text>
 
-              {/* ─────────────────────────────────────────────────────────────
-                  STEP 4: CONTAINER 2 - API Access & Security (Gold / Yellow)
-                 ───────────────────────────────────────────────────────────── */}
-              <rect
-                x="380"
-                y="355"
-                width="360"
-                height="305"
-                rx="8"
-                fill="#fffbeb"
-                stroke="#fde68a"
-                strokeWidth="1.5"
-              />
-              <text
-                x="560"
-                y="378"
-                textAnchor="middle"
-                fill="#854d0e"
-                fontSize="12"
-                fontFamily="ui-monospace, monospace"
-                fontWeight="bold"
-              >
-                API Access
-              </text>
-
-              {/* Cloudflare Proxy */}
-              <g
-                className="cursor-pointer group"
-                onClick={() => setSelectedNode({
-                  id: 'cloudflare',
-                  label: 'Cloudflare Proxy',
-                  sub: 'SSL Termination & DDoS Ingress Proxy',
-                  category: 'API_ACCESS',
-                  type: 'PROXY',
-                  color: '#854d0e',
-                  bg: '#fef08a',
-                  border: '#f59e0b'
-                })}
-              >
-                <rect
-                  x="420"
-                  y="392"
-                  width="280"
-                  height="36"
-                  rx="6"
-                  fill="#fef08a"
-                  stroke="#f59e0b"
-                  strokeWidth="1.5"
-                  className="transition group-hover:stroke-amber-600 group-hover:brightness-95"
-                />
-                <text x="560" y="415" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">
-                  Cloudflare Proxy
-                </text>
-              </g>
-
-              {/* Connector: Cloudflare -> Spring Boot */}
-              <path d="M 560 428 L 560 452" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
-              <rect x="515" y="432" width="90" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-              <text x="560" y="442" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="9" fontFamily="ui-monospace, monospace" fontWeight="600">
-                proxies traffic
-              </text>
-
-              {/* Spring Boot API */}
-              <g
-                className="cursor-pointer group"
-                onClick={() => setSelectedNode({
-                  id: 'spring_boot',
-                  label: `${formattedProjectName} REST API`,
-                  sub: `${projectName} Spring Boot 3.x REST Router`,
-                  category: 'API_ACCESS',
-                  type: 'API_GATEWAY',
-                  annotations: '@SpringBootApplication, @RestController',
-                  color: '#854d0e',
-                  bg: '#fef08a',
-                  border: '#f59e0b'
-                })}
-              >
-                <rect
-                  x="420"
-                  y="452"
-                  width="280"
-                  height="36"
-                  rx="6"
-                  fill="#fef08a"
-                  stroke="#f59e0b"
-                  strokeWidth="1.5"
-                  className="transition group-hover:stroke-amber-600 group-hover:brightness-95"
-                />
-                <text x="560" y="475" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">
-                  {formattedProjectName} REST API
-                </text>
-              </g>
-
-              {/* Connector: Spring Boot -> Security Config */}
-              <path d="M 560 488 L 560 512" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
-              <rect x="515" y="492" width="90" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-              <text x="560" y="502" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="9" fontFamily="ui-monospace, monospace" fontWeight="600">
-                enters security
-              </text>
-
-              {/* Security Config */}
-              <g
-                className="cursor-pointer group"
-                onClick={() => setSelectedNode({
-                  id: 'sec_config',
-                  label: 'Security Config',
-                  sub: 'SecurityFilterChain & CORS Beans',
-                  category: 'API_ACCESS',
-                  type: 'SECURITY_CONFIG',
-                  annotations: '@Configuration, @EnableWebSecurity',
-                  color: '#854d0e',
-                  bg: '#fef08a',
-                  border: '#f59e0b'
-                })}
-              >
-                <rect
-                  x="420"
-                  y="512"
-                  width="280"
-                  height="36"
-                  rx="6"
-                  fill="#fef08a"
-                  stroke="#f59e0b"
-                  strokeWidth="1.5"
-                  className="transition group-hover:stroke-amber-600 group-hover:brightness-95"
-                />
-                <text x="560" y="535" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">
-                  Security Config
-                </text>
-              </g>
-
-              {/* Connector: Security Config -> JWT Filter */}
-              <path d="M 560 548 L 560 572" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
-              <rect x="517" y="552" width="86" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-              <text x="560" y="562" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="9" fontFamily="ui-monospace, monospace" fontWeight="600">
-                applies filter
-              </text>
-
-              {/* JWT Filter */}
-              <g
-                className="cursor-pointer group"
-                onClick={() => setSelectedNode({
-                  id: 'jwt_filter',
-                  label: 'JWT Filter',
-                  sub: 'Bearer Token Validator & Principal',
-                  category: 'API_ACCESS',
-                  type: 'JWT_FILTER',
-                  annotations: 'OncePerRequestFilter, JwtUtils',
-                  color: '#854d0e',
-                  bg: '#fef08a',
-                  border: '#f59e0b'
-                })}
-              >
-                <rect
-                  x="420"
-                  y="572"
-                  width="280"
-                  height="36"
-                  rx="6"
-                  fill="#fef08a"
-                  stroke="#f59e0b"
-                  strokeWidth="1.5"
-                  className="transition group-hover:stroke-amber-600 group-hover:brightness-95"
-                />
-                <text x="560" y="595" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">
-                  JWT Filter
-                </text>
-              </g>
-
-              {/* Animated particle inside API Access */}
-              <circle r="3.5" fill="#d97706">
-                <animateMotion path="M 560 392 L 560 608" dur="2.8s" repeatCount="indefinite" />
-              </circle>
-
-              {/* ─────────────────────────────────────────────────────────────
-                  STEP 5: DISPATCHES (Fanning out from JWT Filter to 7 Domains)
-                 ───────────────────────────────────────────────────────────── */}
-              {/* Central Bus & Fan-out Lines */}
-              <path d="M 560 608 L 560 645" fill="none" stroke="#64748b" strokeWidth="1.5" />
-              <rect x="526" y="618" width="68" height="16" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-              <text x="560" y="629" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="600">
-                dispatches
-              </text>
-
-              {top7Domains.map((dom, i) => {
-                const targetX = 95 + i * 155;
-                return (
-                  <g key={`dispatch-line-${i}`}>
-                    <path
-                      d={`M 560 645 L ${targetX} 645 L ${targetX} 715`}
-                      fill="none"
-                      stroke="#64748b"
-                      strokeWidth="1.5"
-                      markerEnd="url(#arrow-slate)"
-                    />
-                    <circle r="3" fill="#22c55e">
-                      <animateMotion
-                        path={`M 560 608 L 560 645 L ${targetX} 645 L ${targetX} 715`}
-                        dur={`${1.8 + i * 0.15}s`}
-                        repeatCount="indefinite"
-                      />
-                    </circle>
-                  </g>
-                );
-              })}
-
-              {/* ─────────────────────────────────────────────────────────────
-                  STEP 6: CONTAINER 3 - Domain Workflows (Green Container)
-                 ───────────────────────────────────────────────────────────── */}
-              <rect
-                x="20"
-                y="705"
-                width="1080"
-                height="105"
-                rx="8"
-                fill="#f0fdf4"
-                stroke="#86efac"
-                strokeWidth="1.5"
-              />
-              <text
-                x="560"
-                y="727"
-                textAnchor="middle"
-                fill="#15803d"
-                fontSize="12"
-                fontFamily="ui-monospace, monospace"
-                fontWeight="bold"
-              >
-                Domain Workflows
-              </text>
-
-              {top7Domains.map((dom, i) => {
-                const center = 95 + i * 155;
-                const firstCtrl = dom.controllers[0];
-                const displayName = dom.name.replace(' Workflows', '');
-
-                return (
-                  <g
-                    key={`dom-card-${i}`}
-                    className="cursor-pointer group"
-                    onClick={() => setSelectedNode({
-                      id: `domain_${i}`,
-                      label: dom.name,
-                      sub: `${dom.count || 1} controller endpoints (${firstCtrl?.data?.filePath || `${displayName}Controller.java`})`,
-                      category: 'DOMAIN',
-                      type: 'DOMAIN_CONTROLLER',
-                      filePath: firstCtrl?.data?.filePath,
-                      annotations: firstCtrl?.data?.annotations || '@RestController, @RequestMapping',
-                      color: '#15803d',
-                      bg: '#dcfce7',
-                      border: '#22c55e'
-                    })}
-                  >
-                    <rect
-                      x={center - 68}
-                      y="742"
-                      width="136"
-                      height="48"
-                      rx="6"
-                      fill="#dcfce7"
-                      stroke="#22c55e"
-                      strokeWidth="1.5"
-                      className="transition group-hover:stroke-emerald-600 group-hover:brightness-95"
-                    />
-                    <text
-                      x={center}
-                      y={displayName.length > 13 ? 761 : 767}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fill="#15803d"
-                      fontSize="10"
-                      fontFamily="ui-monospace, monospace"
-                      fontWeight="bold"
+                    {/* Component Card */}
+                    <g
+                      className="cursor-pointer group"
+                      onClick={() => setSelectedNode({
+                        id: item.id,
+                        label: `${item.label} ${item.file}`,
+                        sub: `ThinkSwipe React View (${item.file})`,
+                        category: 'CLIENT',
+                        type: 'FE_VIEW',
+                        filePath: `src/components/${item.file.replace(/[\[\]]/g, '')}`,
+                        color: '#1e40af',
+                        bg: '#dbeafe',
+                        border: '#60a5fa'
+                      })}
                     >
-                      {displayName.length > 13 ? (
-                        <>
-                          <tspan x={center} dy="0">{displayName.split(' ')[0]}</tspan>
-                          <tspan x={center} dy="12">{displayName.split(' ').slice(1).join(' ') || 'Workflows'}</tspan>
-                        </>
-                      ) : (
-                        displayName
-                      )}
-                    </text>
+                      <rect x={item.x - 58} y="325" width="116" height="46" rx="4" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1.5" className="transition group-hover:stroke-blue-600" />
+                      <text x={item.x} y="342" textAnchor="middle" fill="#1e40af" fontSize="10.5" fontFamily="ui-monospace, monospace" fontWeight="bold">{item.label}</text>
+                      <text x={item.x} y="357" textAnchor="middle" fill="#1e40af" fontSize="9" fontFamily="ui-monospace, monospace" opacity="0.8">{item.file}</text>
+                    </g>
                   </g>
-                );
-              })}
+                ))}
 
-              {/* ─────────────────────────────────────────────────────────────
-                  STEP 7: STEPPED CONNECTIONS FROM DOMAINS TO PERSISTENCE & INTEGRATIONS
-                 ───────────────────────────────────────────────────────────── */}
-              {/* Solid lines to JPA Repositories */}
-              {top7Domains.map((dom, i) => {
-                const startX = 95 + i * 155;
-                const targetX = 140 + i * 45;
-                const domainNameRaw = dom.name.replace(/ Workflows/i, '');
-                const labelText = i === 0 ? 'reads users' : i === 1 ? 'stores data' : i === 2 ? 'stores ops' : i === 3 ? 'reads reports' : i === 4 ? 'manages records' : i === 5 ? 'stores files' : 'reads/writes';
-                const lineY = 835 + (i % 3) * 12;
+                {/* Lines from 4 Sub-Components -> API Client */}
+                <path d="M 430 371 L 430 460 L 760 460 L 760 480" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="408" y="405" width="45" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="430" y="413" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">searches</text>
 
-                return (
-                  <g key={`jpa-line-${i}`}>
-                    <path
-                      d={`M ${startX} 790 L ${startX} ${lineY} L ${targetX} ${lineY} L ${targetX} 910`}
-                      fill="none"
-                      stroke="#64748b"
-                      strokeWidth="1.5"
-                      markerEnd="url(#arrow-slate)"
-                    />
-                    <rect x={(startX + targetX) / 2 - 38} y={lineY - 7} width="76" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-                    <text x={(startX + targetX) / 2} y={lineY + 1} textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">
-                      {labelText}
-                    </text>
-                    <circle r="3" fill="#f43f5e">
-                      <animateMotion
-                        path={`M ${startX} 790 L ${startX} ${lineY} L ${targetX} ${lineY} L ${targetX} 910`}
-                        dur={`${2.0 + i * 0.18}s`}
-                        repeatCount="indefinite"
-                      />
-                    </circle>
-                  </g>
-                );
-              })}
+                <path d="M 565 371 L 565 448 L 780 448 L 780 480" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="532" y="405" width="66" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="565" y="413" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">loads rankings</text>
 
-              {/* Dashed lines to External Integrations */}
-              {/* Branch 1 -> Email Service */}
-              <path d="M 250 790 L 250 820 L 820 820 L 820 910" fill="none" stroke="#6366f1" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#arrow-indigo)" />
-              <rect x="780" y="812" width="76" height="15" rx="3" fill="#ffffff" stroke="#c7d2fe" strokeWidth="1" />
-              <text x="818" y="822" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">sends notices</text>
-              <circle r="3" fill="#6366f1"><animateMotion path="M 250 790 L 250 820 L 820 820 L 820 910" dur="2.5s" repeatCount="indefinite" /></circle>
+                <path d="M 700 371 L 700 436 L 800 436 L 800 480" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="672" y="405" width="56" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="700" y="413" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">admin calls</text>
 
-              {/* Branch 2 -> Whatsapp Service */}
-              <path d="M 715 790 L 715 810 L 990 810 L 990 910" fill="none" stroke="#6366f1" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#arrow-indigo)" />
-              <rect x="910" y="802" width="70" height="15" rx="3" fill="#ffffff" stroke="#c7d2fe" strokeWidth="1" />
-              <text x="945" y="812" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">sends alerts</text>
-              <circle r="3" fill="#6366f1"><animateMotion path="M 715 790 L 715 810 L 990 810 L 990 910" dur="2.4s" repeatCount="indefinite" /></circle>
+                <path d="M 835 371 L 835 480" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="815" y="405" width="40" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="835" y="413" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">submits</text>
 
-              {/* Branch 3 -> Media / Cloudinary */}
-              <path d="M 870 790 L 870 835 L 650 835 L 650 910" fill="none" stroke="#6366f1" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#arrow-indigo)" />
-              <rect x="715" y="826" width="80" height="15" rx="3" fill="#ffffff" stroke="#c7d2fe" strokeWidth="1" />
-              <text x="755" y="836" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">uploads media</text>
-              <circle r="3" fill="#6366f1"><animateMotion path="M 870 790 L 870 835 L 650 835 L 650 910" dur="2.2s" repeatCount="indefinite" /></circle>
+                <path d="M 465 248 L 380 248 L 380 475 L 750 475 L 750 480" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="366" y="360" width="28" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="380" y="368" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">calls</text>
 
-              {/* ─────────────────────────────────────────────────────────────
-                  STEP 8: CONTAINER 4 - Persistence (Pink / Rose Container)
-                 ───────────────────────────────────────────────────────────── */}
-              <rect
-                x="20"
-                y="895"
-                width="510"
-                height="215"
-                rx="8"
-                fill="#fff1f2"
-                stroke="#fecdd3"
-                strokeWidth="1.5"
-              />
-              <text
-                x="275"
-                y="918"
-                textAnchor="middle"
-                fill="#be123c"
-                fontSize="12"
-                fontFamily="ui-monospace, monospace"
-                fontWeight="bold"
+                {/* API Client [api.js] */}
+                <g
+                  className="cursor-pointer group"
+                  onClick={() => setSelectedNode({
+                    id: 'ts_api_js',
+                    label: 'API Client [api.js]',
+                    sub: 'Axios / Fetch REST HTTP Client Helper',
+                    category: 'CLIENT',
+                    type: 'PROXY',
+                    filePath: 'src/services/api.js',
+                    color: '#1e40af',
+                    bg: '#dbeafe',
+                    border: '#60a5fa'
+                  })}
+                >
+                  <rect x="740" y="480" width="95" height="42" rx="4" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1.5" className="transition group-hover:stroke-blue-600" />
+                  <text x="787" y="497" textAnchor="middle" fill="#1e40af" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">API Client</text>
+                  <text x="787" y="511" textAnchor="middle" fill="#1e40af" fontSize="9" fontFamily="ui-monospace, monospace" opacity="0.8">[api.js]</text>
+                </g>
+
+                {/* ─── 3. CONNECTOR TO EDGE DELIVERY ─── */}
+                <path d="M 787 522 L 787 560" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="763" y="534" width="48" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="787" y="543" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="9" fontFamily="ui-monospace, monospace" fontWeight="600">requests</text>
+                <circle r="3.5" fill="#f59e0b"><animateMotion path="M 787 522 L 787 560" dur="1.8s" repeatCount="indefinite" /></circle>
+
+                {/* ─── 4. CONTAINER 2: EDGE DELIVERY ─── */}
+                <rect x="725" y="560" width="125" height="135" rx="8" fill="#fffbeb" stroke="#fde68a" strokeWidth="1.5" />
+                <text x="787" y="578" textAnchor="middle" fill="#854d0e" fontSize="10.5" fontFamily="ui-monospace, monospace" fontWeight="bold">
+                  Edge Delivery
+                </text>
+
+                {/* Edge Proxy [worker.js] */}
+                <g
+                  className="cursor-pointer group"
+                  onClick={() => setSelectedNode({
+                    id: 'ts_worker_js',
+                    label: 'Edge Proxy [worker.js]',
+                    sub: 'Cloudflare Worker Reverse Proxy & Rate Limiter',
+                    category: 'API_ACCESS',
+                    type: 'PROXY',
+                    filePath: 'worker.js',
+                    color: '#854d0e',
+                    bg: '#fef08a',
+                    border: '#f59e0b'
+                  })}
+                >
+                  <rect x="740" y="590" width="95" height="38" rx="4" fill="#fef08a" stroke="#f59e0b" strokeWidth="1.5" className="transition group-hover:stroke-amber-600" />
+                  <text x="787" y="606" textAnchor="middle" fill="#854d0e" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">Edge Proxy</text>
+                  <text x="787" y="618" textAnchor="middle" fill="#854d0e" fontSize="8.5" fontFamily="ui-monospace, monospace" opacity="0.8">[worker.js]</text>
+                </g>
+
+                <path d="M 787 628 L 787 648" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="768" y="632" width="38" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="787" y="640" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">proxies</text>
+
+                {/* Spring API */}
+                <g
+                  className="cursor-pointer group"
+                  onClick={() => setSelectedNode({
+                    id: 'ts_spring_api',
+                    label: 'Spring API',
+                    sub: 'Spring Boot 3.x REST Controller Gateway',
+                    category: 'API_ACCESS',
+                    type: 'API_GATEWAY',
+                    annotations: '@SpringBootApplication, @RestController',
+                    color: '#854d0e',
+                    bg: '#fef08a',
+                    border: '#f59e0b'
+                  })}
+                >
+                  <rect x="740" y="648" width="95" height="34" rx="4" fill="#fef08a" stroke="#f59e0b" strokeWidth="1.5" className="transition group-hover:stroke-amber-600" />
+                  <text x="787" y="669" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Spring API</text>
+                </g>
+
+                {/* ─── 5. FANNING OUT DISPATCHES TO PRACTICE DOMAIN & ADMIN OPERATIONS ─── */}
+                <path d="M 760 682 L 760 710" fill="none" stroke="#64748b" strokeWidth="1.5" />
+                <path d="M 810 682 L 810 710" fill="none" stroke="#64748b" strokeWidth="1.5" />
+
+                <path d="M 760 710 L 220 710 L 220 765" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="330" y="703" width="55" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="357" y="711" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">dispatches</text>
+                <circle r="3" fill="#22c55e"><animateMotion path="M 760 682 L 760 710 L 220 710 L 220 765" dur="2.2s" repeatCount="indefinite" /></circle>
+
+                <path d="M 760 710 L 355 710 L 355 765" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="400" y="703" width="55" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="427" y="711" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">dispatches</text>
+                <circle r="3" fill="#22c55e"><animateMotion path="M 760 682 L 760 710 L 355 710 L 355 765" dur="2.4s" repeatCount="indefinite" /></circle>
+
+                <path d="M 760 710 L 490 710 L 490 765" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="465" y="703" width="55" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="492" y="711" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">dispatches</text>
+
+                <path d="M 760 710 L 625 710 L 625 765" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+
+                <path d="M 810 710 L 760 710 L 760 815" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="735" y="703" width="55" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="762" y="711" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">dispatches</text>
+                <circle r="3" fill="#f43f5e"><animateMotion path="M 810 682 L 810 710 L 760 710 L 760 815" dur="2.0s" repeatCount="indefinite" /></circle>
+
+                <path d="M 810 710 L 870 710 L 870 815" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="845" y="703" width="55" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="872" y="711" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">dispatches</text>
+                <circle r="3" fill="#f43f5e"><animateMotion path="M 810 682 L 810 710 L 870 710 L 870 815" dur="2.1s" repeatCount="indefinite" /></circle>
+
+                {/* ─── 6. CONTAINER 3: PRACTICE DOMAIN ─── */}
+                <rect x="140" y="735" width="560" height="185" rx="8" fill="#f0fdf4" stroke="#86efac" strokeWidth="1.5" />
+                <text x="420" y="753" textAnchor="middle" fill="#15803d" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">
+                  Practice Domain
+                </text>
+
+                {/* Question Controller */}
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ts_q_ctrl', label: 'Question Controller', sub: 'REST endpoints for question retrieval and filtering', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'QuestionController.java', annotations: '@RestController, @RequestMapping("/api/questions")', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
+                  <rect x="160" y="765" width="120" height="36" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
+                  <text x="220" y="787" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">Question Controller</text>
+                </g>
+
+                {/* Answer Controller */}
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ts_ans_ctrl', label: 'Answer Controller', sub: 'Submits user answers and executes automated test verification', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'AnswerController.java', annotations: '@RestController, @RequestMapping("/api/answers")', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
+                  <rect x="295" y="765" width="120" height="36" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
+                  <text x="355" y="787" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">Answer Controller</text>
+                </g>
+
+                {/* Submission Controller */}
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ts_sub_ctrl', label: 'Submission Controller', sub: 'Stores practice run session state and submissions', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'SubmissionController.java', annotations: '@RestController, @RequestMapping("/api/submissions")', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
+                  <rect x="430" y="765" width="120" height="36" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
+                  <text x="490" y="787" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Submission Controller</text>
+                </g>
+
+                {/* Leaderboard Controller */}
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ts_lead_ctrl', label: 'Leaderboard Controller', sub: 'Calculates user streak rankings and global scoreboard', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'LeaderboardController.java', annotations: '@RestController, @RequestMapping("/api/leaderboard")', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
+                  <rect x="565" y="765" width="125" height="36" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
+                  <text x="627" y="787" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Leaderboard Controller</text>
+                </g>
+
+                <path d="M 220 801 L 220 845" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="175" y="818" width="90" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="220" y="826" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">requests questions</text>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ts_q_srv', label: 'Question Service', sub: 'Business logic for question generation & code execution routing', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'QuestionService.java', annotations: '@Service, @Transactional', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
+                  <rect x="165" y="845" width="110" height="36" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
+                  <text x="220" y="867" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">Question Service</text>
+                </g>
+
+                <path d="M 355 801 L 355 845" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="315" y="818" width="80" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="355" y="826" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">evaluates answer</text>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ts_ans_srv', label: 'Answer Service [AnswerService.java]', sub: 'Core evaluation engine validating user submissions', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'AnswerService.java', annotations: '@Service, @Transactional', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
+                  <rect x="290" y="845" width="130" height="42" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
+                  <text x="355" y="862" textAnchor="middle" fill="#15803d" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">Answer Service</text>
+                  <text x="355" y="876" textAnchor="middle" fill="#15803d" fontSize="8.5" fontFamily="ui-monospace, monospace" opacity="0.8">[AnswerService.java]</text>
+                </g>
+
+                {/* ─── 7. CONTAINER 4: ADMIN OPERATIONS ─── */}
+                <rect x="715" y="785" width="245" height="85" rx="8" fill="#fff1f2" stroke="#fecdd3" strokeWidth="1.5" />
+                <text x="837" y="803" textAnchor="middle" fill="#be123c" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">
+                  Admin Operations
+                </text>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ts_admin_ctrl', label: 'Admin Controller', sub: 'Administrative management endpoints & user subscriptions', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'AdminController.java', annotations: '@RestController, @PreAuthorize("hasRole(\'ADMIN\')")', color: '#be123c', bg: '#ffe4e6', border: '#f43f5e' })}>
+                  <rect x="730" y="815" width="105" height="36" rx="4" fill="#ffe4e6" stroke="#f43f5e" strokeWidth="1.5" className="transition group-hover:stroke-rose-600" />
+                  <text x="782" y="837" textAnchor="middle" dominantBaseline="middle" fill="#be123c" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Admin Controller</text>
+                </g>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ts_push_ctrl', label: 'Push Controller', sub: 'Web push notification dispatcher & subscription store', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'PushController.java', annotations: '@RestController, @RequestMapping("/api/push")', color: '#be123c', bg: '#ffe4e6', border: '#f43f5e' })}>
+                  <rect x="845" y="815" width="105" height="36" rx="4" fill="#ffe4e6" stroke="#f43f5e" strokeWidth="1.5" className="transition group-hover:stroke-rose-600" />
+                  <text x="897" y="837" textAnchor="middle" dominantBaseline="middle" fill="#be123c" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Push Controller</text>
+                </g>
+
+                {/* ─── 8. EXTERNAL INTEGRATIONS & STEPPED LINES TO PERSISTENCE ─── */}
+                <path d="M 195 881 L 195 965" fill="none" stroke="#22c55e" strokeWidth="1.5" strokeDasharray="3 3" markerEnd="url(#ts-arrow-green)" />
+                <rect x="165" y="915" width="60" height="14" rx="2" fill="#ffffff" stroke="#bbf7d0" strokeWidth="1" />
+                <text x="195" y="923" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">executes code</text>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ts_jdoodle', label: 'JDoodle API', sub: 'External Compiler & Code Execution Engine API', category: 'EXTERNAL', type: 'EXTERNAL', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
+                  <rect x="155" y="965" width="90" height="36" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
+                  <text x="200" y="987" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">JDoodle API</text>
+                </g>
+
+                <path d="M 245 881 L 245 930 L 550 930 L 550 970" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="220" y="915" width="52" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="246" y="923" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">reads writes</text>
+
+                <path d="M 355 887 L 355 938 L 565 938 L 565 970" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="325" y="915" width="60" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="355" y="923" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">saves attempts</text>
+
+                <path d="M 490 801 L 490 945 L 580 945 L 580 970" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="445" y="915" width="80" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="485" y="923" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">stores submissions</text>
+
+                <path d="M 625 801 L 625 952 L 595 952 L 595 970" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="595" y="915" width="62" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="626" y="923" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">reads rankings</text>
+
+                <path d="M 760 851 L 760 945 L 610 945 L 610 970" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="720" y="915" width="58" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="749" y="923" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">manages data</text>
+
+                <path d="M 790 851 L 790 938 L 625 938 L 625 970" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="762" y="915" width="76" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="800" y="923" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">stores subscriptions</text>
+
+                <path d="M 897 851 L 897 965" fill="none" stroke="#6366f1" strokeWidth="1.5" strokeDasharray="3 3" markerEnd="url(#ts-arrow-indigo)" />
+                <rect x="855" y="915" width="85" height="14" rx="2" fill="#ffffff" stroke="#c7d2fe" strokeWidth="1" />
+                <text x="897" y="923" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">sends notifications</text>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ts_web_push', label: 'Web Push Service', sub: 'VAPID Web Push Protocol & Browser Notification Delivery', category: 'EXTERNAL', type: 'EXTERNAL', color: '#3730a3', bg: '#e0e7ff', border: '#6366f1' })}>
+                  <rect x="840" y="965" width="115" height="36" rx="4" fill="#e0e7ff" stroke="#6366f1" strokeWidth="1.5" className="transition group-hover:stroke-indigo-600" />
+                  <text x="897" y="987" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">Web Push Service</text>
+                </g>
+
+                {/* ─── 9. CONTAINER 5: PERSISTENCE (TiDB Cluster) ─── */}
+                <rect x="520" y="955" width="140" height="235" rx="8" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.5" />
+                <text x="590" y="972" textAnchor="middle" fill="#64748b" fontSize="10.5" fontFamily="ui-monospace, monospace" fontWeight="600">
+                  Persistence
+                </text>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ts_jpa', label: 'JPA Repositories', sub: 'Spring Data JPA Repository Interfaces & Entities', category: 'PERSISTENCE', type: 'JPA_REPO', color: '#1e40af', bg: '#dbeafe', border: '#60a5fa' })}>
+                  <rect x="535" y="980" width="110" height="32" rx="4" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1.5" className="transition group-hover:stroke-blue-600" />
+                  <text x="590" y="1000" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">JPA Repositories</text>
+                </g>
+
+                <path d="M 590 1012 L 590 1045" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="570" y="1022" width="40" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="590" y="1030" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">persists</text>
+                <circle r="3" fill="#3b82f6"><animateMotion path="M 590 1012 L 590 1045" dur="1.8s" repeatCount="indefinite" /></circle>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ts_tidb_pri', label: 'Primary TiDB', sub: 'Distributed SQL MySQL-Compatible Primary Cluster', category: 'PERSISTENCE', type: 'DATABASE', color: '#1e40af', bg: '#dbeafe', border: '#60a5fa' })}>
+                  <rect x="545" y="1045" width="90" height="38" rx="10" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1.5" className="transition group-hover:stroke-blue-600" />
+                  <text x="590" y="1068" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">Primary TiDB</text>
+                </g>
+
+                <path d="M 590 1083 L 590 1120" fill="none" stroke="#64748b" strokeWidth="1.5" strokeDasharray="3 3" markerEnd="url(#ts-arrow-slate)" />
+                <rect x="566" y="1095" width="48" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="590" y="1103" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">daily sync</text>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ts_tidb_sec', label: 'Secondary TiDB', sub: 'Async Disaster Recovery & Read Replica Cluster', category: 'PERSISTENCE', type: 'DATABASE', color: '#1e40af', bg: '#dbeafe', border: '#60a5fa' })}>
+                  <rect x="545" y="1120" width="90" height="38" rx="10" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1.5" className="transition group-hover:stroke-blue-600" />
+                  <text x="590" y="1143" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Secondary TiDB</text>
+                </g>
+              </svg>
+            ) : (
+              /* ═══════════════════════════════════════════════════════════════════
+                 STANDARD / VPS ARCHITECTURE CANVAS
+                 ═══════════════════════════════════════════════════════════════════ */
+              <svg
+                viewBox="0 0 1120 1200"
+                className="w-full h-auto drop-shadow-sm select-none"
+                style={{ minWidth: '320px', maxWidth: '1120px' }}
               >
-                Persistence
-              </text>
+                <defs>
+                  <marker id="arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" />
+                  </marker>
+                  <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#3b82f6" />
+                  </marker>
+                  <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f59e0b" />
+                  </marker>
+                  <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#22c55e" />
+                  </marker>
+                  <marker id="arrow-rose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f43f5e" />
+                  </marker>
+                  <marker id="arrow-indigo" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#6366f1" />
+                  </marker>
+                  <filter id="nodeHover" x="-10%" y="-10%" width="120%" height="120%">
+                    <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.12" />
+                  </filter>
+                </defs>
 
-              {/* JPA Repositories */}
-              <g
-                className="cursor-pointer group"
-                onClick={() => setSelectedNode({
-                  id: 'jpa_repos',
-                  label: `JPA Repositories (${repos.length > 0 ? repos.length : 26} DAO Classes)`,
-                  sub: 'Hibernate ORM / JPQL Query Engine',
-                  category: 'PERSISTENCE',
-                  type: 'JPA_REPO',
-                  annotations: '@Repository, @Transactional, JpaRepository',
-                  color: '#be123c',
-                  bg: '#ffe4e6',
-                  border: '#f43f5e'
+                {/* ─── 1. TOP ACTOR NODE ─── */}
+                <g
+                  className="cursor-pointer group"
+                  onClick={() => setSelectedNode({
+                    id: 'users',
+                    label: actorLabel,
+                    sub: `${formattedProjectName} Web Browser & Mobile App End Users`,
+                    category: 'CLIENT',
+                    type: 'USER',
+                    color: '#1e40af',
+                    bg: '#dbeafe',
+                    border: '#3b82f6'
+                  })}
+                >
+                  <rect
+                    x="440"
+                    y="16"
+                    width="240"
+                    height="44"
+                    rx="22"
+                    fill="#dbeafe"
+                    stroke="#3b82f6"
+                    strokeWidth="2"
+                    className="transition-all group-hover:stroke-blue-700 group-hover:brightness-95"
+                  />
+                  <text
+                    x="560"
+                    y="43"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill="#1e40af"
+                    fontSize="12.5"
+                    fontFamily="ui-monospace, monospace"
+                    fontWeight="bold"
+                  >
+                    {actorLabel}
+                  </text>
+                </g>
+
+                <path d="M 560 60 L 560 115" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
+                <rect x="542" y="78" width="36" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="560" y="91" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="10.5" fontFamily="ui-monospace, monospace" fontWeight="600">
+                  uses
+                </text>
+                <circle r="3.5" fill="#3b82f6">
+                  <animateMotion path="M 560 60 L 560 115" dur="1.6s" repeatCount="indefinite" />
+                </circle>
+
+                {/* ─── 2. CONTAINER 1 - Client Experience ─── */}
+                <rect x="160" y="115" width="800" height="195" rx="8" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.5" />
+                <text x="185" y="138" fill="#64748b" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="600">
+                  Client Experience
+                </text>
+
+                <g
+                  className="cursor-pointer group"
+                  onClick={() => setSelectedNode({
+                    id: 'react_app',
+                    label: `${formattedProjectName} App (App.jsx)`,
+                    sub: `${projectName} React 19 Frontend SPA`,
+                    category: 'CLIENT',
+                    type: 'REACT_APP',
+                    filePath: 'src/App.jsx',
+                    color: '#1e40af',
+                    bg: '#dbeafe',
+                    border: '#60a5fa'
+                  })}
+                >
+                  <rect x="190" y="152" width="340" height="52" rx="6" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1.5" className="transition group-hover:stroke-blue-600 group-hover:brightness-95" />
+                  <text x="360" y="174" textAnchor="middle" fill="#1e40af" fontSize="12.5" fontFamily="ui-monospace, monospace" fontWeight="bold">
+                    {formattedProjectName} Application
+                  </text>
+                  <text x="360" y="192" textAnchor="middle" fill="#1e40af" fontSize="10.5" fontFamily="ui-monospace, monospace" opacity="0.85">
+                    [App.jsx]
+                  </text>
+                </g>
+
+                <g
+                  className="cursor-pointer group"
+                  onClick={() => setSelectedNode({
+                    id: 'fe_views',
+                    label: clientViewsLabel,
+                    sub: `${formattedProjectName} Modular View Layer`,
+                    category: 'CLIENT',
+                    type: 'FE_VIEW',
+                    color: '#1e40af',
+                    bg: '#dbeafe',
+                    border: '#60a5fa'
+                  })}
+                >
+                  <rect x="570" y="152" width="360" height="52" rx="6" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1.5" className="transition group-hover:stroke-blue-600 group-hover:brightness-95" />
+                  <text x="750" y="183" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="12.5" fontFamily="ui-monospace, monospace" fontWeight="bold">
+                    {clientViewsLabel}
+                  </text>
+                </g>
+
+                <g
+                  className="cursor-pointer group"
+                  onClick={() => setSelectedNode({
+                    id: 'auth_context',
+                    label: 'Auth Context [AuthContext.jsx]',
+                    sub: 'State Management & JWT Storage',
+                    category: 'CLIENT',
+                    type: 'AUTH_CONTEXT',
+                    filePath: 'src/context/AuthContext.jsx',
+                    color: '#1e40af',
+                    bg: '#dbeafe',
+                    border: '#60a5fa'
+                  })}
+                >
+                  <rect x="190" y="238" width="340" height="52" rx="6" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1.5" className="transition group-hover:stroke-blue-600 group-hover:brightness-95" />
+                  <text x="360" y="260" textAnchor="middle" fill="#1e40af" fontSize="13" fontFamily="ui-monospace, monospace" fontWeight="bold">Auth Context</text>
+                  <text x="360" y="278" textAnchor="middle" fill="#1e40af" fontSize="10.5" fontFamily="ui-monospace, monospace" opacity="0.85">[AuthContext.jsx]</text>
+                </g>
+
+                <path d="M 360 204 L 360 238" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
+                <rect x="323" y="212" width="74" height="17" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="360" y="224" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="600">
+                  reads auth
+                </text>
+
+                {/* ─── 3. CONNECTOR TO API ACCESS ─── */}
+                <path d="M 360 290 L 360 325 L 560 325 L 560 355" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
+                <rect x="415" y="316" width="94" height="18" rx="4" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="462" y="329" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="10.5" fontFamily="ui-monospace, monospace" fontWeight="600">
+                  sends requests
+                </text>
+                <circle r="3.5" fill="#f59e0b">
+                  <animateMotion path="M 360 290 L 360 325 L 560 325 L 560 355" dur="2.4s" repeatCount="indefinite" />
+                </circle>
+
+                {/* ─── 4. CONTAINER 2 - API Access & Security ─── */}
+                <rect x="380" y="355" width="360" height="305" rx="8" fill="#fffbeb" stroke="#fde68a" strokeWidth="1.5" />
+                <text x="560" y="378" textAnchor="middle" fill="#854d0e" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">
+                  API Access
+                </text>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'cloudflare', label: 'Cloudflare Proxy', sub: 'SSL Termination & DDoS Ingress Proxy', category: 'API_ACCESS', type: 'PROXY', color: '#854d0e', bg: '#fef08a', border: '#f59e0b' })}>
+                  <rect x="420" y="392" width="280" height="36" rx="6" fill="#fef08a" stroke="#f59e0b" strokeWidth="1.5" className="transition group-hover:stroke-amber-600 group-hover:brightness-95" />
+                  <text x="560" y="415" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">Cloudflare Proxy</text>
+                </g>
+
+                <path d="M 560 428 L 560 452" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
+                <rect x="515" y="432" width="90" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="560" y="442" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="9" fontFamily="ui-monospace, monospace" fontWeight="600">proxies traffic</text>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'spring_boot', label: `${formattedProjectName} REST API`, sub: `${projectName} Spring Boot 3.x REST Router`, category: 'API_ACCESS', type: 'API_GATEWAY', annotations: '@SpringBootApplication, @RestController', color: '#854d0e', bg: '#fef08a', border: '#f59e0b' })}>
+                  <rect x="420" y="452" width="280" height="36" rx="6" fill="#fef08a" stroke="#f59e0b" strokeWidth="1.5" className="transition group-hover:stroke-amber-600 group-hover:brightness-95" />
+                  <text x="560" y="475" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">{formattedProjectName} REST API</text>
+                </g>
+
+                <path d="M 560 488 L 560 512" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
+                <rect x="515" y="492" width="90" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="560" y="502" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="9" fontFamily="ui-monospace, monospace" fontWeight="600">enters security</text>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'sec_config', label: 'Security Config', sub: 'SecurityFilterChain & CORS Beans', category: 'API_ACCESS', type: 'SECURITY_CONFIG', annotations: '@Configuration, @EnableWebSecurity', color: '#854d0e', bg: '#fef08a', border: '#f59e0b' })}>
+                  <rect x="420" y="512" width="280" height="36" rx="6" fill="#fef08a" stroke="#f59e0b" strokeWidth="1.5" className="transition group-hover:stroke-amber-600 group-hover:brightness-95" />
+                  <text x="560" y="535" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">Security Config</text>
+                </g>
+
+                <path d="M 560 548 L 560 572" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
+                <rect x="517" y="552" width="86" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="560" y="562" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="9" fontFamily="ui-monospace, monospace" fontWeight="600">applies filter</text>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'jwt_filter', label: 'JWT Filter', sub: 'Bearer Token Validator & Principal', category: 'API_ACCESS', type: 'JWT_FILTER', annotations: 'OncePerRequestFilter, JwtUtils', color: '#854d0e', bg: '#fef08a', border: '#f59e0b' })}>
+                  <rect x="420" y="572" width="280" height="36" rx="6" fill="#fef08a" stroke="#f59e0b" strokeWidth="1.5" className="transition group-hover:stroke-amber-600 group-hover:brightness-95" />
+                  <text x="560" y="595" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">JWT Filter</text>
+                </g>
+
+                <circle r="3.5" fill="#d97706"><animateMotion path="M 560 392 L 560 608" dur="2.8s" repeatCount="indefinite" /></circle>
+
+                {/* ─── 5. DISPATCHES TO DOMAINS ─── */}
+                <path d="M 560 608 L 560 645" fill="none" stroke="#64748b" strokeWidth="1.5" />
+                <rect x="526" y="618" width="68" height="16" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="560" y="629" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="600">dispatches</text>
+
+                {top7Domains.map((dom, i) => {
+                  const targetX = 95 + i * 155;
+                  return (
+                    <g key={`dispatch-line-${i}`}>
+                      <path d={`M 560 645 L ${targetX} 645 L ${targetX} 715`} fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
+                      <circle r="3" fill="#22c55e"><animateMotion path={`M 560 608 L 560 645 L ${targetX} 645 L ${targetX} 715`} dur={`${1.8 + i * 0.15}s`} repeatCount="indefinite" /></circle>
+                    </g>
+                  );
                 })}
-              >
-                <rect
-                  x="75"
-                  y="935"
-                  width="400"
-                  height="40"
-                  rx="6"
-                  fill="#ffe4e6"
-                  stroke="#f43f5e"
-                  strokeWidth="1.5"
-                  className="transition group-hover:stroke-rose-600 group-hover:brightness-95"
-                />
-                <text x="275" y="958" textAnchor="middle" dominantBaseline="middle" fill="#be123c" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">
-                  JPA Repositories
+
+                {/* ─── 6. CONTAINER 3 - Domain Workflows ─── */}
+                <rect x="20" y="705" width="1080" height="105" rx="8" fill="#f0fdf4" stroke="#86efac" strokeWidth="1.5" />
+                <text x="560" y="727" textAnchor="middle" fill="#15803d" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">
+                  Domain Workflows
                 </text>
-              </g>
 
-              {/* Connector: Repos -> MySQL Database */}
-              <path d="M 275 975 L 275 1018" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
-              <rect x="236" y="987" width="78" height="16" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-              <text x="275" y="998" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="9" fontFamily="ui-monospace, monospace" fontWeight="600">
-                reads / writes
-              </text>
-              <circle r="3.5" fill="#f43f5e">
-                <animateMotion path="M 275 935 L 275 1060" dur="2.2s" repeatCount="indefinite" />
-              </circle>
+                {top7Domains.map((dom, i) => {
+                  const center = 95 + i * 155;
+                  const firstCtrl = dom.controllers[0];
+                  const displayName = dom.name.replace(' Workflows', '');
 
-              {/* MySQL Database */}
-              <g
-                className="cursor-pointer group"
-                onClick={() => setSelectedNode({
-                  id: 'database',
-                  label: `MySQL Database (${tables.length > 0 ? tables.length : 27} Tables)`,
-                  sub: `${tables.length > 0 ? tables.length : 27} Tables / Schema Mappings`,
-                  category: 'PERSISTENCE',
-                  type: 'DATABASE',
-                  annotations: '@Entity, @Table, @Id',
-                  color: '#be123c',
-                  bg: '#ffe4e6',
-                  border: '#f43f5e'
+                  return (
+                    <g
+                      key={`dom-card-${i}`}
+                      className="cursor-pointer group"
+                      onClick={() => setSelectedNode({
+                        id: `domain_${i}`,
+                        label: dom.name,
+                        sub: `${dom.count || 1} controller endpoints (${firstCtrl?.data?.filePath || `${displayName}Controller.java`})`,
+                        category: 'DOMAIN',
+                        type: 'DOMAIN_CONTROLLER',
+                        filePath: firstCtrl?.data?.filePath,
+                        annotations: firstCtrl?.data?.annotations || '@RestController, @RequestMapping',
+                        color: '#15803d',
+                        bg: '#dcfce7',
+                        border: '#22c55e'
+                      })}
+                    >
+                      <rect x={center - 68} y="742" width="136" height="48" rx="6" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600 group-hover:brightness-95" />
+                      <text x={center} y={displayName.length > 13 ? 761 : 767} textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">
+                        {displayName.length > 13 ? (
+                          <>
+                            <tspan x={center} dy="0">{displayName.split(' ')[0]}</tspan>
+                            <tspan x={center} dy="12">{displayName.split(' ').slice(1).join(' ') || 'Workflows'}</tspan>
+                          </>
+                        ) : (
+                          displayName
+                        )}
+                      </text>
+                    </g>
+                  );
                 })}
-              >
-                <rect
-                  x="75"
-                  y="1018"
-                  width="400"
-                  height="40"
-                  rx="6"
-                  fill="#ffe4e6"
-                  stroke="#f43f5e"
-                  strokeWidth="1.5"
-                  className="transition group-hover:stroke-rose-600 group-hover:brightness-95"
-                />
-                <text x="275" y="1041" textAnchor="middle" dominantBaseline="middle" fill="#be123c" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">
-                  MySQL Database
-                </text>
-              </g>
 
-              {/* ─────────────────────────────────────────────────────────────
-                  STEP 9: CONTAINER 5 - External Integrations (Indigo Container)
-                 ───────────────────────────────────────────────────────────── */}
-              <rect
-                x="560"
-                y="895"
-                width="540"
-                height="215"
-                rx="8"
-                fill="#eef2ff"
-                stroke="#c7d2fe"
-                strokeWidth="1.5"
-              />
-              <text
-                x="830"
-                y="918"
-                textAnchor="middle"
-                fill="#3730a3"
-                fontSize="12"
-                fontFamily="ui-monospace, monospace"
-                fontWeight="bold"
-              >
-                External Integrations
-              </text>
+                {/* ─── 7. CONNECTIONS TO PERSISTENCE & INTEGRATIONS ─── */}
+                {top7Domains.map((dom, i) => {
+                  const startX = 95 + i * 155;
+                  const targetX = 140 + i * 45;
+                  const labelText = i === 0 ? 'reads users' : i === 1 ? 'stores data' : i === 2 ? 'stores ops' : i === 3 ? 'reads reports' : i === 4 ? 'manages records' : i === 5 ? 'stores files' : 'reads/writes';
+                  const lineY = 835 + (i % 3) * 12;
 
-              {/* Cloudinary Media */}
-              <g
-                className="cursor-pointer group"
-                onClick={() => setSelectedNode({
-                  id: 'ext_s3',
-                  label: 'Cloudinary Media',
-                  sub: 'Media CDN & Cloud Bucket SDK',
-                  category: 'EXTERNAL',
-                  type: 'EXTERNAL',
-                  color: '#3730a3',
-                  bg: '#e0e7ff',
-                  border: '#6366f1'
+                  return (
+                    <g key={`jpa-line-${i}`}>
+                      <path d={`M ${startX} 790 L ${startX} ${lineY} L ${targetX} ${lineY} L ${targetX} 910`} fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
+                      <rect x={(startX + targetX) / 2 - 38} y={lineY - 7} width="76" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                      <text x={(startX + targetX) / 2} y={lineY + 1} textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">
+                        {labelText}
+                      </text>
+                      <circle r="3" fill="#f43f5e"><animateMotion path={`M ${startX} 790 L ${startX} ${lineY} L ${targetX} ${lineY} L ${targetX} 910`} dur={`${2.0 + i * 0.18}s`} repeatCount="indefinite" /></circle>
+                    </g>
+                  );
                 })}
-              >
-                <rect
-                  x="580"
-                  y="940"
-                  width="155"
-                  height="56"
-                  rx="6"
-                  fill="#e0e7ff"
-                  stroke="#6366f1"
-                  strokeWidth="1.5"
-                  className="transition group-hover:stroke-indigo-600 group-hover:brightness-95"
-                />
-                <text x="657" y="971" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">
-                  Cloudinary Media
-                </text>
-              </g>
 
-              {/* Email Service [EmailService.java] */}
-              <g
-                className="cursor-pointer group"
-                onClick={() => setSelectedNode({
-                  id: 'ext_email',
-                  label: 'Email Service',
-                  sub: 'JavaMailSender / SendGrid SDK',
-                  category: 'EXTERNAL',
-                  type: 'EXTERNAL',
-                  filePath: 'EmailService.java',
-                  color: '#3730a3',
-                  bg: '#e0e7ff',
-                  border: '#6366f1'
-                })}
-              >
-                <rect
-                  x="750"
-                  y="940"
-                  width="160"
-                  height="56"
-                  rx="6"
-                  fill="#e0e7ff"
-                  stroke="#6366f1"
-                  strokeWidth="1.5"
-                  className="transition group-hover:stroke-indigo-600 group-hover:brightness-95"
-                />
-                <text x="830" y="962" textAnchor="middle" fill="#3730a3" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">
-                  Email Service
-                </text>
-                <text x="830" y="980" textAnchor="middle" fill="#3730a3" fontSize="9.5" fontFamily="ui-monospace, monospace" opacity="0.8">
-                  [EmailService.java]
-                </text>
-              </g>
+                <path d="M 250 790 L 250 820 L 820 820 L 820 910" fill="none" stroke="#6366f1" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#arrow-indigo)" />
+                <rect x="780" y="812" width="76" height="15" rx="3" fill="#ffffff" stroke="#c7d2fe" strokeWidth="1" />
+                <text x="818" y="822" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">sends notices</text>
+                <circle r="3" fill="#6366f1"><animateMotion path="M 250 790 L 250 820 L 820 820 L 820 910" dur="2.5s" repeatCount="indefinite" /></circle>
 
-              {/* Whatsapp Service */}
-              <g
-                className="cursor-pointer group"
-                onClick={() => setSelectedNode({
-                  id: 'ext_msg',
-                  label: 'Whatsapp Service',
-                  sub: 'Twilio / WhatsApp Business Gateway',
-                  category: 'EXTERNAL',
-                  type: 'EXTERNAL',
-                  color: '#3730a3',
-                  bg: '#e0e7ff',
-                  border: '#6366f1'
-                })}
-              >
-                <rect
-                  x="925"
-                  y="940"
-                  width="155"
-                  height="56"
-                  rx="6"
-                  fill="#e0e7ff"
-                  stroke="#6366f1"
-                  strokeWidth="1.5"
-                  className="transition group-hover:stroke-indigo-600 group-hover:brightness-95"
-                />
-                <text x="1002" y="971" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">
-                  Whatsapp Service
-                </text>
-              </g>
+                <path d="M 715 790 L 715 810 L 990 810 L 990 910" fill="none" stroke="#6366f1" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#arrow-indigo)" />
+                <rect x="910" y="802" width="70" height="15" rx="3" fill="#ffffff" stroke="#c7d2fe" strokeWidth="1" />
+                <text x="945" y="812" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">sends alerts</text>
+                <circle r="3" fill="#6366f1"><animateMotion path="M 715 790 L 715 810 L 990 810 L 990 910" dur="2.4s" repeatCount="indefinite" /></circle>
 
-              {/* Subtitle footer inside External Integrations */}
-              <text
-                x="830"
-                y="1080"
-                textAnchor="middle"
-                fill="#4f46e5"
-                fontSize="10"
-                fontFamily="ui-monospace, monospace"
-                fontWeight="500"
-              >
-                Detected from Spring POM dependencies
-              </text>
-            </svg>
+                <path d="M 870 790 L 870 835 L 650 835 L 650 910" fill="none" stroke="#6366f1" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#arrow-indigo)" />
+                <rect x="715" y="826" width="80" height="15" rx="3" fill="#ffffff" stroke="#c7d2fe" strokeWidth="1" />
+                <text x="755" y="836" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">uploads media</text>
+                <circle r="3" fill="#6366f1"><animateMotion path="M 870 790 L 870 835 L 650 835 L 650 910" dur="2.2s" repeatCount="indefinite" /></circle>
+
+                {/* ─── 8. CONTAINER 4 - PERSISTENCE ─── */}
+                <rect x="20" y="895" width="510" height="215" rx="8" fill="#fff1f2" stroke="#fecdd3" strokeWidth="1.5" />
+                <text x="275" y="918" textAnchor="middle" fill="#be123c" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">
+                  Persistence
+                </text>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'jpa_repos', label: `JPA Repositories (${repos.length > 0 ? repos.length : 26} DAO Classes)`, sub: 'Hibernate ORM / JPQL Query Engine', category: 'PERSISTENCE', type: 'JPA_REPO', annotations: '@Repository, @Transactional, JpaRepository', color: '#be123c', bg: '#ffe4e6', border: '#f43f5e' })}>
+                  <rect x="75" y="935" width="400" height="40" rx="6" fill="#ffe4e6" stroke="#f43f5e" strokeWidth="1.5" className="transition group-hover:stroke-rose-600 group-hover:brightness-95" />
+                  <text x="275" y="958" textAnchor="middle" dominantBaseline="middle" fill="#be123c" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">JPA Repositories</text>
+                </g>
+
+                <path d="M 275 975 L 275 1018" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
+                <rect x="236" y="987" width="78" height="16" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="275" y="998" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="9" fontFamily="ui-monospace, monospace" fontWeight="600">reads / writes</text>
+                <circle r="3.5" fill="#f43f5e"><animateMotion path="M 275 935 L 275 1060" dur="2.2s" repeatCount="indefinite" /></circle>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'database', label: `MySQL Database (${tables.length > 0 ? tables.length : 27} Tables)`, sub: `${tables.length > 0 ? tables.length : 27} Tables / Schema Mappings`, category: 'PERSISTENCE', type: 'DATABASE', annotations: '@Entity, @Table, @Id', color: '#be123c', bg: '#ffe4e6', border: '#f43f5e' })}>
+                  <rect x="75" y="1018" width="400" height="40" rx="6" fill="#ffe4e6" stroke="#f43f5e" strokeWidth="1.5" className="transition group-hover:stroke-rose-600 group-hover:brightness-95" />
+                  <text x="275" y="1041" textAnchor="middle" dominantBaseline="middle" fill="#be123c" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">MySQL Database</text>
+                </g>
+
+                {/* ─── 9. CONTAINER 5 - EXTERNAL INTEGRATIONS ─── */}
+                <rect x="560" y="895" width="540" height="215" rx="8" fill="#eef2ff" stroke="#c7d2fe" strokeWidth="1.5" />
+                <text x="830" y="918" textAnchor="middle" fill="#3730a3" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">
+                  External Integrations
+                </text>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ext_s3', label: 'Cloudinary Media', sub: 'Media CDN & Cloud Bucket SDK', category: 'EXTERNAL', type: 'EXTERNAL', color: '#3730a3', bg: '#e0e7ff', border: '#6366f1' })}>
+                  <rect x="580" y="940" width="155" height="56" rx="6" fill="#e0e7ff" stroke="#6366f1" strokeWidth="1.5" className="transition group-hover:stroke-indigo-600 group-hover:brightness-95" />
+                  <text x="657" y="971" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Cloudinary Media</text>
+                </g>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ext_email', label: 'Email Service', sub: 'JavaMailSender / SendGrid SDK', category: 'EXTERNAL', type: 'EXTERNAL', filePath: 'EmailService.java', color: '#3730a3', bg: '#e0e7ff', border: '#6366f1' })}>
+                  <rect x="750" y="940" width="160" height="56" rx="6" fill="#e0e7ff" stroke="#6366f1" strokeWidth="1.5" className="transition group-hover:stroke-indigo-600 group-hover:brightness-95" />
+                  <text x="830" y="962" textAnchor="middle" fill="#3730a3" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Email Service</text>
+                  <text x="830" y="980" textAnchor="middle" fill="#3730a3" fontSize="9.5" fontFamily="ui-monospace, monospace" opacity="0.8">[EmailService.java]</text>
+                </g>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ext_msg', label: 'Whatsapp Service', sub: 'Twilio / WhatsApp Business Gateway', category: 'EXTERNAL', type: 'EXTERNAL', color: '#3730a3', bg: '#e0e7ff', border: '#6366f1' })}>
+                  <rect x="925" y="940" width="155" height="56" rx="6" fill="#e0e7ff" stroke="#6366f1" strokeWidth="1.5" className="transition group-hover:stroke-indigo-600 group-hover:brightness-95" />
+                  <text x="1002" y="971" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Whatsapp Service</text>
+                </g>
+
+                <text x="830" y="1080" textAnchor="middle" fill="#4f46e5" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="500">
+                  Detected from Spring POM dependencies
+                </text>
+              </svg>
+            )}
           </div>
 
           {/* ─────────────────────────────────────────────────────────────
-              STEP 10: SPONSOR BANNER (Exact GitDiagram Footer Reference)
+              SPONSOR BANNER (Exact GitDiagram Footer Reference)
              ───────────────────────────────────────────────────────────── */}
           <div className="w-full max-w-4xl p-3 sm:p-4 rounded-xl border-2 border-black bg-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition mt-2">
             <div className="flex items-center gap-3">
@@ -1308,18 +1305,19 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 className="px-3 py-1.5 rounded-lg text-slate-900 font-mono font-black text-xs border border-black"
                 style={{ backgroundColor: '#d8b4fe' }}
               >
-                CODEFLOW
+                YC
               </span>
               <div className="text-xs font-mono">
-                <span className="font-bold text-slate-900">Architecture Studio: </span>
-                <span className="text-slate-600">Inspect codebase flows, APIs & full-stack dependencies live.</span>
+                <span className="font-bold text-slate-900 uppercase text-[10.5px]">SPONSOR SLOT: </span>
+                <span className="font-bold text-slate-900">Your company / </span>
+                <span className="text-slate-600">Reach developers while they inspect codebase architecture.</span>
               </div>
             </div>
             <button
               onClick={() => onOpenTool?.('ai')}
               className="text-xs font-mono font-bold text-purple-700 hover:underline cursor-pointer shrink-0"
             >
-              Ask AI Copilot ↗
+              Sponsor this spot ↗
             </button>
           </div>
         </div>
