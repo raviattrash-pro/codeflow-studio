@@ -68,6 +68,21 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
   const [isActivityMenuOpen, setIsActivityMenuOpen] = useState(false);
   const [isAllToolsOpen, setIsAllToolsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isAnimationEnabled, setIsAnimationEnabled] = useState(true);
+  const [animSpeed, setAnimSpeed] = useState<'normal' | 'fast' | 'slow'>('normal');
+  const [isPlayingFlow, setIsPlayingFlow] = useState(false);
+
+  // Autoplay step simulation timer
+  useEffect(() => {
+    if (!isPlayingFlow || flowSteps.length === 0) return;
+    const interval = setInterval(() => {
+      onSelectStep((activeStepIndex + 1) % flowSteps.length);
+    }, animSpeed === 'fast' ? 1200 : animSpeed === 'slow' ? 3000 : 2000);
+    return () => clearInterval(interval);
+  }, [isPlayingFlow, activeStepIndex, flowSteps.length, animSpeed, onSelectStep]);
+
+  const flowSpeedSec = animSpeed === 'fast' ? '0.7s' : animSpeed === 'slow' ? '2.5s' : '1.3s';
+
 
   const canvasRef = useRef<HTMLDivElement>(null);
 
@@ -353,6 +368,40 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
           )}
         </div>
 
+        
+        {/* Pill: Flow Animation Controls */}
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-mono text-xs font-bold bg-white text-slate-900 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:bg-slate-900 dark:text-white dark:border-slate-700">
+          <button
+            onClick={() => setIsAnimationEnabled(!isAnimationEnabled)}
+            className="flex items-center gap-1.5 hover:text-purple-600 transition cursor-pointer"
+            title="Toggle Live Flow Animation"
+          >
+            <span className={`w-2 h-2 rounded-full ${isAnimationEnabled ? 'bg-emerald-500 animate-ping' : 'bg-slate-400'}`} />
+            <span className={`w-2 h-2 rounded-full -ml-3.5 ${isAnimationEnabled ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+            <span className="text-[11px]">{isAnimationEnabled ? 'Flow Live' : 'Flow Paused'}</span>
+          </button>
+          <div className="h-4 w-px bg-slate-300 dark:bg-slate-700 mx-1" />
+          <button
+            onClick={() => {
+              setAnimSpeed(animSpeed === 'normal' ? 'fast' : animSpeed === 'fast' ? 'slow' : 'normal');
+            }}
+            className="px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 text-[10px] uppercase hover:bg-purple-200 transition cursor-pointer"
+            title="Change Animation Speed"
+          >
+            {animSpeed} ({animSpeed === 'fast' ? '2x' : animSpeed === 'slow' ? '0.5x' : '1x'})
+          </button>
+          <div className="h-4 w-px bg-slate-300 dark:bg-slate-700 mx-1" />
+          <button
+            onClick={() => setIsPlayingFlow(!isPlayingFlow)}
+            className={`px-2 py-0.5 rounded text-[10.5px] transition cursor-pointer font-bold ${
+              isPlayingFlow ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
+            }`}
+            title="Simulate continuous request flow across layers"
+          >
+            {isPlayingFlow ? '⏹ Stop' : '▶ Step Sim'}
+          </button>
+        </div>
+
         {/* Pill 5: Regenerate */}
         <button
           onClick={() => {
@@ -467,6 +516,32 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 style={{ minWidth: '320px', maxWidth: '1140px' }}
               >
                 <defs>
+                <style>{`
+                  @keyframes flowForward {
+                    from { stroke-dashoffset: 24; }
+                    to { stroke-dashoffset: 0; }
+                  }
+                  @keyframes pulseBeam {
+                    0%, 100% { opacity: 0.3; transform: scale(1); }
+                    50% { opacity: 0.9; transform: scale(1.08); }
+                  }
+                  @keyframes rotateAura {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                  }
+                  .flow-line {
+                    stroke-dasharray: ${isAnimationEnabled ? '6 4' : 'none'};
+                    animation: ${isAnimationEnabled ? `flowForward ${flowSpeedSec} linear infinite` : 'none'};
+                  }
+                  .flow-particle {
+                    display: ${isAnimationEnabled ? 'block' : 'none'};
+                  }
+                  .actor-aura {
+                    transform-origin: center;
+                    animation: rotateAura 12s linear infinite;
+                  }
+                `}</style>
+
                   <marker id="tl-arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" /></marker>
                   <marker id="tl-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#3b82f6" /></marker>
                   <marker id="tl-arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#eab308" /></marker>
@@ -492,23 +567,23 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="920" y="49" textAnchor="middle" fill="#1e40af" fontSize="10.5" fontFamily="system-ui, sans-serif" fontWeight="bold">Administrator</text>
                 </g>
 
-                <path d="M 210 71 L 210 235" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 210 71 L 210 235" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="175" y="85" width="70" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="210" y="93" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">opens portal</text>
 
-                <path d="M 410 73 L 410 235" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 410 73 L 410 235" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="375" y="85" width="70" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="410" y="93" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">manages vault</text>
 
-                <path d="M 450 73 L 450 185 L 675 185 L 675 235" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 450 73 L 450 185 L 675 185 L 675 235" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="475" y="85" width="85" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="517" y="93" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">registers or logs in</text>
 
-                <path d="M 700 72 L 700 145" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 700 72 L 700 145" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="670" y="85" width="60" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="700" y="93" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">opens app</text>
 
-                <path d="M 920 73 L 920 235" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 920 73 L 920 235" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="880" y="85" width="80" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="920" y="93" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">monitors system</text>
 
@@ -546,44 +621,44 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="915" y="268" textAnchor="middle" fill="#1e40af" fontSize="8" fontFamily="ui-monospace, monospace" opacity="0.8">[AdminDashboard.jsx]</text>
                 </g>
 
-                <path d="M 635 170 L 195 170 L 195 235" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#tl-arrow-blue)" />
+                <path d="M 635 170 L 195 170 L 195 235" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#tl-arrow-blue)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="230" y="163" width="70" height="13" rx="2" fill="#ffffff" stroke="#bfdbfe" strokeWidth="1" />
                 <text x="265" y="171" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">routes nominee</text>
 
-                <path d="M 635 175 L 435 175 L 435 235" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#tl-arrow-blue)" />
+                <path d="M 635 175 L 435 175 L 435 235" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#tl-arrow-blue)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="470" y="168" width="64" height="13" rx="2" fill="#ffffff" stroke="#bfdbfe" strokeWidth="1" />
                 <text x="502" y="176" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">routes owner</text>
 
-                <path d="M 675 187 L 675 235" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#tl-arrow-blue)" />
+                <path d="M 675 187 L 675 235" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#tl-arrow-blue)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="645" y="198" width="60" height="13" rx="2" fill="#ffffff" stroke="#bfdbfe" strokeWidth="1" />
                 <text x="675" y="206" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">routes login</text>
 
-                <path d="M 765 170 L 915 170 L 915 235" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#tl-arrow-blue)" />
+                <path d="M 765 170 L 915 170 L 915 235" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#tl-arrow-blue)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="800" y="163" width="64" height="13" rx="2" fill="#ffffff" stroke="#bfdbfe" strokeWidth="1" />
                 <text x="832" y="171" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">routes admin</text>
 
                 {/* 3. LINES DOWN TO API */}
-                <path d="M 155 281 L 155 410" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 155 281 L 155 410" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="110" y="325" width="90" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="155" y="333" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">requests shared files</text>
 
-                <path d="M 385 281 L 385 350 L 305 350 L 305 410" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 385 281 L 385 350 L 305 350 L 305 410" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="305" y="325" width="88" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="349" y="333" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">updates preferences</text>
 
-                <path d="M 435 281 L 435 350 L 460 350 L 460 410" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 435 281 L 435 350 L 460 350 L 460 410" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="420" y="325" width="84" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="462" y="333" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">manages documents</text>
 
-                <path d="M 490 281 L 490 340 L 525 340 L 525 730 L 590 730" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 490 281 L 490 340 L 525 340 L 525 730 L 590 730" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="500" y="325" width="46" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="523" y="333" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">checks in</text>
 
-                <path d="M 675 281 L 675 350 L 615 350 L 615 410" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 675 281 L 675 350 L 615 350 L 615 410" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="610" y="325" width="88" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="654" y="333" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">submits credentials</text>
 
-                <path d="M 915 281 L 915 410" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 915 281 L 915 410" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="880" y="325" width="70" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="915" y="333" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">reviews alerts</text>
 
@@ -626,15 +701,15 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="635" y="505" textAnchor="middle" fill="#854d0e" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="bold">JWT Request Filter</text>
                 </g>
 
-                <path d="M 585 444 L 585 485" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 585 444 L 585 485" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="530" y="458" width="80" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="570" y="466" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">requires protection</text>
 
-                <path d="M 645 444 L 645 485" fill="none" stroke="#eab308" strokeWidth="1.5" strokeDasharray="3 3" markerEnd="url(#tl-arrow-amber)" />
+                <path d="M 645 444 L 645 485" fill="none" stroke="#eab308" strokeWidth="1.5" markerEnd="url(#tl-arrow-amber)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="630" y="458" width="85" height="13" rx="2" fill="#ffffff" stroke="#fde047" strokeWidth="1" />
                 <text x="672" y="466" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">issues session token</text>
 
-                <path d="M 745 444 L 745 470 L 685 470 L 685 485" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 745 444 L 745 470 L 685 470 L 685 485" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="715" y="458" width="56" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="743" y="466" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">installs filter</text>
 
@@ -647,7 +722,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="457" y="676" textAnchor="middle" fill="#15803d" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Encryption Service</text>
                 </g>
 
-                <path d="M 457 689 L 457 730" fill="none" stroke="#22c55e" strokeWidth="1.5" markerEnd="url(#tl-arrow-green)" />
+                <path d="M 457 689 L 457 730" fill="none" stroke="#22c55e" strokeWidth="1.5" markerEnd="url(#tl-arrow-green)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="415" y="702" width="84" height="13" rx="2" fill="#ffffff" stroke="#bbf7d0" strokeWidth="1" />
                 <text x="457" y="710" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">performs AES-GCM</text>
 
@@ -662,7 +737,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="662" y="676" textAnchor="middle" fill="#15803d" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Switch Scheduler</text>
                 </g>
 
-                <path d="M 662 689 L 662 730" fill="none" stroke="#22c55e" strokeWidth="1.5" markerEnd="url(#tl-arrow-green)" />
+                <path d="M 662 689 L 662 730" fill="none" stroke="#22c55e" strokeWidth="1.5" markerEnd="url(#tl-arrow-green)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="610" y="702" width="104" height="13" rx="2" fill="#ffffff" stroke="#bbf7d0" strokeWidth="1" />
                 <text x="662" y="710" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">runs inactivity workflow</text>
 
@@ -672,75 +747,75 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 </g>
 
                 {/* 6. INTER-TIER STEPPED LINES */}
-                <path d="M 120 444 L 120 750 L 385 750" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 120 444 L 120 750 L 385 750" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="135" y="590" width="80" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="175" y="598" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">decrypts download</text>
 
-                <path d="M 430 444 L 430 655" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 430 444 L 430 655" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="385" y="575" width="88" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="429" y="583" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">encrypts or decrypts</text>
 
-                <path d="M 130 444 L 130 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 130 444 L 130 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="85" y="660" width="94" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="132" y="668" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">finds shared documents</text>
 
-                <path d="M 170 444 L 170 650 L 590 650 L 590 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 170 444 L 170 650 L 590 650 L 590 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="180" y="660" width="56" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="208" y="668" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">loads owner</text>
 
-                <path d="M 290 444 L 290 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 290 444 L 290 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="245" y="660" width="92" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="291" y="668" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">reads or saves toggles</text>
 
-                <path d="M 450 444 L 450 630 L 180 630 L 180 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 450 444 L 450 630 L 180 630 L 180 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="330" y="660" width="102" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="381" y="668" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">reads or saves documents</text>
 
-                <path d="M 470 444 L 470 640 L 610 640 L 610 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 470 444 L 470 640 L 610 640 L 610 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="425" y="660" width="56" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="453" y="668" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">loads owner</text>
 
-                <path d="M 615 444 L 615 570 L 660 570 L 660 730" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 615 444 L 615 570 L 660 570 L 660 730" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="580" y="580" width="76" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="618" y="588" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">updates check-in</text>
 
-                <path d="M 630 444 L 630 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 630 444 L 630 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="632" y="580" width="82" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="673" y="588" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">initializes accounts</text>
 
-                <path d="M 457 772 L 457 850 L 480 850 L 480 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 457 772 L 457 850 L 480 850 L 480 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="450" y="830" width="62" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="481" y="838" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">reads or writes</text>
 
-                <path d="M 610 764 L 610 860 L 330 860 L 330 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 610 764 L 610 860 L 330 860 L 330 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="520" y="830" width="70" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="555" y="838" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">initializes toggles</text>
 
-                <path d="M 645 764 L 645 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 645 764 L 645 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="590" y="830" width="56" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="618" y="838" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">saves status</text>
 
-                <path d="M 690 764 L 690 850 L 760 850 L 760 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 690 764 L 690 850 L 760 850 L 760 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="670" y="830" width="74" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="707" y="838" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">records check-in</text>
 
-                <path d="M 870 444 L 870 650 L 780 650 L 780 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 870 444 L 870 650 L 780 650 L 780 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="660" y="660" width="58" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="689" y="668" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">records audit</text>
 
-                <path d="M 890 444 L 890 640 L 660 640 L 660 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 890 444 L 890 640 L 660 640 L 660 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="715" y="660" width="86" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="758" y="668" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">reads or saves users</text>
 
-                <path d="M 910 444 L 910 630 L 680 630 L 680 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 910 444 L 910 630 L 680 630 L 680 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="800" y="660" width="48" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="824" y="668" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">lists users</text>
 
-                <path d="M 935 444 L 935 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 935 444 L 935 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="840" y="660" width="82" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="881" y="668" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">reads audit history</text>
 
-                <path d="M 965 444 L 965 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 965 444 L 965 925" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="915" y="660" width="98" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="964" y="668" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">reads or resolves alerts</text>
 
@@ -788,26 +863,50 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="570" y="1062" textAnchor="middle" dominantBaseline="middle" fill="#be123c" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">MySQL Database</text>
                 </g>
 
-                <path d="M 170 965 L 170 1020 L 530 1020 L 530 1035" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 170 965 L 170 1020 L 530 1020 L 530 1035" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="180" y="980" width="76" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="218" y="988" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">persists metadata</text>
 
-                <path d="M 327 965 L 327 1010 L 545 1010 L 545 1035" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 327 965 L 327 1010 L 545 1010 L 545 1035" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="340" y="980" width="72" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="376" y="988" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">persists toggles</text>
 
-                <path d="M 637 965 L 637 1010 L 585 1010 L 585 1035" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 637 965 L 637 1010 L 585 1010 L 585 1035" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="640" y="980" width="66" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="673" y="988" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">persists users</text>
 
-                <path d="M 797 965 L 797 1020 L 600 1020 L 600 1035" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 797 965 L 797 1020 L 600 1020 L 600 1035" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="800" y="980" width="84" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="842" y="988" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">persists audit logs</text>
 
-                <path d="M 957 965 L 957 1030 L 615 1030 L 615 1035" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" />
+                <path d="M 957 965 L 957 1030 L 615 1030 L 615 1035" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="960" y="980" width="68" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="994" y="988" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">persists alerts</text>
-              </svg>
+              
+                {/* FLOW ANIMATION PARTICLES */}
+                {isAnimationEnabled && (
+                  <g className="flow-particle pointer-events-none">
+                    <circle r="3.5" fill="#3b82f6" opacity="0.9">
+                      <animateMotion dur={flowSpeedSec} repeatCount="indefinite" path="M 210 71 L 210 235" />
+                    </circle>
+                    <circle r="3.5" fill="#3b82f6" opacity="0.9">
+                      <animateMotion dur={flowSpeedSec} repeatCount="indefinite" path="M 410 73 L 410 235" />
+                    </circle>
+                    <circle r="3.5" fill="#3b82f6" opacity="0.9">
+                      <animateMotion dur={flowSpeedSec} repeatCount="indefinite" path="M 700 72 L 700 145" />
+                    </circle>
+                    <circle r="3.5" fill="#eab308" opacity="0.9">
+                      <animateMotion dur={flowSpeedSec} repeatCount="indefinite" path="M 675 281 L 675 350 L 615 350 L 615 410" />
+                    </circle>
+                    <circle r="3.5" fill="#22c55e" opacity="0.9">
+                      <animateMotion dur={flowSpeedSec} repeatCount="indefinite" path="M 457 689 L 457 730" />
+                    </circle>
+                    <circle r="3.5" fill="#f43f5e" opacity="0.9">
+                      <animateMotion dur={flowSpeedSec} repeatCount="indefinite" path="M 545 1010 L 545 1070" />
+                    </circle>
+                  </g>
+                )}
+</svg>
             ) : isThinkSwipe ? (
               /* ═══════════════════════════════════════════════════════════════════
                  THINKSWIPE ARCHITECTURE CANVAS
@@ -818,6 +917,32 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 style={{ minWidth: '320px', maxWidth: '1120px' }}
               >
                 <defs>
+                <style>{`
+                  @keyframes flowForward {
+                    from { stroke-dashoffset: 24; }
+                    to { stroke-dashoffset: 0; }
+                  }
+                  @keyframes pulseBeam {
+                    0%, 100% { opacity: 0.3; transform: scale(1); }
+                    50% { opacity: 0.9; transform: scale(1.08); }
+                  }
+                  @keyframes rotateAura {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                  }
+                  .flow-line {
+                    stroke-dasharray: ${isAnimationEnabled ? '6 4' : 'none'};
+                    animation: ${isAnimationEnabled ? `flowForward ${flowSpeedSec} linear infinite` : 'none'};
+                  }
+                  .flow-particle {
+                    display: ${isAnimationEnabled ? 'block' : 'none'};
+                  }
+                  .actor-aura {
+                    transform-origin: center;
+                    animation: rotateAura 12s linear infinite;
+                  }
+                `}</style>
+
                   <marker id="ts-arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" /></marker>
                   <marker id="ts-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#3b82f6" /></marker>
                   <marker id="ts-arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#22c55e" /></marker>
@@ -835,11 +960,11 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="780" y="44" textAnchor="middle" fill="#1e40af" fontSize="10" fontFamily="system-ui, sans-serif" fontWeight="bold">Admin User</text>
                 </g>
 
-                <path d="M 340 62 L 340 135" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <path d="M 340 62 L 340 135" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="315" y="80" width="50" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="340" y="88" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">opens app</text>
 
-                <path d="M 780 67 L 780 235" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <path d="M 780 67 L 780 235" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="750" y="80" width="60" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="780" y="88" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">opens admin</text>
 
@@ -853,7 +978,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="340" y="167" textAnchor="middle" fill="#1e40af" fontSize="8.5" fontFamily="ui-monospace, monospace" opacity="0.8">[main.jsx]</text>
                 </g>
 
-                <path d="M 400 156 L 470 156" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#ts-arrow-blue)" />
+                <path d="M 400 156 L 470 156" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#ts-arrow-blue)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="415" y="149" width="40" height="14" rx="2" fill="#ffffff" stroke="#bfdbfe" strokeWidth="1" />
                 <text x="435" y="157" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">mounts</text>
 
@@ -863,7 +988,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="530" y="167" textAnchor="middle" fill="#1e40af" fontSize="8.5" fontFamily="ui-monospace, monospace" opacity="0.8">[App.jsx]</text>
                 </g>
 
-                <path d="M 590 156 L 660 156" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#ts-arrow-blue)" />
+                <path d="M 590 156 L 660 156" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#ts-arrow-blue)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="605" y="149" width="40" height="14" rx="2" fill="#ffffff" stroke="#bfdbfe" strokeWidth="1" />
                 <text x="625" y="157" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">registers</text>
 
@@ -901,19 +1026,19 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="530" y="372" textAnchor="middle" fill="#1e40af" fontSize="8.5" fontFamily="ui-monospace, monospace" opacity="0.8">[api.js]</text>
                 </g>
 
-                <path d="M 245 277 L 245 361 L 470 361" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#ts-arrow-blue)" />
+                <path d="M 245 277 L 245 361 L 470 361" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#ts-arrow-blue)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="270" y="354" width="45" height="14" rx="2" fill="#ffffff" stroke="#bfdbfe" strokeWidth="1" />
                 <text x="292" y="362" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">searches</text>
 
-                <path d="M 425 277 L 425 350 L 470 350" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#ts-arrow-blue)" />
+                <path d="M 425 277 L 425 350 L 470 350" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#ts-arrow-blue)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="390" y="310" width="70" height="14" rx="2" fill="#ffffff" stroke="#bfdbfe" strokeWidth="1" />
                 <text x="425" y="318" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">loads rankings</text>
 
-                <path d="M 780 277 L 780 350 L 590 350" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#ts-arrow-blue)" />
+                <path d="M 780 277 L 780 350 L 590 350" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#ts-arrow-blue)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="665" y="343" width="60" height="14" rx="2" fill="#ffffff" stroke="#bfdbfe" strokeWidth="1" />
                 <text x="695" y="351" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">admin calls</text>
 
-                <path d="M 890 277 L 890 361 L 590 361" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#ts-arrow-blue)" />
+                <path d="M 890 277 L 890 361 L 590 361" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#ts-arrow-blue)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="790" y="354" width="45" height="14" rx="2" fill="#ffffff" stroke="#bfdbfe" strokeWidth="1" />
                 <text x="812" y="362" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">submits</text>
 
@@ -921,7 +1046,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 <rect x="450" y="470" width="160" height="100" rx="8" fill="#fffbeb" stroke="#fde047" strokeWidth="1.5" />
                 <text x="530" y="490" textAnchor="middle" fill="#854d0e" fontSize="10.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Edge Delivery</text>
 
-                <path d="M 530 382 L 530 505" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <path d="M 530 382 L 530 505" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="508" y="420" width="44" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="530" y="428" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">proxies</text>
 
@@ -932,7 +1057,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 </g>
 
                 {/* 4. SPRING BOOT REST API */}
-                <path d="M 530 547 L 530 615" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <path d="M 530 547 L 530 615" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="500" y="575" width="60" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="530" y="583" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">Spring API</text>
 
@@ -965,13 +1090,13 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="625" y="777" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Leaderboard Controller</text>
                 </g>
 
-                <path d="M 220 791 L 220 835" fill="none" stroke="#22c55e" strokeWidth="1.5" markerEnd="url(#ts-arrow-green)" />
+                <path d="M 220 791 L 220 835" fill="none" stroke="#22c55e" strokeWidth="1.5" markerEnd="url(#ts-arrow-green)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ts_q_srv', label: 'Question Service', sub: 'Question catalog cache and difficulty selector', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'QuestionService.java', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
                   <rect x="165" y="835" width="110" height="36" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
                   <text x="220" y="857" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">Question Service</text>
                 </g>
 
-                <path d="M 355 791 L 355 835" fill="none" stroke="#22c55e" strokeWidth="1.5" markerEnd="url(#ts-arrow-green)" />
+                <path d="M 355 791 L 355 835" fill="none" stroke="#22c55e" strokeWidth="1.5" markerEnd="url(#ts-arrow-green)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'ts_ans_srv', label: 'Answer Service [AnswerService.java]', sub: 'Core evaluation engine validating user submissions', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'AnswerService.java', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
                   <rect x="290" y="835" width="130" height="42" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
                   <text x="355" y="852" textAnchor="middle" fill="#15803d" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">Answer Service</text>
@@ -1012,7 +1137,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="590" y="1000" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">JPA Repositories</text>
                 </g>
 
-                <path d="M 590 1012 L 590 1045" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" />
+                <path d="M 590 1012 L 590 1045" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="570" y="1022" width="40" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="590" y="1030" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">persists</text>
 
@@ -1021,7 +1146,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="590" y="1068" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">Primary TiDB</text>
                 </g>
 
-                <path d="M 590 1083 L 590 1120" fill="none" stroke="#64748b" strokeWidth="1.5" strokeDasharray="3 3" markerEnd="url(#ts-arrow-slate)" />
+                <path d="M 590 1083 L 590 1120" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="566" y="1095" width="48" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="590" y="1103" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">daily sync</text>
 
@@ -1029,7 +1154,28 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <rect x="545" y="1120" width="90" height="38" rx="10" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1.5" className="transition group-hover:stroke-blue-600" />
                   <text x="590" y="1143" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Secondary TiDB</text>
                 </g>
-              </svg>
+              
+                {/* FLOW ANIMATION PARTICLES */}
+                {isAnimationEnabled && (
+                  <g className="flow-particle pointer-events-none">
+                    <circle r="3.5" fill="#3b82f6" opacity="0.9">
+                      <animateMotion dur={flowSpeedSec} repeatCount="indefinite" path="M 330 73 L 330 235" />
+                    </circle>
+                    <circle r="3.5" fill="#3b82f6" opacity="0.9">
+                      <animateMotion dur={flowSpeedSec} repeatCount="indefinite" path="M 770 73 L 770 235" />
+                    </circle>
+                    <circle r="3.5" fill="#eab308" opacity="0.9">
+                      <animateMotion dur={flowSpeedSec} repeatCount="indefinite" path="M 550 281 L 550 410" />
+                    </circle>
+                    <circle r="3.5" fill="#22c55e" opacity="0.9">
+                      <animateMotion dur={flowSpeedSec} repeatCount="indefinite" path="M 380 444 L 380 625" />
+                    </circle>
+                    <circle r="3.5" fill="#f43f5e" opacity="0.9">
+                      <animateMotion dur={flowSpeedSec} repeatCount="indefinite" path="M 550 780 L 550 870" />
+                    </circle>
+                  </g>
+                )}
+</svg>
             ) : isVps ? (
               /* ═══════════════════════════════════════════════════════════════════
                  VPS (VISION PUBLIC SCHOOL ERP) ARCHITECTURE CANVAS (EXACT GITDIAGRAM)
@@ -1040,6 +1186,32 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 style={{ minWidth: '320px', maxWidth: '1140px' }}
               >
                 <defs>
+                <style>{`
+                  @keyframes flowForward {
+                    from { stroke-dashoffset: 24; }
+                    to { stroke-dashoffset: 0; }
+                  }
+                  @keyframes pulseBeam {
+                    0%, 100% { opacity: 0.3; transform: scale(1); }
+                    50% { opacity: 0.9; transform: scale(1.08); }
+                  }
+                  @keyframes rotateAura {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                  }
+                  .flow-line {
+                    stroke-dasharray: ${isAnimationEnabled ? '6 4' : 'none'};
+                    animation: ${isAnimationEnabled ? `flowForward ${flowSpeedSec} linear infinite` : 'none'};
+                  }
+                  .flow-particle {
+                    display: ${isAnimationEnabled ? 'block' : 'none'};
+                  }
+                  .actor-aura {
+                    transform-origin: center;
+                    animation: rotateAura 12s linear infinite;
+                  }
+                `}</style>
+
                   <marker id="vps-arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" /></marker>
                   <marker id="vps-arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#3b82f6" /></marker>
                   <marker id="vps-arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#eab308" /></marker>
@@ -1054,7 +1226,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="570" y="49" textAnchor="middle" fill="#1e40af" fontSize="10.5" fontFamily="system-ui, sans-serif" fontWeight="bold">School Users</text>
                 </g>
 
-                <path d="M 570 73 L 570 145" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arrow-slate)" />
+                <path d="M 570 73 L 570 145" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="548" y="95" width="44" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="570" y="103" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">uses</text>
 
@@ -1068,7 +1240,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="300" y="202" textAnchor="middle" fill="#1e40af" fontSize="8.5" fontFamily="ui-monospace, monospace" opacity="0.8">[App.jsx]</text>
                 </g>
 
-                <path d="M 380 193 L 480 193" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#vps-arrow-blue)" />
+                <path d="M 380 193 L 480 193" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#vps-arrow-blue)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="400" y="186" width="60" height="14" rx="2" fill="#ffffff" stroke="#bfdbfe" strokeWidth="1" />
                 <text x="430" y="194" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">reads auth</text>
 
@@ -1087,7 +1259,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 <rect x="180" y="345" width="780" height="150" rx="8" fill="#fffbeb" stroke="#fde047" strokeWidth="1.5" />
                 <text x="570" y="365" textAnchor="middle" fill="#854d0e" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">API Access</text>
 
-                <path d="M 300 216 L 300 390" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arrow-slate)" />
+                <path d="M 300 216 L 300 390" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="255" y="270" width="90" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="300" y="278" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">sends requests</text>
 
@@ -1096,7 +1268,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="290" y="413" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">Cloudflare Proxy</text>
                 </g>
 
-                <path d="M 360 411 L 430 411" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arrow-slate)" />
+                <path d="M 360 411 L 430 411" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="368" y="404" width="58" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="397" y="412" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">proxies traffic</text>
 
@@ -1106,7 +1278,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="495" y="421" textAnchor="middle" fill="#854d0e" fontSize="8" fontFamily="ui-monospace, monospace" opacity="0.8">[VpsApplication.java]</text>
                 </g>
 
-                <path d="M 560 411 L 630 411" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arrow-slate)" />
+                <path d="M 560 411 L 630 411" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="568" y="404" width="58" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="597" y="412" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">enters security</text>
 
@@ -1115,7 +1287,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="690" y="413" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Security Config</text>
                 </g>
 
-                <path d="M 750 411 L 810 411" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arrow-slate)" />
+                <path d="M 750 411 L 810 411" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="752" y="404" width="56" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="780" y="412" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">applies filter</text>
 
@@ -1167,7 +1339,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="310" y="808" textAnchor="middle" dominantBaseline="middle" fill="#be123c" fontSize="10.5" fontFamily="ui-monospace, monospace" fontWeight="bold">JPA Repositories</text>
                 </g>
 
-                <path d="M 310 827 L 310 865" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arrow-slate)" />
+                <path d="M 310 827 L 310 865" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="275" y="836" width="70" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="310" y="844" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">reads / writes</text>
 
@@ -1204,6 +1376,32 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 style={{ minWidth: '320px', maxWidth: '1120px' }}
               >
                 <defs>
+                <style>{`
+                  @keyframes flowForward {
+                    from { stroke-dashoffset: 24; }
+                    to { stroke-dashoffset: 0; }
+                  }
+                  @keyframes pulseBeam {
+                    0%, 100% { opacity: 0.3; transform: scale(1); }
+                    50% { opacity: 0.9; transform: scale(1.08); }
+                  }
+                  @keyframes rotateAura {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                  }
+                  .flow-line {
+                    stroke-dasharray: ${isAnimationEnabled ? '6 4' : 'none'};
+                    animation: ${isAnimationEnabled ? `flowForward ${flowSpeedSec} linear infinite` : 'none'};
+                  }
+                  .flow-particle {
+                    display: ${isAnimationEnabled ? 'block' : 'none'};
+                  }
+                  .actor-aura {
+                    transform-origin: center;
+                    animation: rotateAura 12s linear infinite;
+                  }
+                `}</style>
+
                   <marker id="arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" /></marker>
                   <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#3b82f6" /></marker>
                   <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f59e0b" /></marker>
@@ -1216,7 +1414,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="560" y="45" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="11.5" fontFamily="system-ui, sans-serif" fontWeight="bold">{actorLabel}</text>
                 </g>
 
-                <path d="M 560 62 L 560 115" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
+                <path d="M 560 62 L 560 115" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="540" y="80" width="40" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="560" y="88" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">uses</text>
 
@@ -1232,7 +1430,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 <rect x="360" y="320" width="400" height="140" rx="8" fill="#fffbeb" stroke="#fde047" strokeWidth="1.5" />
                 <text x="560" y="340" textAnchor="middle" fill="#854d0e" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">API & Security Gateway</text>
 
-                <path d="M 560 265 L 560 355" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
+                <path d="M 560 265 L 560 355" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="525" y="295" width="70" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="560" y="303" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">sends requests</text>
 
@@ -1244,7 +1442,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 <rect x="80" y="520" width="960" height="180" rx="8" fill="#f0fdf4" stroke="#bbf7d0" strokeWidth="1.5" />
                 <text x="560" y="542" textAnchor="middle" fill="#15803d" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Domain Workflows ({domainWorkflows.length})</text>
 
-                <path d="M 560 460 L 560 560" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
+                <path d="M 560 460 L 560 560" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="530" y="490" width="60" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="560" y="498" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">dispatches</text>
 
@@ -1262,7 +1460,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 <rect x="260" y="760" width="600" height="180" rx="8" fill="#fff1f2" stroke="#fecdd3" strokeWidth="1.5" />
                 <text x="560" y="782" textAnchor="middle" fill="#be123c" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Persistence & Data Layer</text>
 
-                <path d="M 560 700 L 560 800" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
+                <path d="M 560 700 L 560 800" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
                 <rect x="525" y="730" width="70" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="560" y="738" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">reads / writes</text>
 
@@ -1271,7 +1469,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="560" y="828" textAnchor="middle" dominantBaseline="middle" fill="#be123c" fontSize="10.5" fontFamily="ui-monospace, monospace" fontWeight="bold">JPA Repositories & Data Access</text>
                 </g>
 
-                <path d="M 560 843 L 560 875" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
+                <path d="M 560 843 L 560 875" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" className="flow-line transition-all duration-300 hover:stroke-width-[2.5]" />
 
                 <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'db_gen', label: 'Primary Database', sub: 'Relational database schema storing persistent state', category: 'PERSISTENCE', type: 'DATABASE', color: '#be123c', bg: '#ffe4e6', border: '#f43f5e' })}>
                   <rect x="470" y="875" width="180" height="42" rx="10" fill="#fee2e2" stroke="#f87171" strokeWidth="1.5" className="transition group-hover:stroke-rose-600" />
