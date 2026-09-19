@@ -339,41 +339,67 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
 
             <div className="p-6 overflow-y-auto custom-scrollbar space-y-6">
               <div>
-                <h3 className="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider mb-3">AI & Interactive Exploration</h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider">AI & Architecture Intelligence (6)</h3>
+                  <span className="text-[10px] font-mono text-slate-400">Analysis & Insights</span>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
                   <ToolCard icon="🤖" label="AI Assistant" desc="Deep architectural analysis & review" onClick={() => { onOpenTool?.('ai'); setIsAllToolsOpen(false); }} />
                   <ToolCard icon="🎙️" label="Voice Copilot" desc="Voice-guided interactive navigation" onClick={() => { onOpenTool?.('voice'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="⚡" label="Command Palette" desc="Global action search & navigation" onClick={() => { onOpenTool?.('cmd'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="⚡" label="Command Palette" desc="Global action search & shortcuts" onClick={() => { onOpenTool?.('cmd'); setIsAllToolsOpen(false); }} />
                   <ToolCard icon="📊" label="Architecture Scorecard" desc="Maintainability & security grades" onClick={() => { onOpenTool?.('scorecard'); setIsAllToolsOpen(false); }} />
                   <ToolCard icon="🔀" label="Architecture Drift" desc="Detect drift vs codebase spec" onClick={() => { onOpenTool?.('drift'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="📋" label="Architecture Blueprint" desc="Export professional architecture spec" onClick={() => { onOpenTool?.('blueprint'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="📋" label="Architecture Blueprint" desc="Export 4K C4 spec & Mermaid" onClick={() => { onOpenTool?.('blueprint'); setIsAllToolsOpen(false); }} />
                 </div>
               </div>
 
               <div>
-                <h3 className="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider mb-3">Database, Runtime & Infrastructure</h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider">Database, Tracing & Performance (8)</h3>
+                  <span className="text-[10px] font-mono text-slate-400">Observability & Schemas</span>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
                   <ToolCard icon="🗄️" label="ER Diagram" desc="Interactive visual database schema" onClick={() => { onOpenTool?.('erd'); setIsAllToolsOpen(false); }} />
                   <ToolCard icon="🔍" label="SQL Explorer" desc="Live query plans & JPA optimizations" onClick={() => { onOpenTool?.('sql'); setIsAllToolsOpen(false); }} />
                   <ToolCard icon="🛡️" label="Security Explorer" desc="JWT validation & RBAC permission audit" onClick={() => { onOpenTool?.('security'); setIsAllToolsOpen(false); }} />
                   <ToolCard icon="⏱️" label="Runtime Tracing" desc="Microsecond-accurate call stack traces" onClick={() => { onOpenTool?.('trace'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="📈" label="API Metrics" desc="Live throughput, p99 latency & SLAs" onClick={() => { onOpenTool?.('metrics'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="📦" label="Dependency Explorer" desc="Maven POM dependencies & licenses" onClick={() => { onOpenTool?.('deps'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="🌐" label="Cloud Infra Synthesizer" desc="Auto-generate Terraform & K8s" onClick={() => { onOpenTool?.('cloud'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="📡" label="Event Stream Visualizer" desc="Kafka & RabbitMQ reactive topology" onClick={() => { onOpenTool?.('events'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="🕸️" label="Service Mesh & Istio" desc="mTLS, circuit breaker & Envoy proxies" onClick={() => { onOpenTool?.('mesh'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="📈" label="Distributed Tracing" desc="OpenTelemetry multi-service waterfall" onClick={() => { onOpenTool?.('dist-tracing'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="📊" label="API Metrics" desc="Live throughput, p99 latency & SLAs" onClick={() => { onOpenTool?.('metrics'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="🔥" label="Latency Heatmap" desc="24-hour quantile matrix & spikes" onClick={() => { onOpenTool?.('heatmap'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="⚡" label="Sequence Diagram" desc="7-Swimlane async request lifecycle" onClick={() => { onOpenTool?.('sequence'); setIsAllToolsOpen(false); }} />
                 </div>
               </div>
 
               <div>
-                <h3 className="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider mb-3">Code Generation & Integrations</h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider">Infrastructure, Cloud & Resilience (6)</h3>
+                  <span className="text-[10px] font-mono text-slate-400">Cloud & Zero-Trust</span>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
-                  <ToolCard icon="🧪" label="API Sandbox" desc="Test Spring REST endpoints with real payloads" onClick={() => { onOpenTool?.('sandbox'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="📘" label="TypeScript Generator" desc="Generate strict DTO interfaces" onClick={() => { onOpenTool?.('tsgen'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="🔬" label="Test Suite Generator" desc="JUnit 5 & Mockito test scaffolds" onClick={() => { onOpenTool?.('tests'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="🌐" label="Cloud Infra Synthesizer" desc="Auto-generate Docker, Terraform & K8s" onClick={() => { onOpenTool?.('cloud'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="📡" label="Event Stream Visualizer" desc="Kafka & WebSocket reactive topology" onClick={() => { onOpenTool?.('events'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="🕸️" label="Service Mesh & Istio" desc="mTLS, circuit breaker & Envoy proxies" onClick={() => { onOpenTool?.('mesh'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="💥" label="Chaos Simulator" desc="Latency injection & circuit breakers" onClick={() => { onOpenTool?.('chaos'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="🛡️" label="Compliance Matrix" desc="Zero-Trust SOC2 & HIPAA controls" onClick={() => { onOpenTool?.('compliance'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="⚡" label="GraphQL & gRPC Explorer" desc="Protobuf v3 & GraphQL schema synthesizer" onClick={() => { onOpenTool?.('graphql-grpc'); setIsAllToolsOpen(false); }} />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider">Developer Experience, Code Gen & Integrations (9)</h3>
+                  <span className="text-[10px] font-mono text-slate-400">DevTools & Workspaces</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                  <ToolCard icon="🧪" label="API Sandbox" desc="Test Spring REST endpoints with payloads" onClick={() => { onOpenTool?.('sandbox'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="📘" label="TypeScript Generator" desc="Generate strict DTO interfaces & Zod" onClick={() => { onOpenTool?.('tsgen'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="🔬" label="Test Suite Generator" desc="RestAssured & Playwright test scaffolds" onClick={() => { onOpenTool?.('tests'); setIsAllToolsOpen(false); }} />
                   <ToolCard icon="📁" label="File Tree Explorer" desc="Interactive project directory explorer" onClick={() => { onOpenTool?.('filetree'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="🧩" label="VS Code Extension" desc="Live architecture sidecar in VS Code" onClick={() => { onOpenTool?.('vscode'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="👥" label="Live Collaboration" desc="Real-time multi-user cursor" onClick={() => { onOpenTool?.('collab'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="⚛️" label="React Runtime Explorer" desc="Fiber tree reconciliation & Hook profiler" onClick={() => { onOpenTool?.('react'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="📦" label="Dependency Explorer" desc="Maven POM dependencies & CVE audit" onClick={() => { onOpenTool?.('deps'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="💻" label="VS Code Extension" desc="Live architecture sidecar in VS Code" onClick={() => { onOpenTool?.('vscode'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="🌐" label="Chrome Extension" desc="GitHub DOM layer & badge injector" onClick={() => { onOpenTool?.('chrome-ext'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="👥" label="Live Collaboration" desc="Real-time multi-user cursor & whiteboard" onClick={() => { onOpenTool?.('collab'); setIsAllToolsOpen(false); }} />
                 </div>
               </div>
             </div>

@@ -761,7 +761,7 @@ export default function App() {
       handleLoadDemoProject();
     }
     closeAllModals();
-    if (toolKey === 'tracing') setIsRuntimeTracingOpen(true);
+    if (toolKey === 'tracing' || toolKey === 'trace') setIsRuntimeTracingOpen(true);
     else if (toolKey === 'metrics') setIsApiMetricsOpen(true);
     else if (toolKey === 'sequence') setIsSequenceDiagramOpen(true);
     else if (toolKey === 'heatmap') setIsLatencyHeatmapOpen(true);
@@ -770,15 +770,15 @@ export default function App() {
     else if (toolKey === 'sql') setIsSqlExplorerOpen(true);
     else if (toolKey === 'deps') setIsDependencyModalOpen(true);
     else if (toolKey === 'ai') setIsAiAssistantOpen(true);
-    else if (toolKey === 'files') setIsFileTreeOpen(true);
+    else if (toolKey === 'files' || toolKey === 'filetree') setIsFileTreeOpen(true);
     else if (toolKey === 'react' || toolKey === 'fiber') setIsReactRuntimeOpen(true);
     else if (toolKey === 'scorecard') setIsScorecardOpen(true);
     else if (toolKey === 'api-sandbox' || toolKey === 'sandbox') setIsApiSandboxOpen(true);
-    else if (toolKey === 'ts-generator' || toolKey === 'ts') setIsTsGeneratorOpen(true);
+    else if (toolKey === 'ts-generator' || toolKey === 'ts' || toolKey === 'tsgen') setIsTsGeneratorOpen(true);
     else if (toolKey === 'chaos') setIsChaosOpen(true);
-    else if (toolKey === 'blueprint' || toolKey === 'export-c4') setIsBlueprintOpen(true);
+    else if (toolKey === 'blueprint' || toolKey === 'export-c4' || toolKey === 'export') setIsBlueprintOpen(true);
     else if (toolKey === 'drift') setIsDriftOpen(true);
-    else if (toolKey === 'test-gen' || toolKey === 'test') setIsTestGenOpen(true);
+    else if (toolKey === 'test-gen' || toolKey === 'test' || toolKey === 'tests') setIsTestGenOpen(true);
     else if (toolKey === 'cloud-infra' || toolKey === 'cloud' || toolKey === 'docker') setIsCloudInfraOpen(true);
     else if (toolKey === 'event-stream' || toolKey === 'kafka' || toolKey === 'events') setIsEventStreamOpen(true);
     else if (toolKey === 'voice' || toolKey === 'copilot') setIsVoiceCopilotOpen(true);
@@ -789,6 +789,7 @@ export default function App() {
     else if (toolKey === 'compliance' || toolKey === 'soc2') setIsComplianceOpen(true);
     else if (toolKey === 'graphql-grpc' || toolKey === 'graphql' || toolKey === 'grpc') setIsGraphqlGrpcOpen(true);
     else if (toolKey === 'service-mesh' || toolKey === 'mesh' || toolKey === 'istio') setIsServiceMeshOpen(true);
+    else if (toolKey === 'cmd' || toolKey === 'command') setIsCommandPaletteOpen(true);
   };
 
   useEffect(() => {
