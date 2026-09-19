@@ -1588,6 +1588,16 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     preview: '🗄️ orders ➔ order_items ➔ users (FK Linked)'
                   },
                   {
+                    title: 'Security & JWT RBAC Explorer',
+                    desc: 'Validate HMAC-SHA256 JWT tokens, inspect stateless filter chains, and audit Spring Security 6 RBAC.',
+                    icon: ShieldCheck,
+                    col: 'text-teal-400',
+                    key: 'security',
+                    badge: 'v6.0 Auth',
+                    graphic: SecurityGraphic,
+                    preview: '🛡️ Bearer JWT HS256 • Role-Based Access Control • BCrypt'
+                  },
+                  {
                     title: 'AI Code & Security Assistant',
                     desc: 'Architectural explanations, Spring Security compliance auditing, and query reviews.',
                     icon: Bot,
