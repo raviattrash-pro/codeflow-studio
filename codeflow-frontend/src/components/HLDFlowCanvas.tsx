@@ -315,13 +315,16 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
 
       {/* ─── STUDIO TOOLS MODAL DRAWER ─── */}
       {isAllToolsOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div
+          className="studio-modal-overlay"
+          onClick={(e) => { if (e.target === e.currentTarget) setIsAllToolsOpen(false); }}
+        >
           <div
-            className={`w-full max-w-4xl max-h-[85vh] rounded-2xl border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col overflow-hidden ${
-              isLight ? 'bg-white text-slate-900' : 'bg-slate-900 text-slate-100 border-slate-700'
+            className={`studio-modal-card max-w-5xl border-2 border-black dark:border-slate-700 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] ${
+              isLight ? 'bg-white text-slate-900' : 'bg-slate-900 text-slate-100'
             }`}
           >
-            <div className="p-4 border-b-2 border-black dark:border-slate-700 flex items-center justify-between bg-purple-50 dark:bg-slate-800">
+            <div className="p-4 border-b-2 border-black dark:border-slate-700 flex items-center justify-between bg-purple-50 dark:bg-slate-800 shrink-0">
               <div className="flex items-center gap-2">
                 <span className="p-2 rounded-xl bg-purple-600 text-white font-mono font-bold text-xs">29</span>
                 <div>
@@ -337,7 +340,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto custom-scrollbar space-y-6">
+            <div className="p-4 sm:p-6 overflow-y-auto custom-scrollbar flex-1 min-h-0 space-y-6">
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider">AI & Architecture Intelligence (6)</h3>
