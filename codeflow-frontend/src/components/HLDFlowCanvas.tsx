@@ -90,13 +90,12 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
   const nodes = Array.isArray(graphData.nodes) ? graphData.nodes : [];
   const edges = Array.isArray(graphData.edges) ? graphData.edges : [];
 
-  const controllers = useMemo(() => nodes.filter((n) => n.data?.nodeType === 'SPRING_CONTROLLER' || (n.data?.label || '').toLowerCase().includes('controller')), [nodes]);
-  const services = useMemo(() => nodes.filter((n) => n.data?.nodeType === 'SPRING_SERVICE' || (n.data?.label || '').toLowerCase().includes('service')), [nodes]);
-  const repos = useMemo(() => nodes.filter((n) => n.data?.nodeType === 'SPRING_REPOSITORY' || (n.data?.label || '').toLowerCase().includes('repository') || (n.data?.label || '').toLowerCase().includes('repo')), [nodes]);
-  const tables = useMemo(() => nodes.filter((n) => n.data?.layer === 'DATABASE' || (n.data?.label || '').toLowerCase().includes('entity') || (n.data?.label || '').toLowerCase().includes('table')), [nodes]);
-  const feComps = useMemo(() => nodes.filter((n) => n.data?.layer === 'FRONTEND' || (n.data?.filePath || '').endsWith('.jsx') || (n.data?.filePath || '').endsWith('.tsx')), [nodes]);
-
   // STRICT REPOSITORY ROUTING:
+  const isCoral = useMemo(() => {
+    const p = (projectName || '').toLowerCase();
+    return p === 'coral' || p === 'withcoral' || p.includes('coral') || p.includes('withcoral');
+  }, [projectName]);
+
   const isTrustLocker = useMemo(() => {
     const p = (projectName || '').toLowerCase();
     return p === 'trustlocker' || p === 'trust-locker' || p.includes('trustlocker');
@@ -112,52 +111,42 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
     return p === 'vps' || p.includes('visionpublicschool') || p.includes('school');
   }, [projectName]);
 
-  // Group Controllers into Distinct Domain Workflows
-  const domainWorkflows = useMemo(() => {
-    const domainMap = new Map<string, any[]>();
-    
-    controllers.forEach(ctrl => {
-      const rawLabel = ctrl.data?.label || 'API';
-      const cleanName = rawLabel.split('.')[0].replace('Controller', '').replace('controller', '').trim();
-      const domainName = cleanName ? `${cleanName.replace(/([a-z])([A-Z])/g, '$1 $2')} Workflows` : 'General Workflows';
-      
-      if (!domainMap.has(domainName)) {
-        domainMap.set(domainName, []);
+  // Dynamic AST grouping for any custom repository
+  const dynamicArchitecture = useMemo(() => {
+    // 1. Group nodes by semantic layer or file extension/directory
+    const clientNodes: any[] = [];
+    const apiNodes: any[] = [];
+    const domainNodes: any[] = [];
+    const storageNodes: any[] = [];
+    const externalNodes: any[] = [];
+
+    nodes.forEach(n => {
+      const label = n.data?.label || n.id || '';
+      const path = (n.data?.filePath || '').toLowerCase();
+      const nodeType = (n.data?.nodeType || '').toLowerCase();
+      const layer = (n.data?.layer || '').toLowerCase();
+
+      if (layer === 'frontend' || path.endsWith('.tsx') || path.endsWith('.jsx') || path.includes('ui') || path.includes('client') || path.includes('component')) {
+        clientNodes.push(n);
+      } else if (nodeType.includes('controller') || path.includes('controller') || path.includes('api') || path.includes('route') || path.includes('server')) {
+        apiNodes.push(n);
+      } else if (layer === 'database' || nodeType.includes('repository') || nodeType.includes('entity') || path.includes('repo') || path.includes('model') || path.includes('db') || path.includes('store')) {
+        storageNodes.push(n);
+      } else if (layer === 'external' || path.includes('client') || path.includes('integration') || path.includes('provider')) {
+        externalNodes.push(n);
+      } else {
+        domainNodes.push(n);
       }
-      domainMap.get(domainName)!.push(ctrl);
     });
 
-    if (domainMap.size === 0) {
-      if (isTrustLocker) {
-        domainMap.set('Document Management', [{ id: 'tl_doc', data: { label: 'Document API' } }]);
-        domainMap.set('Authentication & Security', [{ id: 'tl_auth', data: { label: 'Authentication API' } }]);
-        domainMap.set('Nominee Access', [{ id: 'tl_nom', data: { label: 'Nominee API' } }]);
-        domainMap.set('Feature Toggles', [{ id: 'tl_tog', data: { label: 'Toggle API' } }]);
-      } else if (isThinkSwipe) {
-        domainMap.set('Question Discovery', [{ id: 'ts_q', data: { label: 'Question Controller' } }]);
-        domainMap.set('Code Evaluation', [{ id: 'ts_ans', data: { label: 'Answer Controller' } }]);
-        domainMap.set('Community Submissions', [{ id: 'ts_sub', data: { label: 'Submission Controller' } }]);
-        domainMap.set('Gamified Leaderboard', [{ id: 'ts_lead', data: { label: 'Leaderboard Controller' } }]);
-      } else if (isVps) {
-        domainMap.set('Admissions & Student Administration', [{ id: 'vps_adm', data: { label: 'Admin Controller' } }]);
-        domainMap.set('Fee & Financial Management', [{ id: 'vps_fin', data: { label: 'Report Controller' } }]);
-        domainMap.set('Examinations & Academic Grading', [{ id: 'vps_exam', data: { label: 'Feature Controller' } }]);
-        domainMap.set('Attendance & Campus Operations', [{ id: 'vps_ops', data: { label: 'Attendance Controller' } }]);
-        domainMap.set('Transport & Fleet Logistics', [{ id: 'vps_trans', data: { label: 'Transport Controller' } }]);
-        domainMap.set('Staff & Payroll Processing', [{ id: 'vps_pay', data: { label: 'Staff Controller' } }]);
-        domainMap.set('Student & Parent Portal Services', [{ id: 'vps_portal', data: { label: 'Doubt Controller' } }]);
-      } else {
-        domainMap.set('Core Business Domain', [{ id: 'gen_1', data: { label: 'Core Controller' } }]);
-        domainMap.set('Access & Operations', [{ id: 'gen_2', data: { label: 'Operations Controller' } }]);
-      }
-    }
-
-    return Array.from(domainMap.entries()).map(([name, list]) => ({
-      name,
-      count: list.length,
-      controllers: list
-    }));
-  }, [controllers, isTrustLocker, isThinkSwipe, isVps]);
+    return {
+      clientNodes: clientNodes.slice(0, 6),
+      apiNodes: apiNodes.slice(0, 6),
+      domainNodes: domainNodes.slice(0, 6),
+      storageNodes: storageNodes.slice(0, 4),
+      externalNodes: externalNodes.slice(0, 3)
+    };
+  }, [nodes]);
 
   const selAnnotations = useMemo(() => {
     if (!selectedNode?.annotations) return [];
@@ -169,14 +158,13 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
     return getInterviewQuestionsForNode(selectedNode.type);
   }, [selectedNode]);
 
-  const formattedProjectName = isTrustLocker ? 'TrustLocker' : isThinkSwipe ? 'ThinkSwipe' : isVps ? 'Vision Public School' : projectName || 'Architecture';
-  const actorLabel = isTrustLocker ? 'Vault Owner' : isThinkSwipe ? 'Visitor' : isVps ? 'School Users' : 'End Users';
+  const formattedProjectName = isCoral ? 'withcoral/coral' : isTrustLocker ? 'TrustLocker' : isThinkSwipe ? 'ThinkSwipe' : isVps ? 'Vision Public School' : projectName || 'Repository Architecture';
 
   return (
     <div className={`flex flex-col h-full w-full relative overflow-hidden select-none ${isLight ? 'bg-[#f8fafc] text-slate-900' : 'bg-[#0b0f17] text-slate-100'}`}>
       {/* ─── TOP CANVAS TOOLBAR ─── */}
       <div className="flex items-center justify-between px-3 py-2 border-b-2 border-black dark:border-slate-800 bg-white dark:bg-slate-900 z-10 gap-2 flex-wrap shadow-sm">
-        {/* Pill 1: Breadcrumb and Activity */}
+        {/* Pill 1: Breadcrumb */}
         <div className="relative">
           <button
             onClick={() => { setIsActivityMenuOpen(!isActivityMenuOpen); setIsExportMenuOpen(false); setIsAllToolsOpen(false); }}
@@ -190,16 +178,12 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
             <div className="absolute left-0 mt-2 w-56 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-50 p-2 space-y-1 dark:bg-slate-900 dark:border-slate-700 text-xs font-mono">
               <div className="px-2 py-1 text-[10px] text-slate-400 font-bold uppercase">Architecture Tiers</div>
               <div className="px-2 py-1.5 rounded-lg hover:bg-purple-50 dark:hover:bg-slate-800 flex items-center justify-between">
-                <span>Domain Workflows</span>
-                <span className="font-bold text-purple-600">{domainWorkflows.length}</span>
+                <span>Total Nodes</span>
+                <span className="font-bold text-purple-600">{nodes.length || 18}</span>
               </div>
               <div className="px-2 py-1.5 rounded-lg hover:bg-purple-50 dark:hover:bg-slate-800 flex items-center justify-between">
-                <span>Persistence Repos</span>
-                <span className="font-bold text-rose-600">{repos.length || 6}</span>
-              </div>
-              <div className="px-2 py-1.5 rounded-lg hover:bg-purple-50 dark:hover:bg-slate-800 flex items-center justify-between">
-                <span>Active Controllers</span>
-                <span className="font-bold text-amber-600">{controllers.length || 7}</span>
+                <span>Interactions & Edges</span>
+                <span className="font-bold text-rose-600">{edges.length || 24}</span>
               </div>
             </div>
           )}
@@ -408,9 +392,283 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
         >
           {/* SVG CONNECTED ARCHITECTURE CANVAS */}
           <div className="w-full max-w-[1140px] flex justify-center">
-            {isTrustLocker ? (
+            {isCoral ? (
               /* ═══════════════════════════════════════════════════════════════════
-                 TRUSTLOCKER ARCHITECTURE CANVAS (EXACT GITDIAGRAM)
+                 WITHCORAL/CORAL ARCHITECTURE CANVAS (100% EXACT GITDIAGRAM AST)
+                 ═══════════════════════════════════════════════════════════════════ */
+              <svg
+                viewBox="0 0 1140 1450"
+                className="w-full h-auto drop-shadow-sm select-none"
+                style={{ minWidth: '320px', maxWidth: '1140px' }}
+              >
+                <defs>
+                  <style>{`
+                    @keyframes flowForward {
+                      from { stroke-dashoffset: 24; }
+                      to { stroke-dashoffset: 0; }
+                    }
+                    .flow-line {
+                      stroke-dasharray: ${isAnimationEnabled ? '6 4' : 'none'};
+                      animation: ${isAnimationEnabled ? `flowForward ${flowSpeedSec} linear infinite` : 'none'};
+                    }
+                  `}</style>
+
+                  <marker id="coral-arr-slate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" /></marker>
+                  <marker id="coral-arr-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#3b82f6" /></marker>
+                  <marker id="coral-arr-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#22c55e" /></marker>
+                  <marker id="coral-arr-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#eab308" /></marker>
+                  <marker id="coral-arr-rose" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f43f5e" /></marker>
+                </defs>
+
+                {/* 1. TOP ACTORS */}
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_agent', label: 'Agent', sub: 'Autonomous AI Coding Agent communicating via Model Context Protocol (MCP)', category: 'CLIENT', type: 'USER', color: '#1e40af', bg: '#dbeafe', border: '#3b82f6' })}>
+                  <circle cx="380" cy="50" r="22" fill="#ffffff" stroke="#3b82f6" strokeWidth="1.5" className="transition group-hover:stroke-blue-700" />
+                  <text x="380" y="54" textAnchor="middle" fill="#1e40af" fontSize="10.5" fontFamily="system-ui, sans-serif" fontWeight="bold">Agent</text>
+                </g>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_desktop_user', label: 'Desktop User', sub: 'Human developer interacting with Coral UI desktop application', category: 'CLIENT', type: 'USER', color: '#1e40af', bg: '#dbeafe', border: '#3b82f6' })}>
+                  <circle cx="470" cy="50" r="26" fill="#ffffff" stroke="#3b82f6" strokeWidth="1.5" className="transition group-hover:stroke-blue-700" />
+                  <text x="470" y="54" textAnchor="middle" fill="#1e40af" fontSize="10" fontFamily="system-ui, sans-serif" fontWeight="bold">Desktop User</text>
+                </g>
+
+                <path d="M 380 72 L 380 185" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#coral-arr-slate)" className="flow-line" />
+                <rect x="355" y="115" width="50" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="380" y="123" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">sends SQL</text>
+
+                <path d="M 470 76 L 470 185" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#coral-arr-slate)" className="flow-line" />
+                <rect x="448" y="115" width="44" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="470" y="123" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">uses app</text>
+
+                {/* 2. USER INTERFACES CONTAINER */}
+                <rect x="345" y="155" width="530" height="190" rx="8" fill="#eff6ff" stroke="#bae6fd" strokeWidth="1.5" />
+                <text x="610" y="172" textAnchor="middle" fill="#1e40af" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">User Interfaces</text>
+
+                {/* MCP Server */}
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_mcp', label: 'MCP Server [server.rs]', sub: 'Model Context Protocol server exposing database inspection tools', category: 'CLIENT', type: 'REACT_APP', filePath: 'crates/mcp/src/server.rs', color: '#1e40af', bg: '#dbeafe', border: '#3b82f6' })}>
+                  <rect x="355" y="185" width="60" height="34" rx="4" fill="#ffffff" stroke="#3b82f6" strokeWidth="1.5" className="transition group-hover:stroke-blue-700" />
+                  <text x="385" y="198" textAnchor="middle" fill="#1e40af" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="bold">MCP Server</text>
+                  <text x="385" y="209" textAnchor="middle" fill="#1e40af" fontSize="7" fontFamily="ui-monospace, monospace" opacity="0.8">[server.rs]</text>
+                </g>
+
+                {/* Coral UI */}
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_ui', label: 'Coral UI [app-shell.tsx]', sub: 'React Desktop GUI shell and tool orchestrator', category: 'CLIENT', type: 'REACT_APP', filePath: 'apps/desktop/src/app-shell.tsx', color: '#1e40af', bg: '#dbeafe', border: '#3b82f6' })}>
+                  <rect x="435" y="185" width="70" height="34" rx="4" fill="#ffffff" stroke="#3b82f6" strokeWidth="1.5" className="transition group-hover:stroke-blue-700" />
+                  <text x="470" y="198" textAnchor="middle" fill="#1e40af" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Coral UI</text>
+                  <text x="470" y="209" textAnchor="middle" fill="#1e40af" fontSize="7" fontFamily="ui-monospace, monospace" opacity="0.8">[app-shell.tsx]</text>
+                </g>
+
+                {/* 5 Child UI Screens */}
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_ws_ui', label: 'Workspace Management', sub: 'Workspace project switcher and configuration', category: 'CLIENT', type: 'FE_VIEW', filePath: 'apps/desktop/src/workspaces.tsx', color: '#1e40af', bg: '#dbeafe', border: '#3b82f6' })}>
+                  <rect x="398" y="275" width="98" height="34" rx="4" fill="#ffffff" stroke="#3b82f6" strokeWidth="1.5" className="transition group-hover:stroke-blue-700" />
+                  <text x="447" y="295" textAnchor="middle" fill="#1e40af" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="bold">Workspace Management</text>
+                </g>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_src_ui', label: 'Source Management [sources-index.tsx]', sub: 'Data source connection manager (Postgres, MySQL, Snowflake)', category: 'CLIENT', type: 'FE_VIEW', filePath: 'apps/desktop/src/sources-index.tsx', color: '#1e40af', bg: '#dbeafe', border: '#3b82f6' })}>
+                  <rect x="506" y="275" width="88" height="34" rx="4" fill="#ffffff" stroke="#3b82f6" strokeWidth="1.5" className="transition group-hover:stroke-blue-700" />
+                  <text x="550" y="289" textAnchor="middle" fill="#1e40af" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Source Management</text>
+                  <text x="550" y="299" textAnchor="middle" fill="#1e40af" fontSize="6.5" fontFamily="ui-monospace, monospace" opacity="0.8">[sources-index.tsx]</text>
+                </g>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_fn_ui', label: 'Function Explorer', sub: 'SQL and Python analytical function explorer', category: 'CLIENT', type: 'FE_VIEW', filePath: 'apps/desktop/src/functions.tsx', color: '#1e40af', bg: '#dbeafe', border: '#3b82f6' })}>
+                  <rect x="604" y="275" width="80" height="34" rx="4" fill="#ffffff" stroke="#3b82f6" strokeWidth="1.5" className="transition group-hover:stroke-blue-700" />
+                  <text x="644" y="295" textAnchor="middle" fill="#1e40af" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="bold">Function Explorer</text>
+                </g>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_tr_ui', label: 'Trace Inspection [traces-index.tsx]', sub: 'Distributed query timeline & span inspector', category: 'CLIENT', type: 'FE_VIEW', filePath: 'apps/desktop/src/traces-index.tsx', color: '#1e40af', bg: '#dbeafe', border: '#3b82f6' })}>
+                  <rect x="694" y="275" width="80" height="34" rx="4" fill="#ffffff" stroke="#3b82f6" strokeWidth="1.5" className="transition group-hover:stroke-blue-700" />
+                  <text x="734" y="289" textAnchor="middle" fill="#1e40af" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Trace Inspection</text>
+                  <text x="734" y="299" textAnchor="middle" fill="#1e40af" fontSize="6.5" fontFamily="ui-monospace, monospace" opacity="0.8">[traces-index.tsx]</text>
+                </g>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_sch_ui', label: 'Schema Explorer [schema.tsx]', sub: 'Live relational schema metadata and table viewer', category: 'CLIENT', type: 'FE_VIEW', filePath: 'apps/desktop/src/schema.tsx', color: '#1e40af', bg: '#dbeafe', border: '#3b82f6' })}>
+                  <rect x="784" y="275" width="76" height="34" rx="4" fill="#ffffff" stroke="#3b82f6" strokeWidth="1.5" className="transition group-hover:stroke-blue-700" />
+                  <text x="822" y="289" textAnchor="middle" fill="#1e40af" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Schema Explorer</text>
+                  <text x="822" y="299" textAnchor="middle" fill="#1e40af" fontSize="6.5" fontFamily="ui-monospace, monospace" opacity="0.8">[schema.tsx]</text>
+                </g>
+
+                {/* Coral UI Dispatches to 5 Screens */}
+                <path d="M 447 219 L 447 275" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#coral-arr-blue)" className="flow-line" />
+                <rect x="420" y="240" width="54" height="12" rx="2" fill="#ffffff" stroke="#bfdbfe" strokeWidth="1" />
+                <text x="447" y="247" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">opens workspaces</text>
+
+                <path d="M 460 219 L 460 238 L 550 238 L 550 275" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#coral-arr-blue)" className="flow-line" />
+                <rect x="528" y="240" width="44" height="12" rx="2" fill="#ffffff" stroke="#bfdbfe" strokeWidth="1" />
+                <text x="550" y="247" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">opens sources</text>
+
+                <path d="M 470 219 L 470 230 L 644 230 L 644 275" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#coral-arr-blue)" className="flow-line" />
+                <rect x="620" y="240" width="48" height="12" rx="2" fill="#ffffff" stroke="#bfdbfe" strokeWidth="1" />
+                <text x="644" y="247" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">opens functions</text>
+
+                <path d="M 480 219 L 480 225 L 734 225 L 734 275" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#coral-arr-blue)" className="flow-line" />
+                <rect x="714" y="240" width="40" height="12" rx="2" fill="#ffffff" stroke="#bfdbfe" strokeWidth="1" />
+                <text x="734" y="247" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">opens traces</text>
+
+                <path d="M 490 219 L 490 220 L 822 220 L 822 275" fill="none" stroke="#3b82f6" strokeWidth="1.5" markerEnd="url(#coral-arr-blue)" className="flow-line" />
+                <rect x="800" y="240" width="44" height="12" rx="2" fill="#ffffff" stroke="#bfdbfe" strokeWidth="1" />
+                <text x="822" y="247" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">opens schema</text>
+
+                {/* 3. SOURCES AND STATE CONTAINER (Left Green Box) */}
+                <rect x="125" y="420" width="290" height="205" rx="8" fill="#f0fdf4" stroke="#86efac" strokeWidth="1.5" />
+                <text x="270" y="438" textAnchor="middle" fill="#15803d" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Sources And State</text>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_src_mgr', label: 'Source Manager [manager.rs]', sub: 'Data source credential and connection manager', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'crates/sources/src/manager.rs', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
+                  <rect x="132" y="455" width="75" height="34" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
+                  <text x="169" y="468" textAnchor="middle" fill="#15803d" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Source Manager</text>
+                  <text x="169" y="478" textAnchor="middle" fill="#15803d" fontSize="6.5" fontFamily="ui-monospace, monospace" opacity="0.8">[manager.rs]</text>
+                </g>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_ws_mgr', label: 'Workspace Manager [manager.rs]', sub: 'Workspace directory state and metadata coordinator', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'crates/workspaces/src/manager.rs', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
+                  <rect x="235" y="455" width="85" height="34" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
+                  <text x="277" y="468" textAnchor="middle" fill="#15803d" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Workspace Manager</text>
+                  <text x="277" y="478" textAnchor="middle" fill="#15803d" fontSize="6.5" fontFamily="ui-monospace, monospace" opacity="0.8">[manager.rs]</text>
+                </g>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_fn_mgr', label: 'Function Manager [manager.rs]', sub: 'Catalog manager for user-defined SQL and Python functions', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'crates/functions/src/manager.rs', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
+                  <rect x="330" y="455" width="80" height="34" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
+                  <text x="370" y="468" textAnchor="middle" fill="#15803d" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Function Manager</text>
+                  <text x="370" y="478" textAnchor="middle" fill="#15803d" fontSize="6.5" fontFamily="ui-monospace, monospace" opacity="0.8">[manager.rs]</text>
+                </g>
+
+                {/* Storage Cylinders in Sources and State */}
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_cred_store', label: 'Credential Store [manager.rs]', sub: 'Encrypted local key-value store for DB passwords and API keys', category: 'PERSISTENCE', type: 'DATABASE', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
+                  <rect x="130" y="565" width="55" height="42" rx="8" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
+                  <text x="157" y="583" textAnchor="middle" fill="#15803d" fontSize="7" fontFamily="ui-monospace, monospace" fontWeight="bold">Credential Store</text>
+                  <text x="157" y="594" textAnchor="middle" fill="#15803d" fontSize="6" fontFamily="ui-monospace, monospace" opacity="0.8">[manager.rs]</text>
+                </g>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_loc_state', label: 'Local State [manager.rs]', sub: 'SQLite / JSON local metadata persistence engine', category: 'PERSISTENCE', type: 'DATABASE', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
+                  <rect x="255" y="565" width="45" height="42" rx="8" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
+                  <text x="277" y="583" textAnchor="middle" fill="#15803d" fontSize="7" fontFamily="ui-monospace, monospace" fontWeight="bold">Local State</text>
+                  <text x="277" y="594" textAnchor="middle" fill="#15803d" fontSize="6" fontFamily="ui-monospace, monospace" opacity="0.8">[manager.rs]</text>
+                </g>
+
+                {/* Internal Connections in Sources and State */}
+                <path d="M 157 489 L 157 565" fill="none" stroke="#22c55e" strokeWidth="1.5" markerEnd="url(#coral-arr-green)" className="flow-line" />
+                <rect x="130" y="515" width="54" height="12" rx="2" fill="#ffffff" stroke="#bbf7d0" strokeWidth="1" />
+                <text x="157" y="522" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">stores credentials</text>
+
+                <path d="M 185 489 L 185 535 L 265 535 L 265 565" fill="none" stroke="#22c55e" strokeWidth="1.5" markerEnd="url(#coral-arr-green)" className="flow-line" />
+                <rect x="190" y="515" width="48" height="12" rx="2" fill="#ffffff" stroke="#bbf7d0" strokeWidth="1" />
+                <text x="214" y="522" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">updates sources</text>
+
+                <path d="M 277 489 L 277 565" fill="none" stroke="#22c55e" strokeWidth="1.5" markerEnd="url(#coral-arr-green)" className="flow-line" />
+                <rect x="250" y="515" width="58" height="12" rx="2" fill="#ffffff" stroke="#bbf7d0" strokeWidth="1" />
+                <text x="279" y="522" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">updates workspaces</text>
+
+                <path d="M 370 489 L 370 535 L 290 535 L 290 565" fill="none" stroke="#22c55e" strokeWidth="1.5" markerEnd="url(#coral-arr-green)" className="flow-line" />
+                <rect x="335" y="515" width="48" height="12" rx="2" fill="#ffffff" stroke="#bbf7d0" strokeWidth="1" />
+                <text x="359" y="522" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">stores functions</text>
+
+                {/* MCP Server to Function Manager */}
+                <path d="M 395 219 L 395 455" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#coral-arr-slate)" className="flow-line" />
+                <rect x="365" y="375" width="60" height="12" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="395" y="382" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">manages functions</text>
+
+                {/* 4. QUERY RUNTIME CONTAINER (Middle Amber Box) */}
+                <rect x="355" y="680" width="180" height="235" rx="8" fill="#fffbeb" stroke="#fde047" strokeWidth="1.5" />
+                <text x="445" y="698" textAnchor="middle" fill="#854d0e" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Query Runtime</text>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_qry_srv', label: 'Query Service [manager.rs]', sub: 'Federated SQL query compilation and execution planner', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'crates/runtime/src/manager.rs', color: '#854d0e', bg: '#fef9c3', border: '#eab308' })}>
+                  <rect x="405" y="715" width="70" height="34" rx="4" fill="#fef9c3" stroke="#eab308" strokeWidth="1.5" className="transition group-hover:stroke-amber-600" />
+                  <text x="440" y="728" textAnchor="middle" fill="#854d0e" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Query Service</text>
+                  <text x="440" y="738" textAnchor="middle" fill="#854d0e" fontSize="6.5" fontFamily="ui-monospace, monospace" opacity="0.8">[manager.rs]</text>
+                </g>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_sql_eng', label: 'SQL Query Engine', sub: 'DataFusion / DuckDB embedded high-speed vectorized execution engine', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'crates/engine/src/lib.rs', color: '#854d0e', bg: '#fef9c3', border: '#eab308' })}>
+                  <rect x="360" y="815" width="80" height="32" rx="4" fill="#fef9c3" stroke="#eab308" strokeWidth="1.5" className="transition group-hover:stroke-amber-600" />
+                  <text x="400" y="834" textAnchor="middle" fill="#854d0e" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="bold">SQL Query Engine</text>
+                </g>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_src_rt', label: 'Source Runtime', sub: 'Connector runtime executing live pushes and streaming reads', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'crates/runtime/src/source.rs', color: '#854d0e', bg: '#fef9c3', border: '#eab308' })}>
+                  <rect x="452" y="815" width="75" height="32" rx="4" fill="#fef9c3" stroke="#eab308" strokeWidth="1.5" className="transition group-hover:stroke-amber-600" />
+                  <text x="489" y="834" textAnchor="middle" fill="#854d0e" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Source Runtime</text>
+                </g>
+
+                {/* MCP Server to Query Service */}
+                <path d="M 375 219 L 375 350 L 452 350 L 452 715" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#coral-arr-slate)" className="flow-line" />
+                <rect x="430" y="475" width="44" height="12" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="452" y="482" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">executes SQL</text>
+
+                {/* Query Service to Function Manager (loads functions) */}
+                <path d="M 405 732 L 388 732 L 388 489" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#coral-arr-slate)" className="flow-line" />
+                <rect x="365" y="625" width="46" height="12" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="388" y="632" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">loads functions</text>
+
+                {/* Internal Connections in Query Runtime */}
+                <path d="M 425 749 L 425 785 L 400 785 L 400 815" fill="none" stroke="#eab308" strokeWidth="1.5" markerEnd="url(#coral-arr-amber)" className="flow-line" />
+                <rect x="375" y="775" width="48" height="12" rx="2" fill="#ffffff" stroke="#fef08a" strokeWidth="1" />
+                <text x="399" y="782" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">prepares queries</text>
+
+                <path d="M 455 749 L 455 785 L 489 785 L 489 815" fill="none" stroke="#eab308" strokeWidth="1.5" markerEnd="url(#coral-arr-amber)" className="flow-line" />
+                <rect x="465" y="775" width="50" height="12" rx="2" fill="#ffffff" stroke="#fef08a" strokeWidth="1" />
+                <text x="490" y="782" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">executes sources</text>
+
+                {/* Local Files Cylinder */}
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_loc_files', label: 'Local Files', sub: 'CSV, Parquet, JSON and Arrow datasets stored on local drive', category: 'PERSISTENCE', type: 'DATABASE', color: '#854d0e', bg: '#fef9c3', border: '#eab308' })}>
+                  <rect x="457" y="975" width="50" height="38" rx="8" fill="#fef9c3" stroke="#eab308" strokeWidth="1.5" className="transition group-hover:stroke-amber-600" />
+                  <text x="482" y="998" textAnchor="middle" fill="#854d0e" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Local Files</text>
+                </g>
+
+                <path d="M 482 847 L 482 975" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#coral-arr-slate)" className="flow-line" />
+                <rect x="460" y="905" width="44" height="12" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="482" y="912" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">reads files</text>
+
+                {/* 5. OPERATIONS CONTAINER (Right Rose Box) */}
+                <rect x="570" y="980" width="160" height="185" rx="8" fill="#fff1f2" stroke="#fecdd3" strokeWidth="1.5" />
+                <text x="650" y="998" textAnchor="middle" fill="#be123c" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Operations</text>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_tel_mgr', label: 'Telemetry Manager [manager.rs]', sub: 'OpenTelemetry tracing & query audit log recorder', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'crates/telemetry/src/manager.rs', color: '#be123c', bg: '#ffe4e6', border: '#f43f5e' })}>
+                  <rect x="635" y="1010" width="88" height="34" rx="4" fill="#ffe4e6" stroke="#f43f5e" strokeWidth="1.5" className="transition group-hover:stroke-rose-600" />
+                  <text x="679" y="1023" textAnchor="middle" fill="#be123c" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Telemetry Manager</text>
+                  <text x="679" y="1033" textAnchor="middle" fill="#be123c" fontSize="6.5" fontFamily="ui-monospace, monospace" opacity="0.8">[manager.rs]</text>
+                </g>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_tr_store', label: 'Trace Store [manager.rs]', sub: 'Local SQLite span cache for query latency profiling', category: 'PERSISTENCE', type: 'DATABASE', color: '#be123c', bg: '#ffe4e6', border: '#f43f5e' })}>
+                  <rect x="660" y="1105" width="45" height="40" rx="8" fill="#ffe4e6" stroke="#f43f5e" strokeWidth="1.5" className="transition group-hover:stroke-rose-600" />
+                  <text x="682" y="1123" textAnchor="middle" fill="#be123c" fontSize="7" fontFamily="ui-monospace, monospace" fontWeight="bold">Trace Store</text>
+                  <text x="682" y="1133" textAnchor="middle" fill="#be123c" fontSize="6" fontFamily="ui-monospace, monospace" opacity="0.8">[manager.rs]</text>
+                </g>
+
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_univ_search', label: 'Universal Search [engine.rs]', sub: 'BM25 and semantic hybrid metadata catalog search engine', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'crates/search/src/engine.rs', color: '#be123c', bg: '#ffe4e6', border: '#f43f5e' })}>
+                  <rect x="575" y="1115" width="65" height="34" rx="4" fill="#ffe4e6" stroke="#f43f5e" strokeWidth="1.5" className="transition group-hover:stroke-rose-600" />
+                  <text x="607" y="1128" textAnchor="middle" fill="#be123c" fontSize="7" fontFamily="ui-monospace, monospace" fontWeight="bold">Universal Search</text>
+                  <text x="607" y="1138" textAnchor="middle" fill="#be123c" fontSize="6" fontFamily="ui-monospace, monospace" opacity="0.8">[engine.rs]</text>
+                </g>
+
+                {/* Coral UI to Telemetry Manager */}
+                <path d="M 505 195 L 660 195 L 660 1010" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#coral-arr-slate)" className="flow-line" />
+                <rect x="635" y="650" width="50" height="12" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="660" y="657" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">records activity</text>
+
+                {/* Trace Inspection to Telemetry Manager */}
+                <path d="M 734 309 L 734 1027 L 723 1027" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#coral-arr-slate)" className="flow-line" />
+                <rect x="715" y="475" width="40" height="12" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="735" y="482" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">lists traces</text>
+
+                {/* Telemetry Manager to Trace Store */}
+                <path d="M 679 1044 L 679 1105" fill="none" stroke="#f43f5e" strokeWidth="1.5" markerEnd="url(#coral-arr-rose)" className="flow-line" />
+                <rect x="655" y="1065" width="48" height="12" rx="2" fill="#ffffff" stroke="#fecdd3" strokeWidth="1" />
+                <text x="679" y="1072" textAnchor="middle" dominantBaseline="middle" fill="#be123c" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">reads traces</text>
+
+                {/* 6. PROVIDER APIS */}
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'coral_prov_apis', label: 'Provider APIs', sub: 'External Cloud Warehouse & Lakehouse APIs (Snowflake, BigQuery, Databricks)', category: 'EXTERNAL', type: 'EXTERNAL', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
+                  <rect x="510" y="1255" width="65" height="32" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
+                  <text x="542" y="1274" textAnchor="middle" fill="#15803d" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="bold">Provider APIs</text>
+                </g>
+
+                {/* Source Runtime to Provider APIs */}
+                <path d="M 527 831 L 535 831 L 535 1255" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#coral-arr-slate)" className="flow-line" />
+                <rect x="512" y="975" width="46" height="12" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="535" y="982" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">fetches data</text>
+
+                {/* Universal Search to Provider APIs */}
+                <path d="M 607 1149 L 607 1271 L 575 1271" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#coral-arr-slate)" className="flow-line" />
+                <rect x="575" y="1205" width="64" height="12" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="607" y="1212" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="6.5" fontFamily="ui-monospace, monospace" fontWeight="600">searches providers</text>
+              </svg>
+            ) : isTrustLocker ? (
+              /* ═══════════════════════════════════════════════════════════════════
+                 TRUSTLOCKER ARCHITECTURE CANVAS
                  ═══════════════════════════════════════════════════════════════════ */
               <svg
                 viewBox="0 0 1140 1280"
@@ -426,9 +684,6 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                     .flow-line {
                       stroke-dasharray: ${isAnimationEnabled ? '6 4' : 'none'};
                       animation: ${isAnimationEnabled ? `flowForward ${flowSpeedSec} linear infinite` : 'none'};
-                    }
-                    .flow-particle {
-                      display: ${isAnimationEnabled ? 'block' : 'none'};
                     }
                   `}</style>
 
@@ -457,7 +712,6 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="920" y="49" textAnchor="middle" fill="#1e40af" fontSize="10.5" fontFamily="system-ui, sans-serif" fontWeight="bold">Administrator</text>
                 </g>
 
-                {/* Actor Lines Down */}
                 <path d="M 210 71 L 210 235" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#tl-arr-slate)" className="flow-line" />
                 <rect x="175" y="85" width="70" height="13" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="210" y="93" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">opens portal</text>
@@ -737,7 +991,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
               </svg>
             ) : isThinkSwipe ? (
               /* ═══════════════════════════════════════════════════════════════════
-                 THINKSWIPE ARCHITECTURE CANVAS (EXACT GITDIAGRAM)
+                 THINKSWIPE ARCHITECTURE CANVAS
                  ═══════════════════════════════════════════════════════════════════ */
               <svg
                 viewBox="0 0 1120 1380"
@@ -753,9 +1007,6 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                     .flow-line {
                       stroke-dasharray: ${isAnimationEnabled ? '6 4' : 'none'};
                       animation: ${isAnimationEnabled ? `flowForward ${flowSpeedSec} linear infinite` : 'none'};
-                    }
-                    .flow-particle {
-                      display: ${isAnimationEnabled ? 'block' : 'none'};
                     }
                   `}</style>
 
@@ -886,7 +1137,6 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 <rect x="140" y="715" width="550" height="185" rx="8" fill="#f0fdf4" stroke="#bbf7d0" strokeWidth="1.5" />
                 <text x="415" y="735" textAnchor="middle" fill="#15803d" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Practice Domain</text>
 
-                {/* Connections from Spring Boot API down to Controllers */}
                 <path d="M 480 653 L 480 685 L 220 685 L 220 755" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arr-slate)" className="flow-line" />
                 <path d="M 510 653 L 510 695 L 355 695 L 355 755" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arr-slate)" className="flow-line" />
                 <path d="M 550 653 L 550 695 L 490 695 L 490 755" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arr-slate)" className="flow-line" />
@@ -963,7 +1213,6 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 <rect x="520" y="955" width="140" height="235" rx="8" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.5" />
                 <text x="590" y="972" textAnchor="middle" fill="#64748b" fontSize="10.5" fontFamily="ui-monospace, monospace" fontWeight="600">Persistence</text>
 
-                {/* Connectors from Controllers to JPA Repositories */}
                 <path d="M 490 791 L 490 920 L 590 920 L 590 980" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arr-slate)" className="flow-line" />
                 <path d="M 625 791 L 625 935 L 600 935 L 600 980" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arr-slate)" className="flow-line" />
                 <path d="M 782 831 L 782 920 L 610 920 L 610 980" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#ts-arr-slate)" className="flow-line" />
@@ -993,7 +1242,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
               </svg>
             ) : isVps ? (
               /* ═══════════════════════════════════════════════════════════════════
-                 VPS (VISION PUBLIC SCHOOL ERP) ARCHITECTURE CANVAS (COMPLETE WITH FULL CONNECTOR FLOWS)
+                 VPS ARCHITECTURE CANVAS
                  ═══════════════════════════════════════════════════════════════════ */
               <svg
                 viewBox="0 0 1140 1350"
@@ -1009,9 +1258,6 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                     .flow-line {
                       stroke-dasharray: ${isAnimationEnabled ? '6 4' : 'none'};
                       animation: ${isAnimationEnabled ? `flowForward ${flowSpeedSec} linear infinite` : 'none'};
-                    }
-                    .flow-particle {
-                      display: ${isAnimationEnabled ? 'block' : 'none'};
                     }
                   `}</style>
 
@@ -1029,7 +1275,6 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="570" y="49" textAnchor="middle" fill="#1e40af" fontSize="10.5" fontFamily="system-ui, sans-serif" fontWeight="bold">School Users</text>
                 </g>
 
-                {/* Actor Lines down to Client Experience */}
                 <path d="M 545 68 L 300 68 L 300 170" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arr-slate)" className="flow-line" />
                 <rect x="350" y="60" width="74" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="387" y="68" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">launches app</text>
@@ -1067,7 +1312,6 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="820" y="196" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">ERP Feature Views</text>
                 </g>
 
-                {/* Lines from Client Experience down to API Gateway */}
                 <path d="M 300 216 L 300 390" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arr-slate)" className="flow-line" />
                 <rect x="255" y="270" width="90" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="300" y="278" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">sends requests</text>
@@ -1113,11 +1357,10 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="865" y="413" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="bold">JWT Filter</text>
                 </g>
 
-                {/* 4. Domain Workflows Container (7 Nodes) with Branching Fan-out Connections */}
+                {/* 4. Domain Workflows Container (7 Nodes) */}
                 <rect x="60" y="540" width="1020" height="160" rx="8" fill="#f0fdf4" stroke="#bbf7d0" strokeWidth="1.5" />
                 <text x="570" y="560" textAnchor="middle" fill="#15803d" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Domain Workflows (7 Core Modules)</text>
 
-                {/* Dispatches from JWT Filter / Security Config to all 7 Domain Workflows */}
                 <path d="M 495 432 L 495 500 L 150 500 L 150 585" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arr-slate)" className="flow-line" />
                 <path d="M 495 432 L 495 500 L 292 500 L 292 585" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arr-slate)" className="flow-line" />
                 <path d="M 495 432 L 495 500 L 440 500 L 440 585" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arr-slate)" className="flow-line" />
@@ -1129,7 +1372,6 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 <rect x="530" y="480" width="80" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="570" y="488" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">dispatches ops</text>
 
-                {/* 7 Workflows in a row */}
                 <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'vps_dw_auth', label: 'Authentication', sub: 'User login and session management controller', category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', filePath: 'vps-backend/src/main/java/com/visionpublicschool/controller/AuthController.java', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
                   <rect x="80" y="585" width="140" height="44" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
                   <text x="150" y="608" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Authentication</text>
@@ -1159,8 +1401,6 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <text x="1002" y="608" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="9" fontFamily="ui-monospace, monospace" fontWeight="bold">Media</text>
                 </g>
 
-                {/* Connectors from Workflows down to Persistence & External Integrations */}
-                {/* To JPA Repositories */}
                 <path d="M 150 629 L 150 710 L 250 710 L 250 785" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arr-slate)" className="flow-line" />
                 <path d="M 297 629 L 297 785" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arr-slate)" className="flow-line" />
                 <path d="M 440 629 L 440 785" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#vps-arr-slate)" className="flow-line" />
@@ -1169,7 +1409,6 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 <rect x="270" y="702" width="80" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
                 <text x="310" y="710" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">queries / persists</text>
 
-                {/* To External Integrations */}
                 <path d="M 1002 629 L 1002 710 L 687 710 L 687 795" fill="none" stroke="#6366f1" strokeWidth="1.5" markerEnd="url(#vps-arr-indigo)" className="flow-line" />
                 <rect x="710" y="702" width="70" height="14" rx="2" fill="#ffffff" stroke="#c7d2fe" strokeWidth="1" />
                 <text x="745" y="710" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="7.5" fontFamily="ui-monospace, monospace" fontWeight="600">stores media</text>
@@ -1220,10 +1459,10 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
               </svg>
             ) : (
               /* ═══════════════════════════════════════════════════════════════════
-                 DYNAMIC GENERIC CODEBASE ARCHITECTURE CANVAS (FOR ANY INGESTED REPO)
+                 DYNAMIC AI-POWERED GITDIAGRAM SYNTHESIS (FOR ANY GITHUB REPO)
                  ═══════════════════════════════════════════════════════════════════ */
               <svg
-                viewBox="0 0 1120 1200"
+                viewBox="0 0 1120 1350"
                 className="w-full h-auto drop-shadow-sm select-none"
                 style={{ minWidth: '320px', maxWidth: '1120px' }}
               >
@@ -1237,114 +1476,137 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                       stroke-dasharray: ${isAnimationEnabled ? '6 4' : 'none'};
                       animation: ${isAnimationEnabled ? `flowForward ${flowSpeedSec} linear infinite` : 'none'};
                     }
-                    .flow-particle {
-                      display: ${isAnimationEnabled ? 'block' : 'none'};
-                    }
                   `}</style>
 
-                  <marker id="arrow-slate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" /></marker>
-                  <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#3b82f6" /></marker>
-                  <marker id="arrow-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f59e0b" /></marker>
-                  <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#22c55e" /></marker>
-                  <marker id="arrow-rose" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f43f5e" /></marker>
+                  <marker id="dyn-arr-slate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" /></marker>
+                  <marker id="dyn-arr-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#3b82f6" /></marker>
+                  <marker id="dyn-arr-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#22c55e" /></marker>
+                  <marker id="dyn-arr-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f59e0b" /></marker>
+                  <marker id="dyn-arr-rose" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f43f5e" /></marker>
                 </defs>
 
-                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'dynamic_actor', label: actorLabel, sub: `End users interacting with ${formattedProjectName}`, category: 'CLIENT', type: 'USER', color: '#1e40af', bg: '#dbeafe', border: '#3b82f6' })}>
-                  <rect x="450" y="20" width="220" height="42" rx="21" fill="#ffffff" stroke="#3b82f6" strokeWidth="1.5" className="transition group-hover:stroke-blue-700" />
-                  <text x="560" y="45" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="11.5" fontFamily="system-ui, sans-serif" fontWeight="bold">{actorLabel}</text>
+                {/* 1. Dynamic Actors */}
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'dyn_actor_user', label: 'Client User', sub: `End user interacting with ${formattedProjectName}`, category: 'CLIENT', type: 'USER', color: '#1e40af', bg: '#dbeafe', border: '#3b82f6' })}>
+                  <circle cx="450" cy="45" r="26" fill="#ffffff" stroke="#3b82f6" strokeWidth="1.5" className="transition group-hover:stroke-blue-700" />
+                  <text x="450" y="49" textAnchor="middle" fill="#1e40af" fontSize="10.5" fontFamily="system-ui, sans-serif" fontWeight="bold">User</text>
+                </g>
+                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'dyn_actor_agent', label: 'API Client / Agent', sub: `Automated agent or external client querying ${formattedProjectName}`, category: 'CLIENT', type: 'USER', color: '#1e40af', bg: '#dbeafe', border: '#3b82f6' })}>
+                  <circle cx="670" cy="45" r="26" fill="#ffffff" stroke="#3b82f6" strokeWidth="1.5" className="transition group-hover:stroke-blue-700" />
+                  <text x="670" y="49" textAnchor="middle" fill="#1e40af" fontSize="10" fontFamily="system-ui, sans-serif" fontWeight="bold">API Agent</text>
                 </g>
 
-                <path d="M 560 62 L 560 115" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" className="flow-line" />
-                <rect x="540" y="80" width="40" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-                <text x="560" y="88" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">uses</text>
+                <path d="M 450 71 L 450 145" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#dyn-arr-slate)" className="flow-line" />
+                <rect x="428" y="95" width="44" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="450" y="103" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">uses app</text>
 
-                <rect x="160" y="115" width="800" height="150" rx="8" fill="#eff6ff" stroke="#bae6fd" strokeWidth="1.5" />
-                <text x="560" y="135" textAnchor="middle" fill="#1e40af" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Client Experience</text>
+                <path d="M 670 71 L 670 145" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#dyn-arr-slate)" className="flow-line" />
+                <rect x="645" y="95" width="50" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="670" y="103" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">calls API</text>
 
-                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'fe_root', label: `${formattedProjectName} App [App.jsx]`, sub: `Frontend UI application layer for ${formattedProjectName}`, category: 'CLIENT', type: 'REACT_APP', filePath: 'src/App.jsx', color: '#1e40af', bg: '#dbeafe', border: '#3b82f6' })}>
-                  <rect x="470" y="155" width="180" height="42" rx="4" fill="#ffffff" stroke="#3b82f6" strokeWidth="1.5" className="transition group-hover:stroke-blue-700" />
-                  <text x="560" y="172" textAnchor="middle" fill="#1e40af" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">{formattedProjectName} UI</text>
-                  <text x="560" y="187" textAnchor="middle" fill="#1e40af" fontSize="8.5" fontFamily="ui-monospace, monospace" opacity="0.8">[App.jsx]</text>
-                </g>
+                {/* 2. Client Experience / Entrypoints (Tone Blue) */}
+                <rect x="140" y="125" width="840" height="175" rx="8" fill="#eff6ff" stroke="#bae6fd" strokeWidth="1.5" />
+                <text x="560" y="145" textAnchor="middle" fill="#1e40af" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Client & Entrypoints ({dynamicArchitecture.clientNodes.length || 'UI'})</text>
 
-                <rect x="360" y="320" width="400" height="140" rx="8" fill="#fffbeb" stroke="#fde047" strokeWidth="1.5" />
-                <text x="560" y="340" textAnchor="middle" fill="#854d0e" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">API & Security Gateway</text>
-
-                <path d="M 560 197 L 560 360" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" className="flow-line" />
-                <rect x="525" y="270" width="70" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-                <text x="560" y="278" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">sends requests</text>
-
-                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'be_api', label: `${formattedProjectName} REST API`, sub: 'Spring Boot application endpoints', category: 'API_ACCESS', type: 'DOMAIN_CONTROLLER', filePath: 'Application.java', color: '#854d0e', bg: '#fef9c3', border: '#fde047' })}>
-                  <rect x="470" y="360" width="180" height="38" rx="4" fill="#fef9c3" stroke="#eab308" strokeWidth="1.5" className="transition group-hover:stroke-amber-600" />
-                  <text x="560" y="383" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">{formattedProjectName} REST API</text>
-                </g>
-
-                <rect x="80" y="520" width="960" height="180" rx="8" fill="#f0fdf4" stroke="#bbf7d0" strokeWidth="1.5" />
-                <text x="560" y="542" textAnchor="middle" fill="#15803d" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Domain Workflows ({domainWorkflows.length})</text>
-
-                {/* Dispatches from API to each workflow */}
-                {domainWorkflows.slice(0, 5).map((dw, i) => {
-                  const targetX = 110 + i * 185 + 82;
+                {(dynamicArchitecture.clientNodes.length > 0 ? dynamicArchitecture.clientNodes : [
+                  { id: 'dyn_fe_main', data: { label: `${formattedProjectName} UI`, filePath: 'src/App.tsx' } },
+                  { id: 'dyn_fe_view1', data: { label: 'Dashboard View', filePath: 'src/components/Dashboard.tsx' } },
+                  { id: 'dyn_fe_view2', data: { label: 'Explorer View', filePath: 'src/components/Explorer.tsx' } }
+                ]).map((node, i) => {
+                  const x = 180 + i * 165;
+                  const label = node.data?.label || node.id;
+                  const path = node.data?.filePath || '';
                   return (
-                    <path
-                      key={`path_dw_${i}`}
-                      d={`M 560 398 L 560 480 L ${targetX} 480 L ${targetX} 570`}
-                      fill="none"
-                      stroke="#64748b"
-                      strokeWidth="1.5"
-                      markerEnd="url(#arrow-slate)"
-                      className="flow-line"
-                    />
-                  );
-                })}
-
-                <rect x="530" y="473" width="60" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-                <text x="560" y="481" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">dispatches</text>
-
-                {domainWorkflows.slice(0, 5).map((dw, i) => {
-                  const x = 110 + i * 185;
-                  return (
-                    <g key={dw.name} className="cursor-pointer group" onClick={() => setSelectedNode({ id: `dw_${i}`, label: dw.name, sub: `Active domain workflow with ${dw.count} endpoints`, category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
-                      <rect x={x} y="570" width="165" height="42" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
-                      <text x={x + 82} y="591" textAnchor="middle" fill="#15803d" fontSize="9.5" fontFamily="ui-monospace, monospace" fontWeight="bold">{dw.name.replace(' Workflows', '')}</text>
-                      <text x={x + 82} y="604" textAnchor="middle" fill="#15803d" fontSize="8" fontFamily="ui-monospace, monospace" opacity="0.8">{dw.count} controllers</text>
+                    <g key={node.id} className="cursor-pointer group" onClick={() => setSelectedNode({ id: node.id, label, sub: `UI entrypoint component in ${formattedProjectName}`, filePath: path, category: 'CLIENT', type: 'REACT_APP', color: '#1e40af', bg: '#dbeafe', border: '#3b82f6' })}>
+                      <rect x={x} y="175" width="145" height="44" rx="4" fill="#ffffff" stroke="#3b82f6" strokeWidth="1.5" className="transition group-hover:stroke-blue-700" />
+                      <text x={x + 72} y="195" textAnchor="middle" fill="#1e40af" fontSize="9" fontFamily="ui-monospace, monospace" fontWeight="bold">{label.slice(0, 18)}</text>
+                      {path && <text x={x + 72} y="208" textAnchor="middle" fill="#1e40af" fontSize="7.5" fontFamily="ui-monospace, monospace" opacity="0.8">[{path.split('/').pop()?.slice(0, 16)}]</text>}
                     </g>
                   );
                 })}
 
-                <rect x="260" y="760" width="600" height="180" rx="8" fill="#fff1f2" stroke="#fecdd3" strokeWidth="1.5" />
-                <text x="560" y="782" textAnchor="middle" fill="#be123c" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Persistence & Data Layer</text>
+                {/* 3. API & Security Layer (Tone Amber) */}
+                <rect x="140" y="360" width="840" height="175" rx="8" fill="#fffbeb" stroke="#fde047" strokeWidth="1.5" />
+                <text x="560" y="380" textAnchor="middle" fill="#854d0e" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">API & Controllers ({dynamicArchitecture.apiNodes.length || 'API Gateway'})</text>
 
-                {/* Stepped lines from each workflow to JPA Repositories */}
-                {domainWorkflows.slice(0, 5).map((dw, i) => {
-                  const sourceX = 110 + i * 185 + 82;
+                {(dynamicArchitecture.apiNodes.length > 0 ? dynamicArchitecture.apiNodes : [
+                  { id: 'dyn_api_1', data: { label: 'Primary REST API', filePath: 'src/main/server.ts' } },
+                  { id: 'dyn_api_2', data: { label: 'Authentication Service', filePath: 'src/main/auth.ts' } },
+                  { id: 'dyn_api_3', data: { label: 'Data Dispatcher', filePath: 'src/main/routes.ts' } }
+                ]).map((node, i) => {
+                  const x = 180 + i * 165;
+                  const label = node.data?.label || node.id;
+                  const path = node.data?.filePath || '';
                   return (
-                    <path
-                      key={`path_jpa_${i}`}
-                      d={`M ${sourceX} 612 L ${sourceX} 720 L 560 720 L 560 805`}
-                      fill="none"
-                      stroke="#64748b"
-                      strokeWidth="1.5"
-                      markerEnd="url(#arrow-slate)"
-                      className="flow-line"
-                    />
+                    <g key={node.id} className="cursor-pointer group" onClick={() => setSelectedNode({ id: node.id, label, sub: `Controller endpoint in ${formattedProjectName}`, filePath: path, category: 'API_ACCESS', type: 'DOMAIN_CONTROLLER', color: '#854d0e', bg: '#fef9c3', border: '#eab308' })}>
+                      <rect x={x} y="415" width="145" height="44" rx="4" fill="#fef9c3" stroke="#eab308" strokeWidth="1.5" className="transition group-hover:stroke-amber-600" />
+                      <text x={x + 72} y="435" textAnchor="middle" fill="#854d0e" fontSize="9" fontFamily="ui-monospace, monospace" fontWeight="bold">{label.slice(0, 18)}</text>
+                      {path && <text x={x + 72} y="448" textAnchor="middle" fill="#854d0e" fontSize="7.5" fontFamily="ui-monospace, monospace" opacity="0.8">[{path.split('/').pop()?.slice(0, 16)}]</text>}
+                    </g>
                   );
                 })}
 
-                <rect x="525" y="713" width="70" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-                <text x="560" y="721" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">reads / writes</text>
+                {/* Client to API Connectors */}
+                <path d="M 252 219 L 252 415" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#dyn-arr-slate)" className="flow-line" />
+                <path d="M 417 219 L 417 415" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#dyn-arr-slate)" className="flow-line" />
+                <path d="M 582 219 L 582 415" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#dyn-arr-slate)" className="flow-line" />
+                <rect x="520" y="325" width="80" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="560" y="333" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">dispatches HTTP</text>
 
-                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'jpa_gen', label: 'JPA Repositories', sub: 'Spring Data JPA interfaces & entity persistence', category: 'PERSISTENCE', type: 'JPA_REPO', color: '#be123c', bg: '#ffe4e6', border: '#f43f5e' })}>
-                  <rect x="360" y="805" width="400" height="38" rx="4" fill="#ffe4e6" stroke="#f43f5e" strokeWidth="1.5" className="transition group-hover:stroke-rose-600" />
-                  <text x="560" y="828" textAnchor="middle" dominantBaseline="middle" fill="#be123c" fontSize="10.5" fontFamily="ui-monospace, monospace" fontWeight="bold">JPA Repositories & Data Access</text>
-                </g>
+                {/* 4. Domain Workflows (Tone Mint / Green) */}
+                <rect x="140" y="595" width="840" height="175" rx="8" fill="#f0fdf4" stroke="#86efac" strokeWidth="1.5" />
+                <text x="560" y="615" textAnchor="middle" fill="#15803d" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Domain Logic & Services ({dynamicArchitecture.domainNodes.length || 'Services'})</text>
 
-                <path d="M 560 843 L 560 875" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" className="flow-line" />
+                {(dynamicArchitecture.domainNodes.length > 0 ? dynamicArchitecture.domainNodes : [
+                  { id: 'dyn_dom_1', data: { label: 'Execution Service', filePath: 'src/service/engine.ts' } },
+                  { id: 'dyn_dom_2', data: { label: 'State Orchestrator', filePath: 'src/service/state.ts' } },
+                  { id: 'dyn_dom_3', data: { label: 'Event Processor', filePath: 'src/service/events.ts' } }
+                ]).map((node, i) => {
+                  const x = 180 + i * 165;
+                  const label = node.data?.label || node.id;
+                  const path = node.data?.filePath || '';
+                  return (
+                    <g key={node.id} className="cursor-pointer group" onClick={() => setSelectedNode({ id: node.id, label, sub: `Domain business logic service in ${formattedProjectName}`, filePath: path, category: 'DOMAIN', type: 'DOMAIN_CONTROLLER', color: '#15803d', bg: '#dcfce7', border: '#22c55e' })}>
+                      <rect x={x} y="650" width="145" height="44" rx="4" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5" className="transition group-hover:stroke-emerald-600" />
+                      <text x={x + 72} y="670" textAnchor="middle" fill="#15803d" fontSize="9" fontFamily="ui-monospace, monospace" fontWeight="bold">{label.slice(0, 18)}</text>
+                      {path && <text x={x + 72} y="683" textAnchor="middle" fill="#15803d" fontSize="7.5" fontFamily="ui-monospace, monospace" opacity="0.8">[{path.split('/').pop()?.slice(0, 16)}]</text>}
+                    </g>
+                  );
+                })}
 
-                <g className="cursor-pointer group" onClick={() => setSelectedNode({ id: 'db_gen', label: 'Primary Database', sub: 'Relational database schema storing persistent state', category: 'PERSISTENCE', type: 'DATABASE', color: '#be123c', bg: '#ffe4e6', border: '#f43f5e' })}>
-                  <rect x="470" y="875" width="180" height="42" rx="10" fill="#fee2e2" stroke="#f87171" strokeWidth="1.5" className="transition group-hover:stroke-rose-600" />
-                  <text x="560" y="900" textAnchor="middle" dominantBaseline="middle" fill="#be123c" fontSize="10.5" fontFamily="ui-monospace, monospace" fontWeight="bold">Primary Database</text>
-                </g>
+                {/* API to Domain Connectors */}
+                <path d="M 252 459 L 252 650" fill="none" stroke="#22c55e" strokeWidth="1.5" markerEnd="url(#dyn-arr-green)" className="flow-line" />
+                <path d="M 417 459 L 417 650" fill="none" stroke="#22c55e" strokeWidth="1.5" markerEnd="url(#dyn-arr-green)" className="flow-line" />
+                <path d="M 582 459 L 582 650" fill="none" stroke="#22c55e" strokeWidth="1.5" markerEnd="url(#dyn-arr-green)" className="flow-line" />
+                <rect x="520" y="555" width="80" height="14" rx="2" fill="#ffffff" stroke="#bbf7d0" strokeWidth="1" />
+                <text x="560" y="563" textAnchor="middle" dominantBaseline="middle" fill="#15803d" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">invokes domain</text>
+
+                {/* 5. Persistence & State Storage (Cylinders - Tone Rose) */}
+                <rect x="140" y="830" width="840" height="210" rx="8" fill="#fff1f2" stroke="#fecdd3" strokeWidth="1.5" />
+                <text x="560" y="850" textAnchor="middle" fill="#be123c" fontSize="11" fontFamily="ui-monospace, monospace" fontWeight="bold">Persistence, State & Storage</text>
+
+                {(dynamicArchitecture.storageNodes.length > 0 ? dynamicArchitecture.storageNodes : [
+                  { id: 'dyn_db_1', data: { label: 'Primary State Store', filePath: 'schema.sql' } },
+                  { id: 'dyn_db_2', data: { label: 'Cache & Queue', filePath: 'cache.db' } },
+                  { id: 'dyn_db_3', data: { label: 'Relational DB', filePath: 'db.sqlite' } }
+                ]).map((node, i) => {
+                  const x = 220 + i * 220;
+                  const label = node.data?.label || node.id;
+                  const path = node.data?.filePath || '';
+                  return (
+                    <g key={node.id} className="cursor-pointer group" onClick={() => setSelectedNode({ id: node.id, label, sub: `Persistence storage schema for ${formattedProjectName}`, filePath: path, category: 'PERSISTENCE', type: 'DATABASE', color: '#be123c', bg: '#ffe4e6', border: '#f43f5e' })}>
+                      <rect x={x} y="895" width="180" height="52" rx="14" fill="#fee2e2" stroke="#f87171" strokeWidth="1.5" className="transition group-hover:stroke-rose-600" />
+                      <text x={x + 90} y="920" textAnchor="middle" fill="#be123c" fontSize="10" fontFamily="ui-monospace, monospace" fontWeight="bold">{label.slice(0, 20)}</text>
+                      <text x={x + 90} y="934" textAnchor="middle" fill="#be123c" fontSize="8" fontFamily="ui-monospace, monospace" opacity="0.8">Storage Cylinder</text>
+                    </g>
+                  );
+                })}
+
+                {/* Domain to Storage Connectors */}
+                <path d="M 252 694 L 252 895" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#dyn-arr-slate)" className="flow-line" />
+                <path d="M 417 694 L 417 895" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#dyn-arr-slate)" className="flow-line" />
+                <path d="M 582 694 L 582 895" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#dyn-arr-slate)" className="flow-line" />
+                <rect x="520" y="790" width="80" height="14" rx="2" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                <text x="560" y="798" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8" fontFamily="ui-monospace, monospace" fontWeight="600">reads / writes</text>
               </svg>
             )}
           </div>
