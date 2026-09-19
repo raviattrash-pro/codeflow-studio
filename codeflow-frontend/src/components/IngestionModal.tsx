@@ -277,11 +277,12 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3.5 rounded-xl bg-[#9333ea] hover:bg-[#7e22ce] active:scale-[0.99] text-white text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] cursor-pointer disabled:opacity-50"
+                style={{ backgroundColor: '#9333ea', color: '#ffffff' }}
+                className="w-full py-3.5 rounded-xl bg-purple-600 hover:bg-purple-700 active:scale-[0.99] text-white text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] cursor-pointer disabled:opacity-90"
               >
-                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <GitBranch className="w-4 h-4" />}
-                <span>{isLoading ? 'Cloning & Parsing AST...' : 'Ingest Git Repository'}</span>
-                {!isLoading && <ArrowRight className="w-3.5 h-3.5 ml-1" />}
+                {isLoading ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <GitBranch className="w-4 h-4 text-white" />}
+                <span className="text-white font-bold">{isLoading ? `Cloning & Parsing AST... (${progress}%)` : 'Ingest Git Repository'}</span>
+                {!isLoading && <ArrowRight className="w-3.5 h-3.5 ml-1 text-white" />}
               </button>
             </form>
           ) : (
@@ -311,11 +312,12 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3.5 rounded-xl bg-[#9333ea] hover:bg-[#7e22ce] active:scale-[0.99] text-white text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] cursor-pointer disabled:opacity-50"
+                style={{ backgroundColor: '#9333ea', color: '#ffffff' }}
+                className="w-full py-3.5 rounded-xl bg-purple-600 hover:bg-purple-700 active:scale-[0.99] text-white text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] cursor-pointer disabled:opacity-90"
               >
-                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                <span>{isLoading ? 'Extracting & Parsing AST...' : 'Upload & Ingest Archive'}</span>
-                {!isLoading && <ArrowRight className="w-3.5 h-3.5 ml-1" />}
+                {isLoading ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Upload className="w-4 h-4 text-white" />}
+                <span className="text-white font-bold">{isLoading ? `Extracting & Parsing AST... (${progress}%)` : 'Upload & Ingest Archive'}</span>
+                {!isLoading && <ArrowRight className="w-3.5 h-3.5 ml-1 text-white" />}
               </button>
             </form>
           )}

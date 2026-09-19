@@ -136,6 +136,45 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
     return domainWorkflows.filter(d => d.name === selectedDomain);
   }, [domainWorkflows, selectedDomain]);
 
+  // Derived dynamic labels for the active project
+  const formattedProjectName = useMemo(() => {
+    if (!projectName || projectName === 'Repository') return 'Spring Boot & React';
+    if (projectName.toLowerCase() === 'vps') return 'School ERP';
+    return projectName.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  }, [projectName]);
+
+  const actorLabel = useMemo(() => {
+    if (projectName?.toLowerCase().includes('school') || projectName?.toLowerCase() === 'vps') return 'School Users';
+    if (projectName?.toLowerCase().includes('petclinic')) return 'Pet Owners & Staff';
+    return `${formattedProjectName} Users`;
+  }, [projectName, formattedProjectName]);
+
+  const clientViewsLabel = useMemo(() => {
+    if (feComps.length > 0) return `${formattedProjectName} Views (${feComps.length})`;
+    if (projectName?.toLowerCase().includes('school') || projectName?.toLowerCase() === 'vps') return 'ERP Feature Views';
+    return `${formattedProjectName} Views`;
+  }, [feComps, projectName, formattedProjectName]);
+
+  // Display top 7 active domains in the SVG
+  const top7Domains = useMemo(() => {
+    const list = [...activeDomains];
+    const defaultDomains = [
+      { name: 'Authentication', controllers: [], count: 1 },
+      { name: 'Core Workflows', controllers: [], count: 1 },
+      { name: 'Data Management', controllers: [], count: 1 },
+      { name: 'Reporting & Analytics', controllers: [], count: 1 },
+      { name: 'Administration', controllers: [], count: 1 },
+      { name: 'Media & Files', controllers: [], count: 1 },
+      { name: 'Business Logic', controllers: [], count: 1 },
+    ];
+    let defIdx = 0;
+    while (list.length < 7) {
+      list.push(defaultDomains[defIdx % defaultDomains.length]);
+      defIdx++;
+    }
+    return list.slice(0, 7);
+  }, [activeDomains]);
+
   // Annotations & QA for selected node drawer
   const selAnnotations = selectedNode ? getAnnotationDetails(selectedNode.annotations) : [];
   const selQA = selectedNode ? getInterviewQuestionsForNode(selectedNode.type) : [];
@@ -479,14 +518,14 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
               </defs>
 
               {/* ─────────────────────────────────────────────────────────────
-                  STEP 1: TOP ACTOR NODE (School Users)
+                  STEP 1: TOP ACTOR NODE (Dynamic Project Users)
                  ───────────────────────────────────────────────────────────── */}
               <g
                 className="cursor-pointer group"
                 onClick={() => setSelectedNode({
                   id: 'users',
-                  label: 'School Users',
-                  sub: 'Web Browser & Mobile App End Users',
+                  label: actorLabel,
+                  sub: `${formattedProjectName} Web Browser & Mobile App End Users`,
                   category: 'CLIENT',
                   type: 'USER',
                   color: '#1e40af',
@@ -495,9 +534,9 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 })}
               >
                 <rect
-                  x="460"
+                  x="440"
                   y="16"
-                  width="200"
+                  width="240"
                   height="44"
                   rx="22"
                   fill="#dbeafe"
@@ -511,11 +550,11 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   textAnchor="middle"
                   dominantBaseline="middle"
                   fill="#1e40af"
-                  fontSize="13"
+                  fontSize="12.5"
                   fontFamily="ui-monospace, monospace"
                   fontWeight="bold"
                 >
-                  School Users
+                  {actorLabel}
                 </text>
               </g>
 
@@ -564,7 +603,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 className="cursor-pointer group"
                 onClick={() => setSelectedNode({
                   id: 'react_app',
-                  label: 'React Application (App.jsx)',
+                  label: `${formattedProjectName} App (App.jsx)`,
                   sub: `${projectName} React 19 Frontend SPA`,
                   category: 'CLIENT',
                   type: 'REACT_APP',
@@ -585,8 +624,8 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   strokeWidth="1.5"
                   className="transition group-hover:stroke-blue-600 group-hover:brightness-95"
                 />
-                <text x="360" y="174" textAnchor="middle" fill="#1e40af" fontSize="13" fontFamily="ui-monospace, monospace" fontWeight="bold">
-                  React Application
+                <text x="360" y="174" textAnchor="middle" fill="#1e40af" fontSize="12.5" fontFamily="ui-monospace, monospace" fontWeight="bold">
+                  {formattedProjectName} Application
                 </text>
                 <text x="360" y="192" textAnchor="middle" fill="#1e40af" fontSize="10.5" fontFamily="ui-monospace, monospace" opacity="0.85">
                   [App.jsx]
@@ -598,8 +637,8 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 className="cursor-pointer group"
                 onClick={() => setSelectedNode({
                   id: 'fe_views',
-                  label: `ERP Feature Views (${feComps.length > 0 ? feComps.length : 97} Views)`,
-                  sub: 'React JSX / TSX Modular View Layer',
+                  label: clientViewsLabel,
+                  sub: `${formattedProjectName} Modular View Layer`,
                   category: 'CLIENT',
                   type: 'FE_VIEW',
                   color: '#1e40af',
@@ -618,8 +657,8 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   strokeWidth="1.5"
                   className="transition group-hover:stroke-blue-600 group-hover:brightness-95"
                 />
-                <text x="750" y="183" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="13" fontFamily="ui-monospace, monospace" fontWeight="bold">
-                  ERP Feature Views
+                <text x="750" y="183" textAnchor="middle" dominantBaseline="middle" fill="#1e40af" fontSize="12.5" fontFamily="ui-monospace, monospace" fontWeight="bold">
+                  {clientViewsLabel}
                 </text>
               </g>
 
@@ -755,8 +794,8 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 className="cursor-pointer group"
                 onClick={() => setSelectedNode({
                   id: 'spring_boot',
-                  label: 'Spring Boot API',
-                  sub: 'Spring Boot 3.x REST Router',
+                  label: `${formattedProjectName} REST API`,
+                  sub: `${projectName} Spring Boot 3.x REST Router`,
                   category: 'API_ACCESS',
                   type: 'API_GATEWAY',
                   annotations: '@SpringBootApplication, @RestController',
@@ -777,7 +816,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   className="transition group-hover:stroke-amber-600 group-hover:brightness-95"
                 />
                 <text x="560" y="475" textAnchor="middle" dominantBaseline="middle" fill="#854d0e" fontSize="12" fontFamily="ui-monospace, monospace" fontWeight="bold">
-                  Spring Boot API
+                  {formattedProjectName} REST API
                 </text>
               </g>
 
@@ -872,32 +911,27 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 dispatches
               </text>
 
-              {[
-                { x: 95, label: 'Authentication', i: 0 },
-                { x: 250, label: 'Communication Features', i: 1 },
-                { x: 405, label: 'School Operations', i: 2 },
-                { x: 560, label: 'Finance Reports', i: 3 },
-                { x: 715, label: 'Student Administration', i: 4 },
-                { x: 870, label: 'Media Workflows', i: 5 },
-                { x: 1025, label: 'Academic Workflows', i: 6 },
-              ].map(({ x: targetX, i }) => (
-                <g key={`dispatch-line-${i}`}>
-                  <path
-                    d={`M 560 645 L ${targetX} 645 L ${targetX} 715`}
-                    fill="none"
-                    stroke="#64748b"
-                    strokeWidth="1.5"
-                    markerEnd="url(#arrow-slate)"
-                  />
-                  <circle r="3" fill="#22c55e">
-                    <animateMotion
-                      path={`M 560 608 L 560 645 L ${targetX} 645 L ${targetX} 715`}
-                      dur={`${1.8 + i * 0.15}s`}
-                      repeatCount="indefinite"
+              {top7Domains.map((dom, i) => {
+                const targetX = 95 + i * 155;
+                return (
+                  <g key={`dispatch-line-${i}`}>
+                    <path
+                      d={`M 560 645 L ${targetX} 645 L ${targetX} 715`}
+                      fill="none"
+                      stroke="#64748b"
+                      strokeWidth="1.5"
+                      markerEnd="url(#arrow-slate)"
                     />
-                  </circle>
-                </g>
-              ))}
+                    <circle r="3" fill="#22c55e">
+                      <animateMotion
+                        path={`M 560 608 L 560 645 L ${targetX} 645 L ${targetX} 715`}
+                        dur={`${1.8 + i * 0.15}s`}
+                        repeatCount="indefinite"
+                      />
+                    </circle>
+                  </g>
+                );
+              })}
 
               {/* ─────────────────────────────────────────────────────────────
                   STEP 6: CONTAINER 3 - Domain Workflows (Green Container)
@@ -924,26 +958,19 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                 Domain Workflows
               </text>
 
-              {[
-                { name: 'Authentication', center: 95, idx: 0 },
-                { name: 'Communication Features', center: 250, idx: 1 },
-                { name: 'School Operations', center: 405, idx: 2 },
-                { name: 'Finance Reports', center: 560, idx: 3 },
-                { name: 'Student Administration', center: 715, idx: 4 },
-                { name: 'Media Workflows', center: 870, idx: 5 },
-                { name: 'Academic Workflows', center: 1025, idx: 6 },
-              ].map((dom) => {
-                const matchedDomain = activeDomains.find(d => d.name.toLowerCase().includes(dom.name.toLowerCase().split(' ')[0])) || activeDomains[dom.idx % activeDomains.length];
-                const firstCtrl = matchedDomain?.controllers[0];
+              {top7Domains.map((dom, i) => {
+                const center = 95 + i * 155;
+                const firstCtrl = dom.controllers[0];
+                const displayName = dom.name.replace(' Workflows', '');
 
                 return (
                   <g
-                    key={`dom-card-${dom.idx}`}
+                    key={`dom-card-${i}`}
                     className="cursor-pointer group"
                     onClick={() => setSelectedNode({
-                      id: `domain_${dom.idx}`,
+                      id: `domain_${i}`,
                       label: dom.name,
-                      sub: `${matchedDomain?.count || 1} controller endpoints (${firstCtrl?.data?.filePath || 'Spring Controller'})`,
+                      sub: `${dom.count || 1} controller endpoints (${firstCtrl?.data?.filePath || `${displayName}Controller.java`})`,
                       category: 'DOMAIN',
                       type: 'DOMAIN_CONTROLLER',
                       filePath: firstCtrl?.data?.filePath,
@@ -954,7 +981,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                     })}
                   >
                     <rect
-                      x={dom.center - 68}
+                      x={center - 68}
                       y="742"
                       width="136"
                       height="48"
@@ -965,8 +992,8 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                       className="transition group-hover:stroke-emerald-600 group-hover:brightness-95"
                     />
                     <text
-                      x={dom.center}
-                      y="767"
+                      x={center}
+                      y={displayName.length > 13 ? 761 : 767}
                       textAnchor="middle"
                       dominantBaseline="middle"
                       fill="#15803d"
@@ -974,13 +1001,13 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                       fontFamily="ui-monospace, monospace"
                       fontWeight="bold"
                     >
-                      {dom.name.length > 15 ? (
+                      {displayName.length > 13 ? (
                         <>
-                          <tspan x={dom.center} dy="-6">{dom.name.split(' ')[0]}</tspan>
-                          <tspan x={dom.center} dy="12">{dom.name.split(' ').slice(1).join(' ')}</tspan>
+                          <tspan x={center} dy="0">{displayName.split(' ')[0]}</tspan>
+                          <tspan x={center} dy="12">{displayName.split(' ').slice(1).join(' ') || 'Workflows'}</tspan>
                         </>
                       ) : (
-                        dom.name
+                        displayName
                       )}
                     </text>
                   </g>
@@ -991,54 +1018,55 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   STEP 7: STEPPED CONNECTIONS FROM DOMAINS TO PERSISTENCE & INTEGRATIONS
                  ───────────────────────────────────────────────────────────── */}
               {/* Solid lines to JPA Repositories */}
-              {/* 1. Auth -> JPA */}
-              <path d="M 95 790 L 95 845 L 180 845 L 180 910" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
-              <rect x="105" y="836" width="68" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-              <text x="139" y="846" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">reads users</text>
-              <circle r="3" fill="#f43f5e"><animateMotion path="M 95 790 L 95 845 L 180 845 L 180 910" dur="2.3s" repeatCount="indefinite" /></circle>
+              {top7Domains.map((dom, i) => {
+                const startX = 95 + i * 155;
+                const targetX = 140 + i * 45;
+                const domainNameRaw = dom.name.replace(/ Workflows/i, '');
+                const labelText = i === 0 ? 'reads users' : i === 1 ? 'stores data' : i === 2 ? 'stores ops' : i === 3 ? 'reads reports' : i === 4 ? 'manages records' : i === 5 ? 'stores files' : 'reads/writes';
+                const lineY = 835 + (i % 3) * 12;
 
-              {/* 2. Communication -> JPA */}
-              <path d="M 250 790 L 250 835 L 240 835 L 240 910" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
-              <rect x="200" y="826" width="96" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-              <text x="248" y="836" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">stores discussions</text>
-
-              {/* 3. School Operations -> JPA */}
-              <path d="M 405 790 L 405 845 L 300 845 L 300 910" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
-              <rect x="315" y="836" width="94" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-              <text x="362" y="846" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">stores operations</text>
-
-              {/* 4. Finance Reports -> JPA */}
-              <path d="M 560 790 L 560 835 L 360 835 L 360 910" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
-              <rect x="420" y="826" width="98" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-              <text x="469" y="836" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">reads finance data</text>
-
-              {/* 5. Student Admin -> JPA */}
-              <path d="M 715 790 L 715 845 L 420 845 L 420 910" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
-              <rect x="525" y="836" width="92" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-              <text x="571" y="846" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">manages records</text>
-
-              {/* 6. Academic Workflows -> JPA */}
-              <path d="M 1025 790 L 1025 855 L 480 855 L 480 910" fill="none" stroke="#64748b" strokeWidth="1.5" markerEnd="url(#arrow-slate)" />
-              <rect x="710" y="846" width="130" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
-              <text x="775" y="856" textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">reads/writes academics</text>
+                return (
+                  <g key={`jpa-line-${i}`}>
+                    <path
+                      d={`M ${startX} 790 L ${startX} ${lineY} L ${targetX} ${lineY} L ${targetX} 910`}
+                      fill="none"
+                      stroke="#64748b"
+                      strokeWidth="1.5"
+                      markerEnd="url(#arrow-slate)"
+                    />
+                    <rect x={(startX + targetX) / 2 - 38} y={lineY - 7} width="76" height="15" rx="3" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+                    <text x={(startX + targetX) / 2} y={lineY + 1} textAnchor="middle" dominantBaseline="middle" fill="#475569" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">
+                      {labelText}
+                    </text>
+                    <circle r="3" fill="#f43f5e">
+                      <animateMotion
+                        path={`M ${startX} 790 L ${startX} ${lineY} L ${targetX} ${lineY} L ${targetX} 910`}
+                        dur={`${2.0 + i * 0.18}s`}
+                        repeatCount="indefinite"
+                      />
+                    </circle>
+                  </g>
+                );
+              })}
 
               {/* Dashed lines to External Integrations */}
-              {/* Media -> Cloudinary */}
+              {/* Branch 1 -> Email Service */}
+              <path d="M 250 790 L 250 820 L 820 820 L 820 910" fill="none" stroke="#6366f1" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#arrow-indigo)" />
+              <rect x="780" y="812" width="76" height="15" rx="3" fill="#ffffff" stroke="#c7d2fe" strokeWidth="1" />
+              <text x="818" y="822" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">sends notices</text>
+              <circle r="3" fill="#6366f1"><animateMotion path="M 250 790 L 250 820 L 820 820 L 820 910" dur="2.5s" repeatCount="indefinite" /></circle>
+
+              {/* Branch 2 -> Whatsapp Service */}
+              <path d="M 715 790 L 715 810 L 990 810 L 990 910" fill="none" stroke="#6366f1" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#arrow-indigo)" />
+              <rect x="910" y="802" width="70" height="15" rx="3" fill="#ffffff" stroke="#c7d2fe" strokeWidth="1" />
+              <text x="945" y="812" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">sends alerts</text>
+              <circle r="3" fill="#6366f1"><animateMotion path="M 715 790 L 715 810 L 990 810 L 990 910" dur="2.4s" repeatCount="indefinite" /></circle>
+
+              {/* Branch 3 -> Media / Cloudinary */}
               <path d="M 870 790 L 870 835 L 650 835 L 650 910" fill="none" stroke="#6366f1" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#arrow-indigo)" />
               <rect x="715" y="826" width="80" height="15" rx="3" fill="#ffffff" stroke="#c7d2fe" strokeWidth="1" />
               <text x="755" y="836" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">uploads media</text>
               <circle r="3" fill="#6366f1"><animateMotion path="M 870 790 L 870 835 L 650 835 L 650 910" dur="2.2s" repeatCount="indefinite" /></circle>
-
-              {/* Communication -> Email Service */}
-              <path d="M 250 790 L 250 820 L 820 820 L 820 910" fill="none" stroke="#6366f1" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#arrow-indigo)" />
-              <rect x="800" y="812" width="76" height="15" rx="3" fill="#ffffff" stroke="#c7d2fe" strokeWidth="1" />
-              <text x="838" y="822" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">sends notices</text>
-              <circle r="3" fill="#6366f1"><animateMotion path="M 250 790 L 250 820 L 820 820 L 820 910" dur="2.5s" repeatCount="indefinite" /></circle>
-
-              {/* Communication -> Whatsapp Service */}
-              <path d="M 250 790 L 250 810 L 990 810 L 990 910" fill="none" stroke="#6366f1" strokeWidth="1.5" strokeDasharray="4 4" markerEnd="url(#arrow-indigo)" />
-              <rect x="910" y="802" width="70" height="15" rx="3" fill="#ffffff" stroke="#c7d2fe" strokeWidth="1" />
-              <text x="945" y="812" textAnchor="middle" dominantBaseline="middle" fill="#3730a3" fontSize="8.5" fontFamily="ui-monospace, monospace" fontWeight="600">sends alerts</text>
 
               {/* ─────────────────────────────────────────────────────────────
                   STEP 8: CONTAINER 4 - Persistence (Pink / Rose Container)
