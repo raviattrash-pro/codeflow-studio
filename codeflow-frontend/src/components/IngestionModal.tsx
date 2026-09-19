@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GitBranch, Upload, X, Loader2, Sparkles, FolderGit2, CheckCircle2, Shield } from 'lucide-react';
+import { GitBranch, Upload, X, Loader2, Sparkles, FolderGit2, CheckCircle2, Shield, AlertTriangle, RefreshCw } from 'lucide-react';
 import axios from 'axios';
 import { Project } from '../types';
 import { ThemeMode } from './Header';
@@ -10,6 +10,12 @@ interface IngestionModalProps {
   onProjectIngested: (projectId: string) => void;
   currentTheme?: ThemeMode;
 }
+
+const SAMPLE_REPOS = [
+  { label: 'Spring PetClinic', url: 'https://github.com/spring-projects/spring-petclinic' },
+  { label: 'CodeFlow Studio', url: 'https://github.com/raviattrash-pro/codeflow-studio' },
+  { label: 'Spring REST Service', url: 'https://github.com/spring-guides/gs-rest-service' },
+];
 
 export const IngestionModal: React.FC<IngestionModalProps> = ({
   isOpen,
@@ -22,6 +28,7 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
   const isLight = currentTheme === 'NORMAL';
@@ -32,15 +39,20 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
 
   const handleGithubSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!githubUrl) return;
+    const cleanUrl = githubUrl.trim();
+    if (!cleanUrl) {
+      setErrorMessage('Please enter a valid GitHub repository URL.');
+      return;
+    }
 
     setIsLoading(true);
+    setErrorMessage(null);
     setStatusMessage('Initiating repository clone...');
     setProgress(10);
 
     try {
       const resp = await axios.post<{ projectId: string; status: string }>('/api/v1/projects/github', {
-        githubUrl: githubUrl,
+        githubUrl: cleanUrl,
         branch: 'main',
       });
 
@@ -48,7 +60,8 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
       pollStatus(projectId);
     } catch (err: any) {
       setIsLoading(false);
-      setStatusMessage('Failed to clone repository: ' + (err.response?.data?.message || err.message));
+      const serverMsg = err.response?.data?.message || err.response?.data?.error || err.message;
+      setErrorMessage(serverMsg ? `Failed to ingest repository: ${serverMsg}` : 'Failed to connect to backend server. Make sure the Spring Boot backend is running on port 8080.');
     }
   };
 
@@ -57,6 +70,7 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
     if (!selectedFile) return;
 
     setIsLoading(true);
+    setErrorMessage(null);
     setStatusMessage('Uploading ZIP archive...');
     setProgress(15);
 
@@ -72,7 +86,8 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
       pollStatus(projectId);
     } catch (err: any) {
       setIsLoading(false);
-      setStatusMessage('Upload failed: ' + (err.response?.data?.message || err.message));
+      const serverMsg = err.response?.data?.message || err.response?.data?.error || err.message;
+      setErrorMessage(serverMsg ? `Upload failed: ${serverMsg}` : 'Failed to upload archive. Make sure the Spring Boot backend is running on port 8080.');
     }
   };
 
@@ -92,18 +107,18 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
         } else if (p.status === 'FAILED') {
           clearInterval(interval);
           setIsLoading(false);
-          setStatusMessage('Analysis failed: ' + p.errorMessage);
+          setErrorMessage(p.errorMessage || 'Analysis failed on the server.');
         }
       } catch (e) {
         clearInterval(interval);
         setIsLoading(false);
-        setStatusMessage('Error checking status');
+        setErrorMessage('Lost connection while polling analysis status.');
       }
     }, 1000);
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop" onClick={onClose} style={{ zIndex: 999999 }}>
       <div
         className={`modal-pop-in w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden flex flex-col my-auto border ${
           isLight
@@ -112,8 +127,9 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
             ? 'glass-modal border-slate-700/80 text-white'
             : isNeumorphic
             ? 'neumorphic-card border-slate-700 text-slate-100'
-            : 'bg-slate-900 border-slate-800 text-white'
+            : 'bg-[#0f172a] border-slate-800 text-white'
         }`}
+        style={{ backgroundColor: isLight ? '#ffffff' : '#0f172a' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -136,7 +152,7 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
 
           <button
             onClick={onClose}
-            className={`p-2 rounded-xl transition-all ${
+            className={`p-2 rounded-xl transition-all cursor-pointer ${
               isLight ? 'hover:bg-slate-200 text-slate-500 hover:text-slate-900' : 'hover:bg-slate-800 text-slate-400 hover:text-white'
             }`}
           >
@@ -149,8 +165,8 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
           isLight ? 'bg-slate-50/50 border-slate-200' : 'bg-slate-950/30 border-slate-800'
         }`}>
           <button
-            onClick={() => setActiveTab('github')}
-            className={`flex items-center space-x-2 py-2.5 px-4 text-xs font-mono font-bold border-b-2 transition-all ${
+            onClick={() => { setActiveTab('github'); setErrorMessage(null); }}
+            className={`flex items-center space-x-2 py-2.5 px-4 text-xs font-mono font-bold border-b-2 transition-all cursor-pointer ${
               activeTab === 'github'
                 ? 'border-cyan-500 text-cyan-500'
                 : isLight
@@ -162,8 +178,8 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
             <span>Git Repository URL</span>
           </button>
           <button
-            onClick={() => setActiveTab('zip')}
-            className={`flex items-center space-x-2 py-2.5 px-4 text-xs font-mono font-bold border-b-2 transition-all ${
+            onClick={() => { setActiveTab('zip'); setErrorMessage(null); }}
+            className={`flex items-center space-x-2 py-2.5 px-4 text-xs font-mono font-bold border-b-2 transition-all cursor-pointer ${
               activeTab === 'zip'
                 ? 'border-cyan-500 text-cyan-500'
                 : isLight
@@ -177,7 +193,18 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
         </div>
 
         {/* Body */}
-        <div className="p-6 space-y-5">
+        <div className="p-6 space-y-4">
+          {/* Error Banner */}
+          {errorMessage && (
+            <div className="p-3.5 rounded-xl bg-red-950/40 border border-red-800/60 text-red-300 text-xs font-mono flex items-start space-x-2.5 animate-fadeIn">
+              <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <span className="font-bold text-red-200 block mb-0.5">Ingestion Error</span>
+                <span>{errorMessage}</span>
+              </div>
+            </div>
+          )}
+
           {activeTab === 'github' ? (
             <form onSubmit={handleGithubSubmit} className="space-y-4">
               <div>
@@ -188,7 +215,7 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
                   type="text"
                   placeholder="https://github.com/user/spring-react-app"
                   value={githubUrl}
-                  onChange={(e) => setGithubUrl(e.target.value)}
+                  onChange={(e) => { setGithubUrl(e.target.value); setErrorMessage(null); }}
                   disabled={isLoading}
                   className={`w-full px-4 py-2.5 rounded-xl border text-xs font-mono outline-none transition-all ${
                     isLight
@@ -196,19 +223,40 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
                       : 'bg-slate-900 border-slate-800 text-slate-100 focus:border-cyan-500'
                   }`}
                 />
+
+                {/* Preset Repositories */}
+                <div className="mt-2.5 flex items-center flex-wrap gap-1.5">
+                  <span className="text-[10px] font-mono text-slate-500">Presets:</span>
+                  {SAMPLE_REPOS.map((repo, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => { setGithubUrl(repo.url); setErrorMessage(null); }}
+                      className={`px-2 py-0.5 rounded-lg border text-[10px] font-mono transition cursor-pointer ${
+                        githubUrl === repo.url
+                          ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300 font-bold'
+                          : isLight
+                          ? 'bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200'
+                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
+                      }`}
+                    >
+                      {repo.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className={`p-3 rounded-xl border text-[11px] font-mono flex items-center space-x-2 ${
                 isLight ? 'bg-cyan-50 border-cyan-200 text-cyan-800' : 'bg-cyan-950/20 border-cyan-500/20 text-cyan-300'
               }`}>
                 <Sparkles className="w-4 h-4 shrink-0 text-cyan-500" />
-                <span>Supports public and private token-authenticated Spring Boot & React repos</span>
+                <span>Supports public and token-authenticated Spring Boot & React repos</span>
               </div>
 
               <button
                 type="submit"
-                disabled={isLoading || !githubUrl}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 text-white text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all shadow-lg shadow-cyan-950/40"
+                disabled={isLoading || !githubUrl.trim()}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 text-white text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all shadow-lg shadow-cyan-950/40 cursor-pointer"
               >
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <GitBranch className="w-4 h-4" />}
                 <span>{isLoading ? 'Cloning & Parsing AST...' : 'Ingest Git Repository'}</span>
@@ -226,7 +274,7 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
                   <input
                     type="file"
                     accept=".zip"
-                    onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                    onChange={(e) => { setSelectedFile(e.target.files?.[0] || null); setErrorMessage(null); }}
                     disabled={isLoading}
                     className="hidden"
                   />
@@ -241,7 +289,7 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
               <button
                 type="submit"
                 disabled={isLoading || !selectedFile}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 text-white text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all shadow-lg shadow-cyan-950/40"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 text-white text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all shadow-lg shadow-cyan-950/40 cursor-pointer"
               >
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                 <span>{isLoading ? 'Extracting & Parsing AST...' : 'Upload & Ingest Archive'}</span>

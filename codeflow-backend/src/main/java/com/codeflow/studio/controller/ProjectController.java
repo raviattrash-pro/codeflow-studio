@@ -46,22 +46,39 @@ public class ProjectController {
 
     @PostMapping("/github")
     public ResponseEntity<ProjectStatusDto> ingestGithubRepo(@RequestBody GithubIngestRequestDto request) {
+        if (request == null || request.getGithubUrl() == null || request.getGithubUrl().trim().isEmpty()) {
+            throw new IllegalArgumentException("GitHub repository URL is required");
+        }
+
+        String rawUrl = request.getGithubUrl().trim();
+        if (!rawUrl.startsWith("http://") && !rawUrl.startsWith("https://")) {
+            throw new IllegalArgumentException("Invalid repository URL. Must start with https:// or http://");
+        }
+
+        while (rawUrl.endsWith("/") && rawUrl.length() > 1) {
+            rawUrl = rawUrl.substring(0, rawUrl.length() - 1);
+        }
+
+        String repoName = "repository";
+        int lastSlash = rawUrl.lastIndexOf('/');
+        if (lastSlash >= 0 && lastSlash < rawUrl.length() - 1) {
+            repoName = rawUrl.substring(lastSlash + 1).replace(".git", "");
+        }
+
         String projectId = "prj_" + UUID.randomUUID().toString().substring(0, 8);
-        String repoName = request.getGithubUrl().substring(request.getGithubUrl().lastIndexOf('/') + 1)
-                .replace(".git", "");
 
         Project project = Project.builder()
                 .id(projectId)
                 .name(repoName)
                 .sourceType("GITHUB")
-                .sourceUrl(request.getGithubUrl())
+                .sourceUrl(rawUrl)
                 .status("PROCESSING")
                 .progressPercentage(10)
                 .build();
 
         projectRepository.save(project);
 
-        coordinatorService.processGithubProjectAsync(projectId, request.getGithubUrl());
+        coordinatorService.processGithubProjectAsync(projectId, rawUrl);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(ProjectStatusDto.builder()
                 .projectId(projectId)
