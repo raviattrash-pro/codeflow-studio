@@ -140,6 +140,11 @@ public class ProjectController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping
+    public ResponseEntity<List<Project>> getAllProjects() {
+        return ResponseEntity.ok(projectRepository.findAll());
+    }
+
     @GetMapping("/{projectId}/dependencies")
     public ResponseEntity<List<ProjectDependency>> getDependencies(@PathVariable String projectId) {
         return ResponseEntity.ok(dependencyRepository.findByProjectId(projectId));

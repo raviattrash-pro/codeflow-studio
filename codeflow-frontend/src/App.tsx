@@ -752,7 +752,9 @@ export default function App() {
   };
 
   const handleOpenToolDirectly = (toolKey: string) => {
-    handleLoadDemoProject();
+    if (!currentProjectId) {
+      handleLoadDemoProject();
+    }
     closeAllModals();
     if (toolKey === 'tracing') setIsRuntimeTracingOpen(true);
     else if (toolKey === 'metrics') setIsApiMetricsOpen(true);
