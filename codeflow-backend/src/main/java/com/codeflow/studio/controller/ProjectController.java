@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/v1/projects")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class ProjectController {
 
     private static final Logger log = LoggerFactory.getLogger(ProjectController.class);

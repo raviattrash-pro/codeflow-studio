@@ -10,7 +10,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/projects")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class ErDiagramController {
 
     private final ProjectNodeRepository nodeRepository;

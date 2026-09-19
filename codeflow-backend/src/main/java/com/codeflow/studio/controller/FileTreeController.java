@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class FileTreeController {
 
     private static final Logger logger = LoggerFactory.getLogger(FileTreeController.class);

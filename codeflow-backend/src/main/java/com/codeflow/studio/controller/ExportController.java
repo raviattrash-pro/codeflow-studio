@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/projects")
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 public class ExportController {
 
     private final ProjectRepository projectRepository;

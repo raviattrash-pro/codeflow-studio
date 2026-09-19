@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GitBranch, Upload, X, Loader2, Sparkles, FolderGit2, CheckCircle2, Shield, AlertTriangle, RefreshCw } from 'lucide-react';
+import { GitBranch, Upload, X, Loader2, Sparkles, FolderGit2, AlertTriangle, Play, ArrowRight } from 'lucide-react';
 import axios from 'axios';
 import { Project } from '../types';
 import { ThemeMode } from './Header';
@@ -37,18 +37,18 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleGithubSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const cleanUrl = githubUrl.trim();
+  const handleGithubSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    let cleanUrl = githubUrl.trim();
     if (!cleanUrl) {
-      setErrorMessage('Please enter a valid GitHub repository URL.');
-      return;
+      cleanUrl = 'https://github.com/spring-projects/spring-petclinic';
+      setGithubUrl(cleanUrl);
     }
 
     setIsLoading(true);
     setErrorMessage(null);
-    setStatusMessage('Initiating repository clone...');
-    setProgress(10);
+    setStatusMessage('Connecting to backend & cloning repo...');
+    setProgress(15);
 
     try {
       const resp = await axios.post<{ projectId: string; status: string }>('/api/v1/projects/github', {
@@ -67,7 +67,10 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
 
   const handleZipSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedFile) return;
+    if (!selectedFile) {
+      setErrorMessage('Please select a ZIP file containing your Spring Boot or React repository.');
+      return;
+    }
 
     setIsLoading(true);
     setErrorMessage(null);
@@ -145,7 +148,7 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
                 Ingest Codebase Architecture
               </h3>
               <p className={`text-xs mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                Analyze Java Spring Boot & React repositories automatically
+                Analyze Java Spring Boot &amp; React repositories automatically
               </p>
             </div>
           </div>
@@ -200,7 +203,19 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
               <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
               <div className="flex-1">
                 <span className="font-bold text-red-200 block mb-0.5">Ingestion Error</span>
-                <span>{errorMessage}</span>
+                <span className="leading-relaxed">{errorMessage}</span>
+                <div className="mt-2 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGithubUrl('https://github.com/spring-projects/spring-petclinic');
+                      setErrorMessage(null);
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-red-900/60 hover:bg-red-800 border border-red-700/60 text-white text-[11px] font-mono font-bold transition cursor-pointer"
+                  >
+                    Use Spring PetClinic Sample
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -213,7 +228,7 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  placeholder="https://github.com/user/spring-react-app"
+                  placeholder="https://github.com/spring-projects/spring-petclinic"
                   value={githubUrl}
                   onChange={(e) => { setGithubUrl(e.target.value); setErrorMessage(null); }}
                   disabled={isLoading}
@@ -232,12 +247,12 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
                       key={idx}
                       type="button"
                       onClick={() => { setGithubUrl(repo.url); setErrorMessage(null); }}
-                      className={`px-2 py-0.5 rounded-lg border text-[10px] font-mono transition cursor-pointer ${
+                      className={`px-2.5 py-1 rounded-lg border text-[11px] font-mono transition cursor-pointer ${
                         githubUrl === repo.url
-                          ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300 font-bold'
+                          ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300 font-bold shadow-xs'
                           : isLight
-                          ? 'bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200'
-                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
+                          ? 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+                          : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white hover:border-slate-700'
                       }`}
                     >
                       {repo.label}
@@ -250,16 +265,17 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
                 isLight ? 'bg-cyan-50 border-cyan-200 text-cyan-800' : 'bg-cyan-950/20 border-cyan-500/20 text-cyan-300'
               }`}>
                 <Sparkles className="w-4 h-4 shrink-0 text-cyan-500" />
-                <span>Supports public and token-authenticated Spring Boot & React repos</span>
+                <span>Supports public and token-authenticated Spring Boot &amp; React repos</span>
               </div>
 
               <button
                 type="submit"
-                disabled={isLoading || !githubUrl.trim()}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 text-white text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all shadow-lg shadow-cyan-950/40 cursor-pointer"
+                disabled={isLoading}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 active:scale-[0.99] text-white text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all shadow-lg shadow-cyan-950/40 cursor-pointer"
               >
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <GitBranch className="w-4 h-4" />}
                 <span>{isLoading ? 'Cloning & Parsing AST...' : 'Ingest Git Repository'}</span>
+                {!isLoading && <ArrowRight className="w-3.5 h-3.5 ml-1" />}
               </button>
             </form>
           ) : (
@@ -288,11 +304,12 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
 
               <button
                 type="submit"
-                disabled={isLoading || !selectedFile}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 disabled:opacity-50 text-white text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all shadow-lg shadow-cyan-950/40 cursor-pointer"
+                disabled={isLoading}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 active:scale-[0.99] text-white text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all shadow-lg shadow-cyan-950/40 cursor-pointer"
               >
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                 <span>{isLoading ? 'Extracting & Parsing AST...' : 'Upload & Ingest Archive'}</span>
+                {!isLoading && <ArrowRight className="w-3.5 h-3.5 ml-1" />}
               </button>
             </form>
           )}
