@@ -33,14 +33,6 @@ spring:
 codeflow:
   ephemeral-dir: ${user.home}/.codeflow/scratch
   cleanup-after-analysis: true
-
-logging:
-  level:
-    root: INFO
-    com.codeflow.studio: DEBUG
-
-# AI Provider Configuration
-codeflow:
   ai:
     provider: none  # Options: gemini, openai, ollama, none
     api-key: ""     # Your Gemini or OpenAI API key
@@ -48,3 +40,8 @@ codeflow:
     ollama-url: http://localhost:11434
     max-context-tokens: 2000
     temperature: 0.3
+
+logging:
+  level:
+    root: INFO
+    com.codeflow.studio: DEBUG
