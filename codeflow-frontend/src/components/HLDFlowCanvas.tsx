@@ -326,22 +326,27 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
 
       {/* ─── ALL 29 TOOLS MODAL POPUP (Rock-solid viewport containment) ─── */}
       {isAllToolsOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/50 backdrop-blur-xs">
+        <div
+          className="modal-backdrop"
+          onClick={() => setIsAllToolsOpen(false)}
+          style={{ zIndex: 999999 }}
+        >
           <div
-            className={`relative w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden ${
+            className={`w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden my-auto border-2 ${
               isLight
-                ? 'bg-white border-2 border-black text-slate-900'
-                : 'bg-slate-900 border-2 border-slate-700 text-slate-100'
+                ? 'bg-white border-black text-slate-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]'
+                : 'bg-slate-900 border-slate-700 text-slate-100 shadow-2xl'
             }`}
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Sticky Modal Header */}
             <div className={`px-6 py-4 border-b flex items-center justify-between shrink-0 ${
-              isLight ? 'bg-white border-slate-200' : 'bg-slate-900 border-slate-800'
+              isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-900 border-slate-800'
             }`}>
               <div className="flex items-center gap-2.5">
                 <span className="p-1.5 rounded-lg bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-bold text-sm">⚡</span>
                 <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-purple-700 dark:text-purple-400">
-                  All 29 CodeFlow Studio Tools & Features
+                  All 29 CodeFlow Studio Tools &amp; Features
                 </h2>
               </div>
               <button
@@ -355,57 +360,65 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
             {/* Scrollable Modal Body */}
             <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {/* Column 1: Analysis & Security */}
-              <div className="space-y-3">
-                <div className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider px-1">Code Analysis & DB</div>
-                <div className="space-y-1.5">
-                  <ToolCard icon="📁" label="File Tree Browser" desc="Explore codebase AST hierarchy" onClick={() => { onOpenTool?.('files'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="📦" label="Dependency Graph" desc="POM & Gradle dependency tree" onClick={() => { onOpenTool?.('deps'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="🗃️" label="Database ERD" desc="Visual schema entity relationships" onClick={() => { onOpenTool?.('erd'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="🔎" label="SQL Query Inspector" desc="JPA repository queries" onClick={() => { onOpenTool?.('sql'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="⚛️" label="React Fiber Runtime" desc="Component tree inspection" onClick={() => { onOpenTool?.('react'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="📋" label="Architecture Scorecard" desc="Automated quality metrics" onClick={() => { onOpenTool?.('scorecard'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="🔀" label="Schema Drift Detector" desc="Flyway & JPA differences" onClick={() => { onOpenTool?.('drift'); setIsAllToolsOpen(false); }} />
+                {/* Column 1: Analysis & Security */}
+                <div className="space-y-3">
+                  <div className={`text-[11px] font-mono font-bold uppercase tracking-wider px-1 ${isLight ? 'text-purple-800' : 'text-purple-400'}`}>
+                    Code Analysis &amp; Database
+                  </div>
+                  <div className="space-y-1.5">
+                    <ToolCard icon="📁" label="File Tree Browser" desc="Explore codebase AST hierarchy" onClick={() => { onOpenTool?.('files'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="📦" label="Dependency Graph" desc="POM & Gradle dependency tree" onClick={() => { onOpenTool?.('deps'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="🗃️" label="Database ERD" desc="Visual schema entity relationships" onClick={() => { onOpenTool?.('erd'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="🔎" label="SQL Query Inspector" desc="JPA repository queries" onClick={() => { onOpenTool?.('sql'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="⚛️" label="React Fiber Runtime" desc="Component tree inspection" onClick={() => { onOpenTool?.('react'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="📋" label="Architecture Scorecard" desc="Automated quality metrics" onClick={() => { onOpenTool?.('scorecard'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="🔀" label="Schema Drift Detector" desc="Flyway & JPA differences" onClick={() => { onOpenTool?.('drift'); setIsAllToolsOpen(false); }} />
+                  </div>
+
+                  <div className={`pt-2 text-[11px] font-mono font-bold uppercase tracking-wider px-1 ${isLight ? 'text-purple-800' : 'text-purple-400'}`}>
+                    Security &amp; Compliance
+                  </div>
+                  <div className="space-y-1.5">
+                    <ToolCard icon="🔐" label="Spring Security Chain" desc="Filter chain visualizer" onClick={() => { onOpenTool?.('security'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="✅" label="SOC2 / GDPR Compliance" desc="Compliance audit matrix" onClick={() => { onOpenTool?.('compliance'); setIsAllToolsOpen(false); }} />
+                  </div>
                 </div>
 
-                <div className="pt-2 text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider px-1">Security & Compliance</div>
-                <div className="space-y-1.5">
-                  <ToolCard icon="🔐" label="Spring Security Chain" desc="Filter chain visualizer" onClick={() => { onOpenTool?.('security'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="✅" label="SOC2 / GDPR Compliance" desc="Compliance audit matrix" onClick={() => { onOpenTool?.('compliance'); setIsAllToolsOpen(false); }} />
-                </div>
-              </div>
+                {/* Column 2: DevOps, AI & Observability */}
+                <div className="space-y-3">
+                  <div className={`text-[11px] font-mono font-bold uppercase tracking-wider px-1 ${isLight ? 'text-purple-800' : 'text-purple-400'}`}>
+                    DevOps &amp; Testing
+                  </div>
+                  <div className="space-y-1.5">
+                    <ToolCard icon="💻" label="TypeScript / Zod Generator" desc="Auto-generate types from DTOs" onClick={() => { onOpenTool?.('ts-generator'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="🧪" label="Interactive API Sandbox" desc="Execute REST endpoints live" onClick={() => { onOpenTool?.('api-sandbox'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="🧬" label="Unit Test Generator" desc="Synthesize JUnit 5 suites" onClick={() => { onOpenTool?.('test-gen'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="💥" label="Chaos Simulator" desc="Latency & failure injection" onClick={() => { onOpenTool?.('chaos'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="☁️" label="Cloud & Docker Infra" desc="Dockerfile & K8s synthesizer" onClick={() => { onOpenTool?.('cloud-infra'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="📡" label="Kafka Event Stream" desc="Topic & message visualizer" onClick={() => { onOpenTool?.('event-stream'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="🌐" label="GraphQL / gRPC Explorer" desc="Schema & RPC playground" onClick={() => { onOpenTool?.('graphql-grpc'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="🕸️" label="Istio Service Mesh" desc="Traffic routing topology" onClick={() => { onOpenTool?.('service-mesh'); setIsAllToolsOpen(false); }} />
+                  </div>
 
-              {/* Column 2: DevOps, AI & Observability */}
-              <div className="space-y-3">
-                <div className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider px-1">DevOps & Testing</div>
-                <div className="space-y-1.5">
-                  <ToolCard icon="💻" label="TypeScript / Zod Generator" desc="Auto-generate types from DTOs" onClick={() => { onOpenTool?.('ts-generator'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="🧪" label="Interactive API Sandbox" desc="Execute REST endpoints live" onClick={() => { onOpenTool?.('api-sandbox'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="🧬" label="Unit Test Generator" desc="Synthesize JUnit 5 suites" onClick={() => { onOpenTool?.('test-gen'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="💥" label="Chaos Simulator" desc="Latency & failure injection" onClick={() => { onOpenTool?.('chaos'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="☁️" label="Cloud & Docker Infra" desc="Dockerfile & K8s synthesizer" onClick={() => { onOpenTool?.('cloud-infra'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="📡" label="Kafka Event Stream" desc="Topic & message visualizer" onClick={() => { onOpenTool?.('event-stream'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="🌐" label="GraphQL / gRPC Explorer" desc="Schema & RPC playground" onClick={() => { onOpenTool?.('graphql-grpc'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="🕸️" label="Istio Service Mesh" desc="Traffic routing topology" onClick={() => { onOpenTool?.('service-mesh'); setIsAllToolsOpen(false); }} />
-                </div>
-
-                <div className="pt-2 text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wider px-1">AI & Observability</div>
-                <div className="space-y-1.5">
-                  <ToolCard icon="🤖" label="AI Copilot Assistant" desc="Deep architecture explanations" onClick={() => { onOpenTool?.('ai'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="🎙️" label="Voice Copilot" desc="Voice-activated queries" onClick={() => { onOpenTool?.('voice'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="📊" label="API Metrics Dashboard" desc="Throughput & p99 latencies" onClick={() => { onOpenTool?.('metrics'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="🔥" label="Latency Heatmap" desc="End-to-end hot paths" onClick={() => { onOpenTool?.('heatmap'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="🔗" label="Distributed Tracing (OTel)" desc="Span waterfall traces" onClick={() => { onOpenTool?.('dist-tracing'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="💜" label="VS Code Sidecar" desc="IDE extension bridge" onClick={() => { onOpenTool?.('vscode'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="🌍" label="Chrome Extension" desc="Browser devtools bridge" onClick={() => { onOpenTool?.('chrome'); setIsAllToolsOpen(false); }} />
-                  <ToolCard icon="👥" label="Live Collaboration" desc="Real-time multi-user cursor" onClick={() => { onOpenTool?.('collab'); setIsAllToolsOpen(false); }} />
+                  <div className={`pt-2 text-[11px] font-mono font-bold uppercase tracking-wider px-1 ${isLight ? 'text-purple-800' : 'text-purple-400'}`}>
+                    AI &amp; Observability
+                  </div>
+                  <div className="space-y-1.5">
+                    <ToolCard icon="🤖" label="AI Copilot Assistant" desc="Deep architecture explanations" onClick={() => { onOpenTool?.('ai'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="🎙️" label="Voice Copilot" desc="Voice-activated queries" onClick={() => { onOpenTool?.('voice'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="📊" label="API Metrics Dashboard" desc="Throughput & p99 latencies" onClick={() => { onOpenTool?.('metrics'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="🔥" label="Latency Heatmap" desc="End-to-end hot paths" onClick={() => { onOpenTool?.('heatmap'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="🔗" label="Distributed Tracing (OTel)" desc="Span waterfall traces" onClick={() => { onOpenTool?.('dist-tracing'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="💜" label="VS Code Sidecar" desc="IDE extension bridge" onClick={() => { onOpenTool?.('vscode'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="🌍" label="Chrome Extension" desc="Browser devtools bridge" onClick={() => { onOpenTool?.('chrome'); setIsAllToolsOpen(false); }} />
+                    <ToolCard icon="👥" label="Live Collaboration" desc="Real-time multi-user cursor" onClick={() => { onOpenTool?.('collab'); setIsAllToolsOpen(false); }} />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
 
       {/* ─── MAIN VERTICAL ARCHITECTURE CANVAS (EXACT GITDIAGRAM MATCH) ─── */}
       <div
