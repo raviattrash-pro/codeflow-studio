@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { GraphData } from '../types';
 import { FlowStep } from './InteractiveFlowExplorer';
 import { getAnnotationDetails } from '../utils/annotationDictionary';
@@ -140,6 +140,23 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
   const selAnnotations = selectedNode ? getAnnotationDetails(selectedNode.annotations) : [];
   const selQA = selectedNode ? getInterviewQuestionsForNode(selectedNode.type) : [];
 
+  // Close open dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.dropdown-trigger-area')) {
+        setIsActivityMenuOpen(false);
+        setIsExportMenuOpen(false);
+      }
+    };
+    if (isActivityMenuOpen || isExportMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isActivityMenuOpen, isExportMenuOpen]);
+
   const handleExportMermaid = () => {
     const mermaid = `graph TD
     User([School Users]) -->|uses| ReactApp[React Application (App.jsx)]
@@ -174,7 +191,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
         </div>
 
         {/* Pill 2: Activity Dropdown */}
-        <div className="relative">
+        <div className="relative dropdown-trigger-area">
           <button
             onClick={() => { setIsActivityMenuOpen(!isActivityMenuOpen); setIsExportMenuOpen(false); setIsAllToolsOpen(false); }}
             className="flex items-center gap-2 px-4 py-2 rounded-xl font-mono text-xs font-bold bg-white text-slate-900 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-slate-50 transition cursor-pointer dark:bg-slate-900 dark:text-white dark:border-slate-700"
@@ -185,7 +202,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
 
           {isActivityMenuOpen && (
             <div
-              className={`absolute left-0 sm:left-auto top-full mt-2 w-72 max-h-[60vh] overflow-y-auto rounded-2xl p-2 z-50 flex flex-col gap-1 custom-scrollbar ${
+              className={`absolute left-0 sm:left-auto top-full mt-2 w-72 max-h-64 sm:max-h-72 overflow-y-auto rounded-2xl p-2 z-50 flex flex-col gap-1 custom-scrollbar shadow-2xl ${
                 isLight
                   ? 'bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-slate-900'
                   : 'bg-slate-900 border-2 border-slate-700 shadow-2xl text-slate-100'
@@ -260,7 +277,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
         </div>
 
         {/* Pill 4: Export Dropdown */}
-        <div className="relative">
+        <div className="relative dropdown-trigger-area">
           <button
             onClick={() => { setIsExportMenuOpen(!isExportMenuOpen); setIsActivityMenuOpen(false); setIsAllToolsOpen(false); }}
             className="flex items-center gap-2 px-4 py-2 rounded-xl font-mono text-xs font-bold bg-white text-slate-900 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-slate-50 transition cursor-pointer dark:bg-slate-900 dark:text-white dark:border-slate-700"
@@ -272,7 +289,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
 
           {isExportMenuOpen && (
             <div
-              className={`absolute right-0 top-full mt-2 w-72 rounded-2xl p-3 z-50 flex flex-col gap-1.5 ${
+              className={`absolute right-0 top-full mt-2 w-72 max-h-64 sm:max-h-72 overflow-y-auto rounded-2xl p-3 z-50 flex flex-col gap-1.5 custom-scrollbar shadow-2xl ${
                 isLight
                   ? 'bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-slate-900'
                   : 'bg-slate-900 border-2 border-slate-700 shadow-2xl text-slate-100'
