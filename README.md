@@ -13,7 +13,9 @@
 
 ## 🎬 Live Interactive Workbench & Studio Showcase
 
-![CodeFlow Studio Live Demo](docs/media/codeflow-studio-v9.gif)
+<p align="center">
+  <img src="docs/media/codeflow-studio-v9.gif" alt="CodeFlow Studio Live Demo — 29 Specialized Visual Architecture Tools" width="100%" />
+</p>
 
 > 💡 *CodeFlow Studio v9.0 expands to **29 Visual Architecture & Intelligence Tools** distributed across 4 dedicated domain categories: DevOps & Cloud, Architecture & Governance, Runtime & Flow, and APIs & Data.*
 
