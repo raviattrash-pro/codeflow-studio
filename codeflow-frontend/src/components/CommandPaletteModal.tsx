@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
-  Search, X, Sparkles, Terminal, Database, ShieldCheck,
+  Search, X, Sparkles, Terminal, Database, ShieldCheck, Monitor, Globe, Users, Network, FileCode,
   Zap, Code2, Layers, Flame, Activity, FolderTree,
   Cpu, ArrowRight, Play, Moon, Sun, Key, Bot, HelpCircle,
-  FileCode, Box, ExternalLink, RefreshCw, GitPullRequest, CheckSquare, Cloud, Radio, Mic, Sliders
+  Box, ExternalLink, RefreshCw, GitPullRequest, CheckSquare, Cloud, Radio, Mic, Sliders
 } from 'lucide-react';
 import { ThemeMode } from './Header';
 
@@ -54,6 +54,65 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
 
   const allCommands: CommandItem[] = useMemo(() => [
     // Tools
+    // v9.0 Suite
+    {
+      id: 'tool-vscode',
+      title: 'VS Code IDE Sidecar & Extension Generator',
+      subtitle: 'Bidirectional WebSocket LSP sidecar & extension manifest compiler',
+      category: 'Tools',
+      icon: <Monitor className="w-4 h-4 text-blue-400" />,
+      shortcut: 'S',
+      action: () => { onClose(); onSelectTool('vscode'); },
+      badge: 'v9.0',
+    },
+    {
+      id: 'tool-chrome-ext',
+      title: 'Chrome Extension & GitHub DOM Injector',
+      subtitle: 'Manifest V3 extension injecting interactive overlays into GitHub PRs & file trees',
+      category: 'Tools',
+      icon: <Globe className="w-4 h-4 text-pink-400" />,
+      action: () => { onClose(); onSelectTool('chrome-ext'); },
+      badge: 'v9.0',
+    },
+    {
+      id: 'tool-live-collab',
+      title: 'WebRTC Live Architecture Review & Collab Room',
+      subtitle: 'P2P cursor broadcasting, shared canvas markup and architecture review rooms',
+      category: 'Tools',
+      icon: <Users className="w-4 h-4 text-emerald-400" />,
+      shortcut: 'L',
+      action: () => { onClose(); onSelectTool('live-collab'); },
+      badge: 'v9.0',
+    },
+    {
+      id: 'tool-compliance',
+      title: 'Zero-Trust SOC2 / ISO 27001 / HIPAA Matrix',
+      subtitle: 'Automated compliance rule validator against parsed Spring Boot & React architecture',
+      category: 'Tools',
+      icon: <ShieldCheck className="w-4 h-4 text-teal-400" />,
+      action: () => { onClose(); onSelectTool('compliance'); },
+      badge: 'v9.0',
+    },
+    {
+      id: 'tool-graphql-grpc',
+      title: 'GraphQL SDL & gRPC Protobuf v3 Synthesizer',
+      subtitle: 'Synthesize Schema Definition Language & Proto3 schemas from Spring Boot REST controllers',
+      category: 'Tools',
+      icon: <FileCode className="w-4 h-4 text-purple-400" />,
+      action: () => { onClose(); onSelectTool('graphql-grpc'); },
+      badge: 'v9.0',
+    },
+    {
+      id: 'tool-service-mesh',
+      title: 'Multi-Repo Service Mesh & Istio Topology',
+      subtitle: 'Multi-service traffic visualizer, Envoy proxy sidecars & Istio VirtualService generator',
+      category: 'Tools',
+      icon: <Network className="w-4 h-4 text-cyan-400" />,
+      shortcut: 'M',
+      action: () => { onClose(); onSelectTool('service-mesh'); },
+      badge: 'v9.0',
+    },
+
     {
       id: 'tool-drift',
       title: 'Git PR Architecture Drift Inspector',

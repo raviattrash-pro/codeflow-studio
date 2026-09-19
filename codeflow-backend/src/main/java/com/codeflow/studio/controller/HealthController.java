@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * Health & Diagnostic System Telemetry Controller.
- * Provides system vitals, JVM heap utilization, and engine status for CodeFlow Studio v8.0.
+ * Provides system vitals, JVM heap utilization, and engine status for CodeFlow Studio v9.0.
  */
 @RestController
 @RequestMapping("/api/v1")
@@ -26,7 +26,7 @@ public class HealthController {
     public ResponseEntity<Map<String, Object>> getHealth() {
         Map<String, Object> health = new LinkedHashMap<>();
         health.put("status", "UP");
-        health.put("version", "8.0.0");
+        health.put("version", "9.0.0");
         health.put("service", "CodeFlow Studio Architecture Engine");
         health.put("timestamp", Instant.now().toString());
         return ResponseEntity.ok(health);

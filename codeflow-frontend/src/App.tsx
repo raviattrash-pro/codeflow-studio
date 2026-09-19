@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, Suspense, lazy } from 'react';
 import axios from 'axios';
 import {
-  Sparkles, Layers, ShieldCheck, Database, Play, Pause,
+  Sparkles, Layers, ShieldCheck, Database, Play, Pause, Monitor, Users, Network,
   RotateCcw, Search, ChevronRight, Server, Globe, Cpu,
   Flame, CheckCircle2, ArrowRight, Zap, Code2, GitBranch,
   Terminal, Lock, FileCode, Check, Copy, ExternalLink, Activity,
@@ -39,12 +39,19 @@ const CloudInfraSynthesizerModal = lazy(() => import('./components/CloudInfraSyn
 const EventStreamVisualizerModal = lazy(() => import('./components/EventStreamVisualizerModal').then(m => ({ default: m.EventStreamVisualizerModal })));
 const VoiceCopilotModal = lazy(() => import('./components/VoiceCopilotModal').then(m => ({ default: m.VoiceCopilotModal })));
 const DistributedTracingModal = lazy(() => import('./components/DistributedTracingModal').then(m => ({ default: m.DistributedTracingModal })));
+const VsCodeSidecarModal = lazy(() => import('./components/VsCodeSidecarModal').then(m => ({ default: m.VsCodeSidecarModal })));
+const ChromeExtensionModal = lazy(() => import('./components/ChromeExtensionModal').then(m => ({ default: m.ChromeExtensionModal })));
+const LiveCollabModal = lazy(() => import('./components/LiveCollabModal').then(m => ({ default: m.LiveCollabModal })));
+const ComplianceMatrixModal = lazy(() => import('./components/ComplianceMatrixModal').then(m => ({ default: m.ComplianceMatrixModal })));
+const GraphqlGrpcModal = lazy(() => import('./components/GraphqlGrpcModal').then(m => ({ default: m.GraphqlGrpcModal })));
+const ServiceMeshModal = lazy(() => import('./components/ServiceMeshModal').then(m => ({ default: m.ServiceMeshModal })));
 import {
   ReactRuntimeGraphic, TracingGraphic, ApiMetricsGraphic, SequenceGraphic,
   HeatmapGraphic, ErdGraphic, SecurityGraphic, AiGraphic,
   SqlGraphic, DepsGraphic, FileTreeGraphic, ExportGraphic,
   ScorecardGraphic, SandboxGraphic, TsGenGraphic, ChaosGraphic, BlueprintGraphic,
-  DriftGraphic, TestGenGraphic, CloudInfraGraphic, EventStreamGraphic, VoiceCopilotGraphic, DistributedTracingGraphic
+  DriftGraphic, TestGenGraphic, CloudInfraGraphic, EventStreamGraphic, VoiceCopilotGraphic, DistributedTracingGraphic,
+  VsCodeGraphic, ChromeExtGraphic, LiveCollabGraphic, ComplianceGraphic, GraphqlGrpcGraphic, ServiceMeshGraphic
 } from './components/ToolPreviewGraphics';
 import { Project, GraphData, NodeDetail, ProjectNode, AiAnalysisType } from './types';
 import { useToast } from './components/ToastNotification';
@@ -553,6 +560,18 @@ export default function App() {
       handleOpenToolDirectly('test-gen');
     } else if (c.includes('docker') || c.includes('terraform') || c.includes('cloud')) {
       handleOpenToolDirectly('cloud-infra');
+    } else if (c.includes('vscode') || c.includes('ide') || c.includes('sidecar')) {
+      handleOpenToolDirectly('vscode');
+    } else if (c.includes('chrome') || c.includes('extension')) {
+      handleOpenToolDirectly('chrome-ext');
+    } else if (c.includes('collab') || c.includes('webrtc') || c.includes('share')) {
+      handleOpenToolDirectly('live-collab');
+    } else if (c.includes('compliance') || c.includes('soc2') || c.includes('hipaa')) {
+      handleOpenToolDirectly('compliance');
+    } else if (c.includes('graphql') || c.includes('grpc') || c.includes('proto')) {
+      handleOpenToolDirectly('graphql-grpc');
+    } else if (c.includes('mesh') || c.includes('istio') || c.includes('envoy')) {
+      handleOpenToolDirectly('service-mesh');
     } else {
       handleOpenAi(command, 'ARCHITECTURE');
     }
@@ -589,6 +608,12 @@ export default function App() {
   const [isEventStreamOpen, setIsEventStreamOpen] = useState(false);
   const [isVoiceCopilotOpen, setIsVoiceCopilotOpen] = useState(false);
   const [isDistTracingOpen, setIsDistTracingOpen] = useState(false);
+  const [isVsCodeOpen, setIsVsCodeOpen] = useState(false);
+  const [isChromeExtOpen, setIsChromeExtOpen] = useState(false);
+  const [isLiveCollabOpen, setIsLiveCollabOpen] = useState(false);
+  const [isComplianceOpen, setIsComplianceOpen] = useState(false);
+  const [isGraphqlGrpcOpen, setIsGraphqlGrpcOpen] = useState(false);
+  const [isServiceMeshOpen, setIsServiceMeshOpen] = useState(false);
   const [viewingFilePath, setViewingFilePath] = useState<string | null>(null);
   const [aiInitialPrompt, setAiInitialPrompt] = useState<string | undefined>(undefined);
   const [aiInitialAnalysisType, setAiInitialAnalysisType] = useState<AiAnalysisType | undefined>(undefined);
@@ -618,6 +643,12 @@ export default function App() {
     setIsEventStreamOpen(false);
     setIsVoiceCopilotOpen(false);
     setIsDistTracingOpen(false);
+    setIsVsCodeOpen(false);
+    setIsChromeExtOpen(false);
+    setIsLiveCollabOpen(false);
+    setIsComplianceOpen(false);
+    setIsGraphqlGrpcOpen(false);
+    setIsServiceMeshOpen(false);
     setViewingFilePath(null);
   };
 
@@ -662,7 +693,7 @@ export default function App() {
     isRuntimeTracingOpen || isApiMetricsOpen || isSequenceDiagramOpen || isLatencyHeatmapOpen ||
     isReactRuntimeOpen || isCommandPaletteOpen || isScorecardOpen || isApiSandboxOpen ||
     isTsGeneratorOpen || isChaosOpen || isBlueprintOpen || isDriftOpen || isTestGenOpen ||
-    isCloudInfraOpen || isEventStreamOpen || isVoiceCopilotOpen || isDistTracingOpen || viewingFilePath !== null;
+    isCloudInfraOpen || isEventStreamOpen || isVoiceCopilotOpen || isDistTracingOpen || isVsCodeOpen || isChromeExtOpen || isLiveCollabOpen || isComplianceOpen || isGraphqlGrpcOpen || isServiceMeshOpen || viewingFilePath !== null;
 
   // Body Scroll Lock when modal is active (prevents background jumping)
   useEffect(() => {
@@ -745,6 +776,12 @@ export default function App() {
     else if (toolKey === 'event-stream' || toolKey === 'kafka' || toolKey === 'events') setIsEventStreamOpen(true);
     else if (toolKey === 'voice' || toolKey === 'copilot') setIsVoiceCopilotOpen(true);
     else if (toolKey === 'dist-tracing' || toolKey === 'otel') setIsDistTracingOpen(true);
+    else if (toolKey === 'vscode' || toolKey === 'sidecar') setIsVsCodeOpen(true);
+    else if (toolKey === 'chrome-ext' || toolKey === 'chrome') setIsChromeExtOpen(true);
+    else if (toolKey === 'live-collab' || toolKey === 'collab') setIsLiveCollabOpen(true);
+    else if (toolKey === 'compliance' || toolKey === 'soc2') setIsComplianceOpen(true);
+    else if (toolKey === 'graphql-grpc' || toolKey === 'graphql' || toolKey === 'grpc') setIsGraphqlGrpcOpen(true);
+    else if (toolKey === 'service-mesh' || toolKey === 'mesh' || toolKey === 'istio') setIsServiceMeshOpen(true);
   };
 
   useEffect(() => {
@@ -1472,7 +1509,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
             <div className="w-full max-w-5xl mb-12">
               <div className="text-center mb-8">
                 <h3 className={`text-xl md:text-2xl font-bold font-mono ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                  23 Specialized Visual Architecture Tools
+                  29 Specialized Visual Architecture Tools
                 </h3>
                 <p className="text-xs md:text-sm text-slate-400 font-mono mt-1">
                   Click any card to launch interactive demo mode directly into that tool
@@ -1700,6 +1737,66 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     badge: 'v8.0 Voice',
                     graphic: VoiceCopilotGraphic,
                     preview: '🎙️ &quot;Audit database entity relationships&quot;'
+                  },
+                  {
+                    title: 'VS Code IDE Sidecar & Extension',
+                    desc: 'Bidirectional WebSocket LSP sidecar, TypeScript manifest compiler, and active-editor architecture synchronization.',
+                    icon: Monitor,
+                    col: 'text-blue-400',
+                    key: 'vscode',
+                    badge: 'v9.0 NEW',
+                    graphic: VsCodeGraphic,
+                    preview: '💻 ws://127.0.0.1:4000 • Active: OrderController.java'
+                  },
+                  {
+                    title: 'Chrome Extension & GitHub DOM',
+                    desc: 'Manifest V3 injector overlaying interactive CodeFlow badges, layer badges, and flow buttons right on GitHub.',
+                    icon: Globe,
+                    col: 'text-pink-400',
+                    key: 'chrome-ext',
+                    badge: 'v9.0 NEW',
+                    graphic: ChromeExtGraphic,
+                    preview: '🌐 GitHub Overlay • [⚡ View Flow] Injected on PR #42'
+                  },
+                  {
+                    title: 'WebRTC Live Collab & Whiteboard',
+                    desc: 'Real-time peer-to-peer architecture review room with multi-cursor broadcasting, live chat & whiteboard pins.',
+                    icon: Users,
+                    col: 'text-emerald-400',
+                    key: 'live-collab',
+                    badge: 'v9.0 NEW',
+                    graphic: LiveCollabGraphic,
+                    preview: '👥 3 Peers Connected (Mesh P2P) • 0ms Relay Latency'
+                  },
+                  {
+                    title: 'Zero-Trust Compliance Matrix',
+                    desc: 'Automated policy validator auditing SOC2 Type II, ISO 27001, HIPAA, and GDPR against static codebase AST.',
+                    icon: ShieldCheck,
+                    col: 'text-teal-400',
+                    key: 'compliance',
+                    badge: 'v9.0 NEW',
+                    graphic: ComplianceGraphic,
+                    preview: '🛡️ SOC2 PASS (96%) • ISO 27001 PASS • HIPAA WARN'
+                  },
+                  {
+                    title: 'GraphQL SDL & gRPC Protobuf v3',
+                    desc: 'Synthesize production-grade GraphQL SDL queries/mutations and gRPC Proto3 schemas from Spring REST controllers.',
+                    icon: FileCode,
+                    col: 'text-purple-400',
+                    key: 'graphql-grpc',
+                    badge: 'v9.0 NEW',
+                    graphic: GraphqlGrpcGraphic,
+                    preview: '⚡ type Query { order(id: ID!): Order } • service OrderService'
+                  },
+                  {
+                    title: 'Multi-Repo Service Mesh & Istio',
+                    desc: 'Multi-service traffic topology visualizer, Envoy proxy sidecar configurations, and Istio VirtualService synthesizer.',
+                    icon: Network,
+                    col: 'text-cyan-400',
+                    key: 'service-mesh',
+                    badge: 'v9.0 NEW',
+                    graphic: ServiceMeshGraphic,
+                    preview: '🕸️ 4 Services Mesh • Envoy Sidecars • Istio mTLS STRICT'
                   }
                 ].map((f, i) => {
                   const Icon = f.icon;
@@ -1994,6 +2091,42 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
         <DistributedTracingModal
           isOpen={isDistTracingOpen}
           onClose={() => setIsDistTracingOpen(false)}
+          currentTheme={currentTheme}
+        />
+
+        <VsCodeSidecarModal
+          isOpen={isVsCodeOpen}
+          onClose={() => setIsVsCodeOpen(false)}
+          currentTheme={currentTheme}
+        />
+
+        <ChromeExtensionModal
+          isOpen={isChromeExtOpen}
+          onClose={() => setIsChromeExtOpen(false)}
+          currentTheme={currentTheme}
+        />
+
+        <LiveCollabModal
+          isOpen={isLiveCollabOpen}
+          onClose={() => setIsLiveCollabOpen(false)}
+          currentTheme={currentTheme}
+        />
+
+        <ComplianceMatrixModal
+          isOpen={isComplianceOpen}
+          onClose={() => setIsComplianceOpen(false)}
+          currentTheme={currentTheme}
+        />
+
+        <GraphqlGrpcModal
+          isOpen={isGraphqlGrpcOpen}
+          onClose={() => setIsGraphqlGrpcOpen(false)}
+          currentTheme={currentTheme}
+        />
+
+        <ServiceMeshModal
+          isOpen={isServiceMeshOpen}
+          onClose={() => setIsServiceMeshOpen(false)}
           currentTheme={currentTheme}
         />
       </Suspense>

@@ -353,3 +353,91 @@ export const DistributedTracingGraphic: React.FC<GraphicProps> = ({ isLight }) =
     <rect x="150" y="44" width="20" height="6" rx="3" fill="#10b981" />
   </svg>
 );
+
+export const VsCodeGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <rect x="25" y="10" width="30" height="40" rx="4" fill={isLight ? '#eff6ff' : '#1e293b'} stroke="#3b82f6" strokeWidth="1.2" />
+    <line x1="33" y1="18" x2="47" y2="18" stroke="#3b82f6" strokeWidth="2" />
+    <line x1="33" y1="24" x2="44" y2="24" stroke="#60a5fa" strokeWidth="1.5" />
+    <line x1="33" y1="30" x2="50" y2="30" stroke="#60a5fa" strokeWidth="1.5" />
+    <path d="M 60 30 L 105 30" stroke="#3b82f6" strokeWidth="1.5" strokeDasharray="3 3" />
+    <polygon points="105,27 111,30 105,33" fill="#3b82f6" />
+    <rect x="115" y="10" width="100" height="40" rx="4" fill={isLight ? '#f0f9ff' : '#0f172a'} stroke="#0284c7" strokeWidth="1.2" />
+    <text x="165" y="26" textAnchor="middle" fill="#0284c7" fontSize="7.5" fontWeight="bold" fontFamily="monospace">codeflow-sidecar</text>
+    <text x="165" y="38" textAnchor="middle" fill={isLight ? '#64748b' : '#38bdf8'} fontSize="6.5" fontFamily="monospace">ws://127.0.0.1:4000</text>
+  </svg>
+);
+
+export const ChromeExtGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <rect x="25" y="12" width="80" height="36" rx="4" fill={isLight ? '#faf5ff' : '#1e1b4b'} stroke="#a855f7" strokeWidth="1.2" />
+    <text x="65" y="26" textAnchor="middle" fill="#a855f7" fontSize="7.5" fontWeight="bold" fontFamily="monospace">github.com/repo</text>
+    <circle cx="37" cy="36" r="3" fill="#ef4444" />
+    <circle cx="45" cy="36" r="3" fill="#eab308" />
+    <circle cx="53" cy="36" r="3" fill="#22c55e" />
+    <path d="M 110 30 L 135 30" stroke="#ec4899" strokeWidth="1.5" />
+    <rect x="140" y="10" width="75" height="40" rx="6" fill={isLight ? '#fdf2f8' : '#3b0764'} stroke="#ec4899" strokeWidth="1.2" />
+    <text x="177" y="26" textAnchor="middle" fill="#ec4899" fontSize="7.5" fontWeight="bold" fontFamily="monospace">DOM Overlay</text>
+    <text x="177" y="38" textAnchor="middle" fill="#f472b6" fontSize="6.5" fontFamily="monospace">[View Flow ⚡]</text>
+  </svg>
+);
+
+export const LiveCollabGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <circle cx="45" cy="24" r="10" fill="#3b82f6" />
+    <text x="45" y="27" textAnchor="middle" fill="#ffffff" fontSize="8" fontWeight="bold">A</text>
+    <text x="45" y="44" textAnchor="middle" fill="#3b82f6" fontSize="6.5" fontFamily="monospace">Alex (Host)</text>
+    <circle cx="195" cy="24" r="10" fill="#10b981" />
+    <text x="195" y="27" textAnchor="middle" fill="#ffffff" fontSize="8" fontWeight="bold">S</text>
+    <text x="195" y="44" textAnchor="middle" fill="#10b981" fontSize="6.5" fontFamily="monospace">Sarah</text>
+    <path d="M 60 24 C 100 10, 140 10, 180 24" fill="none" stroke="#6366f1" strokeWidth="1.5" strokeDasharray="4 4" />
+    <rect x="105" y="14" width="30" height="18" rx="4" fill={isLight ? '#eff6ff' : '#1e1b4b'} stroke="#6366f1" strokeWidth="1" />
+    <text x="120" y="26" textAnchor="middle" fill="#6366f1" fontSize="7" fontWeight="bold" fontFamily="monospace">P2P</text>
+  </svg>
+);
+
+export const ComplianceGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    {[
+      { label: 'SOC2', status: 'PASS', col: '#10b981', x: 25 },
+      { label: 'ISO27001', status: 'PASS', col: '#10b981', x: 75 },
+      { label: 'HIPAA', status: 'WARN', col: '#f59e0b', x: 130 },
+      { label: 'GDPR', status: 'PASS', col: '#10b981', x: 185 },
+    ].map((item, i) => (
+      <g key={i}>
+        <rect x={item.x} y="12" width="45" height="36" rx="4" fill={isLight ? '#f8fafc' : '#1e293b'} stroke={item.col} strokeWidth="1.2" />
+        <text x={item.x + 22.5} y="25" textAnchor="middle" fill={isLight ? '#1e293b' : '#f8fafc'} fontSize="6.5" fontWeight="bold" fontFamily="monospace">{item.label}</text>
+        <rect x={item.x + 8} y="31" width="29" height="12" rx="2" fill={item.col} opacity="0.2" />
+        <text x={item.x + 22.5} y="40" textAnchor="middle" fill={item.col} fontSize="6" fontWeight="bold" fontFamily="monospace">{item.status}</text>
+      </g>
+    ))}
+  </svg>
+);
+
+export const GraphqlGrpcGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <rect x="25" y="12" width="80" height="36" rx="4" fill={isLight ? '#fdf2f8' : '#3b0764'} stroke="#ec4899" strokeWidth="1.2" />
+    <text x="65" y="26" textAnchor="middle" fill="#ec4899" fontSize="7.5" fontWeight="bold" fontFamily="monospace">GraphQL SDL</text>
+    <text x="65" y="38" textAnchor="middle" fill="#f472b6" fontSize="6.5" fontFamily="monospace">type Query &#123; ... &#125;</text>
+    <text x="120" y="34" textAnchor="middle" fill="#8b5cf6" fontSize="11" fontWeight="bold">⇄</text>
+    <rect x="135" y="12" width="80" height="36" rx="4" fill={isLight ? '#eff6ff' : '#1e293b'} stroke="#3b82f6" strokeWidth="1.2" />
+    <text x="175" y="26" textAnchor="middle" fill="#3b82f6" fontSize="7.5" fontWeight="bold" fontFamily="monospace">gRPC Proto3</text>
+    <text x="175" y="38" textAnchor="middle" fill="#60a5fa" fontSize="6.5" fontFamily="monospace">service Order &#123; ... &#125;</text>
+  </svg>
+);
+
+export const ServiceMeshGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <rect x="25" y="14" width="50" height="32" rx="4" fill={isLight ? '#f0fdf4' : '#064e3b'} stroke="#10b981" strokeWidth="1.2" />
+    <text x="50" y="28" textAnchor="middle" fill="#10b981" fontSize="7" fontWeight="bold" fontFamily="monospace">auth-svc</text>
+    <text x="50" y="38" textAnchor="middle" fill="#34d399" fontSize="5.5" fontFamily="monospace">Envoy :8081</text>
+    <path d="M 80 30 L 105 30" stroke="#0ea5e9" strokeWidth="1.5" strokeDasharray="3 3" />
+    <rect x="110" y="10" width="45" height="40" rx="4" fill={isLight ? '#e0f2fe' : '#0c4a6e'} stroke="#0284c7" strokeWidth="1.2" />
+    <text x="132" y="26" textAnchor="middle" fill="#0284c7" fontSize="7" fontWeight="bold" fontFamily="monospace">mTLS 🔒</text>
+    <text x="132" y="38" textAnchor="middle" fill="#38bdf8" fontSize="6" fontFamily="monospace">Istio Pilot</text>
+    <path d="M 160 30 L 180 30" stroke="#0ea5e9" strokeWidth="1.5" strokeDasharray="3 3" />
+    <rect x="185" y="14" width="50" height="32" rx="4" fill={isLight ? '#faf5ff' : '#3b0764'} stroke="#a855f7" strokeWidth="1.2" />
+    <text x="210" y="28" textAnchor="middle" fill="#a855f7" fontSize="7" fontWeight="bold" fontFamily="monospace">order-svc</text>
+    <text x="210" y="38" textAnchor="middle" fill="#c084fc" fontSize="5.5" fontFamily="monospace">Envoy :8082</text>
+  </svg>
+);
