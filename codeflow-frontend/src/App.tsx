@@ -659,7 +659,7 @@ export default function App() {
     setIsAiAssistantOpen(true);
   };
 
-  const [currentTheme, setCurrentTheme] = useState<ThemeMode>('NIGHT');
+  const [currentTheme, setCurrentTheme] = useState<ThemeMode>('NORMAL');
 
   // Interactive Hero Workbench State
   const [activeScenarioKey, setActiveScenarioKey] = useState<ScenarioKey>('checkout');
@@ -676,6 +676,11 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', currentTheme);
+    if (currentTheme === 'NIGHT') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }, [currentTheme]);
 
   // Live Auto-play scrubber for hero workbench
@@ -889,7 +894,7 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
     switch (currentTheme) {
       case 'NEUMORPHIC': return 'bg-[#e0e5ec] text-[#2d3748]';
       case 'GLASSMORPHISM': return 'bg-[#eef2f6] text-slate-900';
-      case 'NORMAL': return 'bg-[#f8fafc] text-slate-900';
+      case 'NORMAL': return 'bg-[#ece2fa] text-slate-900';
       default: return 'bg-[#090d16] text-slate-100';
     }
   };
@@ -940,57 +945,58 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
           /* ========================================================================= */
           /* PREMIUM HANDCRAFTED DEVELOPER LANDING STUDIO                               */
           /* ========================================================================= */
-          <div className={`flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-10 flex flex-col items-center relative transition-colors duration-200 ${getPageBgClass()}`}>
+          <div
+            className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-10 flex flex-col items-center relative transition-colors duration-200"
+            style={{ backgroundColor: isLight ? '#ece2fa' : '#090d16', color: isLight ? '#0f172a' : '#f8fafc' }}
+          >
             {/* Top Atmospheric Radial Glow (Subtle Cyan & Indigo) */}
             <div className="absolute top-0 inset-x-0 h-[420px] bg-[radial-gradient(ellipse_at_top,rgba(14,165,233,0.1),rgba(99,102,241,0.1),transparent_70%)] pointer-events-none" />
 
             {/* 1. Release Eyebrow Chip */}
-            <div className={`inline-flex items-center space-x-2.5 px-3.5 py-1.5 rounded-full text-xs font-mono font-semibold mb-6 transition-all ${
+            <div className={`inline-flex items-center space-x-2.5 px-4 py-1.5 rounded-full text-xs font-mono font-bold mb-6 transition-all ${
               isLight
-                ? 'bg-sky-500/10 text-sky-700 border border-sky-500/30'
-                : 'bg-sky-500/10 text-sky-300 border border-sky-500/30 shadow-md shadow-sky-500/5'
+                ? 'bg-white text-purple-900 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
+                : 'bg-slate-900 text-purple-300 border-2 border-slate-700 shadow-md'
             }`}>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>CODEFLOW STUDIO 5.0 • REACT 19 & SPRING BOOT 3 RUNTIME ENGINE</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>CODEFLOW STUDIO 5.0 • REACT 19 &amp; SPRING BOOT 3 RUNTIME ENGINE</span>
             </div>
 
             {/* 2. Hero Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-center max-w-4xl tracking-tight leading-[1.14] mb-4">
-              <span className={isLight ? 'text-slate-900' : 'text-slate-50'}>
-                Observe, Replay &amp; Master Real Code Execution.
-              </span>
-              <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-indigo-400">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-center max-w-4xl tracking-tight leading-[1.14] mb-4 text-slate-900 dark:text-white">
+              Observe, Replay &amp; Master Real Code Execution.
+              <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-700 via-indigo-600 to-sky-600 dark:from-purple-400 dark:via-sky-300 dark:to-indigo-400">
                 From HTTP Request to Hibernate SQL in Milliseconds.
               </span>
             </h1>
 
             {/* 3. Hero Subtitle */}
-            <p className={`text-sm md:text-base max-w-3xl text-center leading-relaxed mb-8 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-              A developer-first visual IDE and execution debugger for <strong className={isLight ? 'text-slate-900' : 'text-slate-200'}>Spring Boot 3</strong> and <strong className={isLight ? 'text-slate-900' : 'text-slate-200'}>React 19</strong>. Step through runtime call-stacks, inspect security filter chains, explore relational schemas, and audit performance bottlenecks.
+            <p className="text-sm md:text-base max-w-3xl text-center font-medium leading-relaxed mb-8 text-slate-700 dark:text-slate-300">
+              A developer-first visual IDE and execution debugger for <strong className="text-slate-900 dark:text-white">Spring Boot 3</strong> and <strong className="text-slate-900 dark:text-white">React 19</strong>. Step through runtime call-stacks, inspect security filter chains, explore relational schemas, and audit performance bottlenecks.
             </p>
 
             {/* 4. Main Action Hub (CTAs + Keyboard Hints) */}
             <div className="flex flex-col sm:flex-row items-center gap-4 mb-10 z-10">
               <button
                 onClick={handleLoadDemoProject}
-                className="w-full sm:w-auto flex items-center justify-center space-x-3 px-8 py-3.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-sm font-bold text-white shadow-xl shadow-sky-600/25 transition-all transform hover:scale-[1.02] active:scale-98 group"
+                className="w-full sm:w-auto flex items-center justify-center space-x-3 px-8 py-3.5 rounded-xl bg-[#9333ea] hover:bg-[#7e22ce] text-white border-2 border-black font-bold text-sm shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all transform hover:scale-[1.02] active:scale-98 cursor-pointer"
               >
-                <Play className="w-4 h-4 fill-white group-hover:translate-x-0.5 transition-transform" />
+                <Play className="w-4 h-4 fill-white" />
                 <span>Launch Full Studio (Demo Mode)</span>
-                <span className="keycap ml-1">D</span>
+                <span className="ml-2 px-1.5 py-0.5 rounded bg-white/20 text-xs font-mono font-bold">D</span>
               </button>
 
               <button
                 onClick={() => setIsIngestModalOpen(true)}
-                className={`w-full sm:w-auto flex items-center justify-center space-x-2.5 px-6 py-3.5 rounded-xl text-sm font-semibold transition-all transform hover:scale-[1.02] active:scale-98 ${
+                className={`w-full sm:w-auto flex items-center justify-center space-x-2.5 px-8 py-3.5 rounded-xl text-sm font-bold border-2 transition-all transform hover:scale-[1.02] active:scale-98 cursor-pointer ${
                   isLight
-                    ? 'bg-white border border-slate-300 text-slate-800 shadow-sm hover:bg-slate-50'
-                    : 'bg-[#0f172a] border border-slate-700/80 text-slate-200 hover:border-slate-500 shadow-lg'
+                    ? 'bg-white border-black text-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:bg-slate-50'
+                    : 'bg-slate-900 border-slate-700 text-white shadow-xl hover:border-slate-500'
                 }`}
               >
-                <Sparkles className="w-4 h-4 text-sky-400" />
+                <Sparkles className="w-4 h-4 text-purple-600 dark:text-sky-400" />
                 <span>Import Repository / ZIP</span>
-                <span className="keycap ml-1">I</span>
+                <span className="ml-2 px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-xs font-mono font-bold">I</span>
               </button>
             </div>
 
@@ -1043,26 +1049,26 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
             </div>
 
             {/* 5. Live Telemetry Strip */}
-            <div className={`flex flex-wrap items-center justify-center gap-4 md:gap-8 px-6 py-2.5 rounded-2xl text-xs font-mono mb-12 shadow-sm border ${
+            <div className={`flex flex-wrap items-center justify-center gap-4 md:gap-8 px-6 py-3 rounded-2xl text-xs font-mono mb-12 border-2 ${
               isLight
-                ? 'bg-white border-slate-200 text-slate-600'
-                : 'bg-slate-900/60 border-slate-800/80 text-slate-400'
+                ? 'bg-white border-black text-slate-900 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]'
+                : 'bg-slate-900 border-slate-700 text-slate-100 shadow-xl'
             }`}>
               <div className="flex items-center space-x-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                <span className={isLight ? 'text-slate-800 font-medium' : 'text-slate-300'}>12 Visual Architecture Tools</span>
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span className="font-bold">29 Visual Architecture Tools</span>
               </div>
               <div className="flex items-center space-x-1.5">
-                <Activity className="w-3.5 h-3.5 text-cyan-400" />
-                <span className={isLight ? 'text-slate-800 font-medium' : 'text-slate-300'}>7-Hop Tracing Engine</span>
+                <Activity className="w-3.5 h-3.5 text-purple-600 dark:text-cyan-400" />
+                <span className="font-bold">7-Hop Tracing Engine</span>
               </div>
               <div className="flex items-center space-x-1.5">
-                <Zap className="w-3.5 h-3.5 text-amber-400" />
-                <span className={isLight ? 'text-slate-800 font-medium' : 'text-slate-300'}>100% Offline Demo Mode</span>
+                <Zap className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                <span className="font-bold">100% Offline Demo Mode</span>
               </div>
               <div className="flex items-center space-x-1.5">
-                <Shield className="w-3.5 h-3.5 text-indigo-400" />
-                <span className={isLight ? 'text-slate-800 font-medium' : 'text-slate-300'}>Spring Security 6 Audit</span>
+                <Shield className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                <span className="font-bold">Spring Security 6 Audit</span>
               </div>
             </div>
 
@@ -1084,10 +1090,10 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
             {/* ===================================================================== */}
             {/* 6. THE LIVE INTERACTIVE WORKBENCH (Core Hands-On Simulation Sandbox)   */}
             {/* ===================================================================== */}
-            <div className={`w-full max-w-5xl rounded-2xl border mb-16 overflow-hidden relative shadow-2xl transition-colors duration-200 ${
+            <div className={`w-full max-w-5xl rounded-2xl border-2 mb-16 overflow-hidden relative shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-colors duration-200 ${
               isLight
-                ? 'bg-white border-slate-200 text-slate-900'
-                : 'bg-[#0c1222]/95 border-slate-800/90 text-slate-100'
+                ? 'bg-white border-black text-slate-900'
+                : 'bg-[#0c1222]/95 border-slate-700 text-slate-100'
             }`}>
               {/* macOS Window Chrome Header */}
               <div className={`px-5 py-3 border-b flex flex-col md:flex-row md:items-center justify-between gap-3 ${
@@ -1877,8 +1883,6 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
           /* ACTIVE PROJECT WORKSPACE (Interactive Flow Canvas + Inspector)            */
           /* ========================================================================= */
           <div className="flex-1 flex flex-col overflow-hidden">
-            {project && <ProjectDashboard project={project} currentTheme={currentTheme} />}
-
             <div className="flex-1 flex overflow-hidden">
               <InteractiveFlowExplorer
                 graphData={graphData}
@@ -1886,6 +1890,8 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                 selectedNodeId={selectedNodeId}
                 onViewCode={(path) => setViewingFilePath(path)}
                 currentTheme={currentTheme}
+                onOpenTool={(toolKey) => handleOpenToolDirectly(toolKey)}
+                projectName={project?.name || 'Repository'}
               />
 
               {selectedNodeDetail && (

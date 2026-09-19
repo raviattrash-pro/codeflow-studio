@@ -337,10 +337,10 @@ print(response.json())`;
               <button
                 onClick={handleExecute}
                 disabled={isLoading}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 shadow transition flex-shrink-0"
+                className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold font-mono rounded-xl bg-[#9333ea] hover:bg-[#7e22ce] text-white shadow-md transition flex-shrink-0 cursor-pointer disabled:opacity-50"
               >
                 {isLoading ? <RotateCcw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5 fill-current" />}
-                {isLoading ? 'Sending...' : 'Send'}
+                <span>{isLoading ? 'Sending...' : 'Send'}</span>
               </button>
             </div>
 

@@ -171,9 +171,11 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
             onClick={() => { setActiveTab('github'); setErrorMessage(null); }}
             className={`flex items-center space-x-2 py-2.5 px-4 text-xs font-mono font-bold border-b-2 transition-all cursor-pointer ${
               activeTab === 'github'
-                ? 'border-cyan-500 text-cyan-500'
+                ? isLight
+                  ? 'border-purple-600 text-purple-700 font-extrabold'
+                  : 'border-purple-400 text-purple-400 font-extrabold'
                 : isLight
-                ? 'border-transparent text-slate-500 hover:text-slate-900'
+                ? 'border-transparent text-slate-600 hover:text-slate-900'
                 : 'border-transparent text-slate-400 hover:text-white'
             }`}
           >
@@ -184,9 +186,11 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
             onClick={() => { setActiveTab('zip'); setErrorMessage(null); }}
             className={`flex items-center space-x-2 py-2.5 px-4 text-xs font-mono font-bold border-b-2 transition-all cursor-pointer ${
               activeTab === 'zip'
-                ? 'border-cyan-500 text-cyan-500'
+                ? isLight
+                  ? 'border-purple-600 text-purple-700 font-extrabold'
+                  : 'border-purple-400 text-purple-400 font-extrabold'
                 : isLight
-                ? 'border-transparent text-slate-500 hover:text-slate-900'
+                ? 'border-transparent text-slate-600 hover:text-slate-900'
                 : 'border-transparent text-slate-400 hover:text-white'
             }`}
           >
@@ -234,14 +238,14 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
                   disabled={isLoading}
                   className={`w-full px-4 py-2.5 rounded-xl border text-xs font-mono outline-none transition-all ${
                     isLight
-                      ? 'bg-white border-slate-300 text-slate-900 focus:border-cyan-500'
-                      : 'bg-slate-900 border-slate-800 text-slate-100 focus:border-cyan-500'
+                      ? 'bg-white border-slate-300 text-slate-900 focus:border-purple-500'
+                      : 'bg-slate-900 border-slate-800 text-slate-100 focus:border-purple-500'
                   }`}
                 />
 
                 {/* Preset Repositories */}
                 <div className="mt-2.5 flex items-center flex-wrap gap-1.5">
-                  <span className="text-[10px] font-mono text-slate-500">Presets:</span>
+                  <span className={`text-[10px] font-mono font-bold ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Presets:</span>
                   {SAMPLE_REPOS.map((repo, idx) => (
                     <button
                       key={idx}
@@ -249,9 +253,11 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
                       onClick={() => { setGithubUrl(repo.url); setErrorMessage(null); }}
                       className={`px-2.5 py-1 rounded-lg border text-[11px] font-mono transition cursor-pointer ${
                         githubUrl === repo.url
-                          ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300 font-bold shadow-xs'
+                          ? isLight
+                            ? 'bg-purple-100 border-purple-600 text-purple-900 font-bold shadow-xs'
+                            : 'bg-purple-900/40 border-purple-500 text-purple-200 font-bold shadow-xs'
                           : isLight
-                          ? 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
+                          ? 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200'
                           : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-white hover:border-slate-700'
                       }`}
                     >
@@ -262,16 +268,16 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
               </div>
 
               <div className={`p-3 rounded-xl border text-[11px] font-mono flex items-center space-x-2 ${
-                isLight ? 'bg-cyan-50 border-cyan-200 text-cyan-800' : 'bg-cyan-950/20 border-cyan-500/20 text-cyan-300'
+                isLight ? 'bg-purple-50 border-purple-200 text-purple-900' : 'bg-purple-950/20 border-purple-500/20 text-purple-300'
               }`}>
-                <Sparkles className="w-4 h-4 shrink-0 text-cyan-500" />
+                <Sparkles className="w-4 h-4 shrink-0 text-purple-600 dark:text-purple-400" />
                 <span>Supports public and token-authenticated Spring Boot &amp; React repos</span>
               </div>
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 active:scale-[0.99] text-white text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all shadow-lg shadow-cyan-950/40 cursor-pointer"
+                className="w-full py-3.5 rounded-xl bg-[#9333ea] hover:bg-[#7e22ce] active:scale-[0.99] text-white text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] cursor-pointer disabled:opacity-50"
               >
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <GitBranch className="w-4 h-4" />}
                 <span>{isLoading ? 'Cloning & Parsing AST...' : 'Ingest Git Repository'}</span>
@@ -285,8 +291,8 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
               }`}>
                 <Upload className="w-8 h-8 mx-auto text-slate-400 mb-2" />
                 <label className="cursor-pointer">
-                  <span className="text-xs font-bold text-cyan-500 hover:underline">Select a ZIP file</span>
-                  <span className={`text-xs ${isLight ? 'text-slate-500' : 'text-slate-400'}`}> or drag and drop</span>
+                  <span className="text-xs font-bold text-purple-600 hover:underline">Select a ZIP file</span>
+                  <span className={`text-xs ${isLight ? 'text-slate-600' : 'text-slate-400'}`}> or drag and drop</span>
                   <input
                     type="file"
                     accept=".zip"
@@ -296,7 +302,7 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
                   />
                 </label>
                 {selectedFile && (
-                  <p className="mt-2 text-xs font-mono font-bold text-emerald-400">
+                  <p className="mt-2 text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">
                     ✓ {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
                   </p>
                 )}
@@ -305,7 +311,7 @@ export const IngestionModal: React.FC<IngestionModalProps> = ({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 active:scale-[0.99] text-white text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all shadow-lg shadow-cyan-950/40 cursor-pointer"
+                className="w-full py-3.5 rounded-xl bg-[#9333ea] hover:bg-[#7e22ce] active:scale-[0.99] text-white text-xs font-bold font-mono flex items-center justify-center space-x-2 transition-all border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] cursor-pointer disabled:opacity-50"
               >
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                 <span>{isLoading ? 'Extracting & Parsing AST...' : 'Upload & Ingest Archive'}</span>

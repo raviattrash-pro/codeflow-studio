@@ -236,10 +236,10 @@ export const ChaosSimulatorModal: React.FC<ChaosSimulatorModalProps> = ({
                 <button
                   onClick={handleRunSimulation}
                   disabled={isRunning}
-                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-400 hover:to-amber-400 text-slate-950 shadow transition"
+                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold font-mono rounded-xl bg-rose-600 hover:bg-rose-500 text-white shadow-md transition cursor-pointer disabled:opacity-50"
                 >
                   <Play className="w-3.5 h-3.5 fill-current" />
-                  {isRunning ? 'Injecting Chaos...' : 'Inject Chaos Fault'}
+                  <span>{isRunning ? 'Injecting Chaos...' : 'Inject Chaos Fault'}</span>
                 </button>
                 <button
                   onClick={handleReset}

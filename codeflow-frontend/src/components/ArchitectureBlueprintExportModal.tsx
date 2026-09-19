@@ -150,10 +150,10 @@ Rel(svc, repo, "Persists AST entities")`;
             <button
               onClick={handleExportSvg}
               disabled={isExporting}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold shadow transition"
+              className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold font-mono rounded-xl bg-[#9333ea] hover:bg-[#7e22ce] text-white shadow-md transition cursor-pointer disabled:opacity-50"
             >
               <Download className="w-3.5 h-3.5" />
-              {isExporting ? 'Exporting...' : 'Export 4K SVG'}
+              <span>{isExporting ? 'Exporting...' : 'Export 4K SVG'}</span>
             </button>
             <button
               onClick={onClose}

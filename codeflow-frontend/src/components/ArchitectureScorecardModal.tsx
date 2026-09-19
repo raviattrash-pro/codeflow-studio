@@ -318,9 +318,11 @@ ${FINDINGS.map((f, i) => `### ${i + 1}. [${f.severity}] ${f.title}
                 <button
                   key={filterKey}
                   onClick={() => setSelectedFilter(filterKey)}
-                  className={`px-2.5 py-1 text-xs font-medium rounded-lg transition ${
+                  className={`px-2.5 py-1 text-xs font-mono font-bold rounded-lg transition cursor-pointer ${
                     selectedFilter === filterKey
-                      ? 'bg-cyan-500 text-slate-950 font-bold shadow'
+                      ? 'bg-purple-600 text-white shadow-sm'
+                      : isLight
+                      ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                       : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                   }`}
                 >
