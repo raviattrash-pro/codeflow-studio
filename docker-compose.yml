@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: codeflow-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-codeflow}
+      POSTGRES_USER: ${POSTGRES_USER:-codeflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Database password is required}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - codeflow-net
+
+  backend:
+    build:
+      context: ./codeflow-backend
+      dockerfile: Dockerfile
+    container_name: codeflow-backend
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-codeflow}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-codeflow}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      CODEFLOW_AI_PROVIDER: ${CODEFLOW_AI_PROVIDER:-none}
+      CODEFLOW_AI_API_KEY: ${CODEFLOW_AI_API_KEY:-}
+      CODEFLOW_AI_MODEL: ${CODEFLOW_AI_MODEL:-gemini-2.0-flash}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/actuator/health | grep UP || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 45s
+    networks:
+      - codeflow-net
+
+  frontend:
+    build:
+      context: ./codeflow-frontend
+      dockerfile: Dockerfile
+    container_name: codeflow-frontend
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-80}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - codeflow-net
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  codeflow-net:
+    driver: bridge

@@ -1,0 +1,2 @@
+# Icon placeholder — replace with actual .ico/.png icons before building
+# Generate icons using: npx tauri icon <path-to-1024x1024-png>

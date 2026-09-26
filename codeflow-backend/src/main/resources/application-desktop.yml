@@ -1,0 +1,41 @@
+# ═══════════════════════════════════════════════════════
+# CodeFlow Studio — Desktop Profile (Tauri Sidecar)
+# ═══════════════════════════════════════════════════════
+server:
+  port: 18080
+
+spring:
+  datasource:
+    url: jdbc:h2:file:${user.home}/.codeflow-studio/data/codeflow;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+codeflow:
+  ai:
+    provider: ollama
+    ollama-url: http://localhost:11434
+    model: codellama
+    max-context-tokens: 2000
+    temperature: 0.3
+
+logging:
+  level:
+    com.codeflow: INFO
+  file:
+    name: ${user.home}/.codeflow-studio/logs/codeflow.log

@@ -308,7 +308,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
           className="flex items-center gap-2 px-3 py-1.5 rounded-xl font-mono text-xs font-bold bg-white text-slate-900 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-purple-50 transition cursor-pointer dark:bg-slate-900 dark:text-white dark:border-slate-700"
         >
           <Wrench className="w-3.5 h-3.5 text-purple-600" />
-          <span>Studio Tools (29)</span>
+          <span>Studio Tools (30)</span>
           <ChevronDown className="w-3.5 h-3.5 opacity-70" />
         </button>
       </div>
@@ -326,7 +326,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
           >
             <div className="p-4 border-b-2 border-black dark:border-slate-700 flex items-center justify-between bg-purple-50 dark:bg-slate-800 shrink-0">
               <div className="flex items-center gap-2">
-                <span className="p-2 rounded-xl bg-purple-600 text-white font-mono font-bold text-xs">29</span>
+                <span className="p-2 rounded-xl bg-purple-600 text-white font-mono font-bold text-xs">30</span>
                 <div>
                   <h2 className="font-mono font-bold text-sm text-slate-900 dark:text-white">CodeFlow Studio Architecture Tool Suite</h2>
                   <p className="text-xs text-slate-500 dark:text-slate-400">Select any analyzer, sandbox, generator or tracer for {projectName}</p>
@@ -375,7 +375,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
 
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider">Infrastructure, Cloud & Resilience (6)</h3>
+                  <h3 className="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider">Infrastructure, Cloud, Resilience & CI/CD (7)</h3>
                   <span className="text-[10px] font-mono text-slate-400">Cloud & Zero-Trust</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
@@ -385,6 +385,7 @@ export const HLDFlowCanvas: React.FC<HLDFlowCanvasProps> = ({
                   <ToolCard icon="💥" label="Chaos Simulator" desc="Latency injection & circuit breakers" onClick={() => { onOpenTool?.('chaos'); setIsAllToolsOpen(false); }} />
                   <ToolCard icon="🛡️" label="Compliance Matrix" desc="Zero-Trust SOC2 & HIPAA controls" onClick={() => { onOpenTool?.('compliance'); setIsAllToolsOpen(false); }} />
                   <ToolCard icon="⚡" label="GraphQL & gRPC Explorer" desc="Protobuf v3 & GraphQL schema synthesizer" onClick={() => { onOpenTool?.('graphql-grpc'); setIsAllToolsOpen(false); }} />
+                  <ToolCard icon="🚧" label="CI/CD Architecture Gate" desc="Static AST rules validation & PR gating" onClick={() => { onOpenTool?.('gate'); setIsAllToolsOpen(false); }} />
                 </div>
               </div>
 

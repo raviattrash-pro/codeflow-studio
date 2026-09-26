@@ -1,0 +1,32 @@
+# ═══════════════════════════════════════════════════════
+# CodeFlow Studio — Docker Profile
+# ═══════════════════════════════════════════════════════
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/codeflow}
+    username: ${SPRING_DATASOURCE_USERNAME:codeflow}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+codeflow:
+  ai:
+    provider: ${CODEFLOW_AI_PROVIDER:none}
+    api-key: ${CODEFLOW_AI_API_KEY:}
+    model: ${CODEFLOW_AI_MODEL:gemini-2.0-flash}

@@ -687,3 +687,33 @@ export const SecurityGraphic: React.FC<GraphicProps> = ({ isLight }) => (
     <text x="200" y="35" textAnchor="middle" fill="#34d399" fontSize="10">✓</text>
   </svg>
 );
+
+// ─── 30. CI/CD ARCHITECTURE GATE ───
+export const ArchGateGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <defs>
+      <style>{`
+        @keyframes gateShield { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+        @keyframes gateScan { 0% { x: 20; opacity: 0; } 30% { opacity: 1; } 70% { opacity: 1; } 100% { x: 220; opacity: 0; } }
+        @keyframes gateCheck { 0%, 60% { opacity: 0; transform: scale(0.5); } 80% { opacity: 1; transform: scale(1.1); } 100% { opacity: 1; transform: scale(1); } }
+      `}</style>
+    </defs>
+    <polygon points="40,8 58,16 58,38 40,48 22,38 22,16" fill={isLight ? '#ecfdf5' : '#064e3b'} stroke="#10b981" strokeWidth="1.5" style={{ transformOrigin: '40px 28px', animation: 'gateShield 2.5s ease-in-out infinite' }} />
+    <text x="40" y="31" textAnchor="middle" fill="#34d399" fontSize="12" fontWeight="bold">🛡</text>
+
+    <rect x="70" y="12" width="40" height="10" rx="3" fill={isLight ? '#f0fdf4' : '#052e16'} stroke="#22c55e" strokeWidth="0.8" />
+    <text x="90" y="20" textAnchor="middle" fill="#4ade80" fontSize="6" fontFamily="monospace">PASS</text>
+    <rect x="70" y="26" width="40" height="10" rx="3" fill={isLight ? '#f0fdf4' : '#052e16'} stroke="#22c55e" strokeWidth="0.8" />
+    <text x="90" y="34" textAnchor="middle" fill="#4ade80" fontSize="6" fontFamily="monospace">PASS</text>
+    <rect x="70" y="40" width="40" height="10" rx="3" fill={isLight ? '#fef2f2' : '#450a0a'} stroke="#ef4444" strokeWidth="0.8" />
+    <text x="90" y="48" textAnchor="middle" fill="#f87171" fontSize="6" fontFamily="monospace">FAIL</text>
+
+    <rect x="20" y="29" width="12" height="2" rx="1" fill="#10b981" opacity="0.6" style={{ animation: 'gateScan 2s linear infinite' }} />
+
+    <line x1="110" y1="30" x2="145" y2="30" stroke="#10b981" strokeWidth="1.5" strokeDasharray="3 3" style={{ animation: 'secFlow 1.2s linear infinite' }} />
+
+    <rect x="150" y="14" width="70" height="34" rx="6" fill={isLight ? '#f0fdf4' : '#052e16'} stroke="#10b981" strokeWidth="1" />
+    <text x="185" y="28" textAnchor="middle" fill="#4ade80" fontSize="7" fontWeight="bold" fontFamily="monospace">CI/CD Gate</text>
+    <text x="185" y="40" textAnchor="middle" fill="#22c55e" fontSize="8" fontFamily="monospace">83% ✓</text>
+  </svg>
+);

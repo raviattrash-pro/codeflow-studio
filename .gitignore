@@ -23,3 +23,10 @@ access_verified.txt
 .env.local
 .env.development.local
 .env.production.local
+
+# Tauri Desktop Build Artifacts
+**/src-tauri/target/
+**/src-tauri/gen/
+
+# Docker Local Volumes
+postgres_data/

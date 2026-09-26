@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "CodeFlow Studio Architecture Rules",
+  "version": "10.0.0",
+  "description": "Enterprise Architectural Quality Gate Ruleset for Spring Boot & React",
+  "rules": [
+    {
+      "id": "LAYER-001",
+      "name": "Controller-Repository Separation",
+      "severity": "HIGH",
+      "description": "Controllers must not directly depend on Repository interfaces. All database persistence operations must flow through a Service layer.",
+      "enforce": true,
+      "sourceTypes": ["CONTROLLER", "REST_CONTROLLER"],
+      "targetTypes": ["REPOSITORY"],
+      "action": "BLOCK"
+    },
+    {
+      "id": "CYCLE-001",
+      "name": "No Circular Dependencies",
+      "severity": "CRITICAL",
+      "description": "Components must maintain acyclic dependency graphs. Circular dependency chains between services or packages are strictly prohibited.",
+      "enforce": true,
+      "scope": "ALL",
+      "action": "BLOCK"
+    },
+    {
+      "id": "LAYER-002",
+      "name": "Service-Controller Separation",
+      "severity": "HIGH",
+      "description": "Service and Domain layer classes must not depend on Controller or Presentation layer components.",
+      "enforce": true,
+      "sourceTypes": ["SERVICE", "DOMAIN_SERVICE"],
+      "targetTypes": ["CONTROLLER", "REST_CONTROLLER"],
+      "action": "BLOCK"
+    },
+    {
+      "id": "JPA-001",
+      "name": "JPA Entity Validation",
+      "severity": "MEDIUM",
+      "description": "Model and entity classes must be annotated with @Entity and specify a primary key annotated with @Id.",
+      "enforce": true,
+      "sourceTypes": ["ENTITY", "MODEL"],
+      "requiredAnnotations": ["@Entity", "@Id"],
+      "action": "WARN"
+    },
+    {
+      "id": "API-001",
+      "name": "REST API Naming Convention",
+      "severity": "LOW",
+      "description": "REST endpoints must use standard kebab-case lowercase path segments.",
+      "enforce": true,
+      "sourceTypes": ["REST_CONTROLLER"],
+      "namingPattern": "^[a-z0-9\\-\\/\\{\\}]+$",
+      "action": "WARN"
+    },
+    {
+      "id": "SEC-001",
+      "name": "Security Annotation Coverage",
+      "severity": "HIGH",
+      "description": "Mutating REST endpoints (@PostMapping, @PutMapping, @DeleteMapping, @PatchMapping) must have explicit security authorizations (@PreAuthorize, @Secured, or @RolesAllowed).",
+      "enforce": true,
+      "sourceTypes": ["REST_CONTROLLER"],
+      "mutatingMethods": ["POST", "PUT", "DELETE", "PATCH"],
+      "requiredSecurityAnnotations": ["@PreAuthorize", "@Secured", "@RolesAllowed"],
+      "action": "BLOCK"
+    }
+  ]
+}

@@ -45,13 +45,17 @@ const LiveCollabModal = lazy(() => import('./components/LiveCollabModal').then(m
 const ComplianceMatrixModal = lazy(() => import('./components/ComplianceMatrixModal').then(m => ({ default: m.ComplianceMatrixModal })));
 const GraphqlGrpcModal = lazy(() => import('./components/GraphqlGrpcModal').then(m => ({ default: m.GraphqlGrpcModal })));
 const ServiceMeshModal = lazy(() => import('./components/ServiceMeshModal').then(m => ({ default: m.ServiceMeshModal })));
+const ArchGateModal = lazy(() => import('./components/ArchGateModal'));
+import { DesktopProvider } from './providers/DesktopProvider';
+import OfflineStatusBar from './components/OfflineStatusBar';
 import {
   ReactRuntimeGraphic, TracingGraphic, ApiMetricsGraphic, SequenceGraphic,
   HeatmapGraphic, ErdGraphic, SecurityGraphic, AiGraphic,
   SqlGraphic, DepsGraphic, FileTreeGraphic, ExportGraphic,
   ScorecardGraphic, SandboxGraphic, TsGenGraphic, ChaosGraphic, BlueprintGraphic,
   DriftGraphic, TestGenGraphic, CloudInfraGraphic, EventStreamGraphic, VoiceCopilotGraphic, DistributedTracingGraphic,
-  VsCodeGraphic, ChromeExtGraphic, LiveCollabGraphic, ComplianceGraphic, GraphqlGrpcGraphic, ServiceMeshGraphic
+  VsCodeGraphic, ChromeExtGraphic, LiveCollabGraphic, ComplianceGraphic, GraphqlGrpcGraphic, ServiceMeshGraphic,
+  ArchGateGraphic
 } from './components/ToolPreviewGraphics';
 import { Project, GraphData, NodeDetail, ProjectNode, AiAnalysisType } from './types';
 import { useToast } from './components/ToastNotification';
@@ -614,6 +618,7 @@ export default function App() {
   const [isComplianceOpen, setIsComplianceOpen] = useState(false);
   const [isGraphqlGrpcOpen, setIsGraphqlGrpcOpen] = useState(false);
   const [isServiceMeshOpen, setIsServiceMeshOpen] = useState(false);
+  const [isArchGateOpen, setIsArchGateOpen] = useState(false);
   const [viewingFilePath, setViewingFilePath] = useState<string | null>(null);
   const [aiInitialPrompt, setAiInitialPrompt] = useState<string | undefined>(undefined);
   const [aiInitialAnalysisType, setAiInitialAnalysisType] = useState<AiAnalysisType | undefined>(undefined);
@@ -649,6 +654,7 @@ export default function App() {
     setIsComplianceOpen(false);
     setIsGraphqlGrpcOpen(false);
     setIsServiceMeshOpen(false);
+    setIsArchGateOpen(false);
     setViewingFilePath(null);
   };
 
@@ -698,7 +704,7 @@ export default function App() {
     isRuntimeTracingOpen || isApiMetricsOpen || isSequenceDiagramOpen || isLatencyHeatmapOpen ||
     isReactRuntimeOpen || isCommandPaletteOpen || isScorecardOpen || isApiSandboxOpen ||
     isTsGeneratorOpen || isChaosOpen || isBlueprintOpen || isDriftOpen || isTestGenOpen ||
-    isCloudInfraOpen || isEventStreamOpen || isVoiceCopilotOpen || isDistTracingOpen || isVsCodeOpen || isChromeExtOpen || isLiveCollabOpen || isComplianceOpen || isGraphqlGrpcOpen || isServiceMeshOpen || viewingFilePath !== null;
+    isCloudInfraOpen || isEventStreamOpen || isVoiceCopilotOpen || isDistTracingOpen || isVsCodeOpen || isChromeExtOpen || isLiveCollabOpen || isComplianceOpen || isGraphqlGrpcOpen || isServiceMeshOpen || isArchGateOpen || viewingFilePath !== null;
 
   // Body Scroll Lock when modal is active (prevents background jumping)
   useEffect(() => {
@@ -789,6 +795,7 @@ export default function App() {
     else if (toolKey === 'compliance' || toolKey === 'soc2') setIsComplianceOpen(true);
     else if (toolKey === 'graphql-grpc' || toolKey === 'graphql' || toolKey === 'grpc') setIsGraphqlGrpcOpen(true);
     else if (toolKey === 'service-mesh' || toolKey === 'mesh' || toolKey === 'istio') setIsServiceMeshOpen(true);
+    else if (toolKey === 'arch-gate' || toolKey === 'gate' || toolKey === 'cicd') setIsArchGateOpen(true);
     else if (toolKey === 'cmd' || toolKey === 'command') setIsCommandPaletteOpen(true);
   };
 
@@ -901,7 +908,8 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
   };
 
   return (
-    <div className={`h-screen w-screen overflow-hidden flex flex-col font-sans select-none ${getPageBgClass()}`}>
+    <DesktopProvider>
+      <div className={`h-screen w-screen overflow-hidden flex flex-col font-sans select-none ${getPageBgClass()}`}>
       <Header
         currentProjectName={project?.name}
         onOpenCommandPalette={() => { closeAllModals(); setIsCommandPaletteOpen(true); }}
@@ -1816,6 +1824,16 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     badge: 'v9.0 NEW',
                     graphic: ServiceMeshGraphic,
                     preview: '🕸️ 4 Services Mesh • Envoy Sidecars • Istio mTLS STRICT'
+                  },
+                  {
+                    title: 'CI/CD Architecture Gate',
+                    desc: 'Automated architectural quality gate auditing layer separation, circular dependencies, JPA compliance & security annotations.',
+                    icon: ShieldCheck,
+                    col: 'text-emerald-400',
+                    key: 'arch-gate',
+                    badge: 'v10.0 NEW',
+                    graphic: ArchGateGraphic,
+                    preview: '🛡️ 6 Rules • 0 Violations • Gate PASSED (100%)'
                   }
                 ].map((f, i) => {
                   const Icon = f.icon;
@@ -2148,9 +2166,19 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
           onClose={() => setIsServiceMeshOpen(false)}
           currentTheme={currentTheme}
         />
+
+        <ArchGateModal
+          isOpen={isArchGateOpen}
+          onClose={() => setIsArchGateOpen(false)}
+          projectId={currentProjectId}
+          isLight={isLight}
+        />
       </Suspense>
       </ErrorBoundary>
 
+      {/* Offline & Desktop Status Indicator */}
+      <OfflineStatusBar isLight={isLight} />
     </div>
+    </DesktopProvider>
   );
 }
