@@ -54,6 +54,17 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
 
   const allCommands: CommandItem[] = useMemo(() => [
     // Tools
+    // v10.0 Suite
+    {
+      id: 'tool-arch-gate',
+      title: 'CI/CD Architecture Gate Dashboard',
+      subtitle: 'Static AST rules validator enforcing layer separation, acyclic graphs, JPA & security rules',
+      category: 'Tools',
+      icon: <ShieldCheck className="w-4 h-4 text-emerald-400" />,
+      shortcut: 'G',
+      action: () => { onClose(); onSelectTool('arch-gate'); },
+      badge: 'v10.0',
+    },
     // v9.0 Suite
     {
       id: 'tool-vscode',
