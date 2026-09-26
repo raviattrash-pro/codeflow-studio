@@ -10,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/projects")
-@CrossOrigin(originPatterns = "*")
 public class RuntimeTracingController {
 
     private final RuntimeTracingService runtimeTracingService;

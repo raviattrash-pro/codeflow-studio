@@ -7,28 +7,28 @@ import com.codeflow.studio.model.ProjectDependency;
 import com.codeflow.studio.repository.ProjectDependencyRepository;
 import com.codeflow.studio.repository.ProjectRepository;
 import com.codeflow.studio.service.AnalysisCoordinatorService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/v1/projects")
-@CrossOrigin(originPatterns = "*")
 public class ProjectController {
 
     private static final Logger log = LoggerFactory.getLogger(ProjectController.class);
+    private static final Pattern SAFE_PROJECT_ID = Pattern.compile("^[a-zA-Z0-9_-]+$");
 
     private final ProjectRepository projectRepository;
     private final ProjectDependencyRepository dependencyRepository;
@@ -51,9 +51,7 @@ public class ProjectController {
         }
 
         String rawUrl = request.getGithubUrl().trim();
-        if (!rawUrl.startsWith("http://") && !rawUrl.startsWith("https://")) {
-            throw new IllegalArgumentException("Invalid repository URL. Must start with https:// or http://");
-        }
+        validateGithubUrlSecurity(rawUrl);
 
         while (rawUrl.endsWith("/") && rawUrl.length() > 1) {
             rawUrl = rawUrl.substring(0, rawUrl.length() - 1);
@@ -90,6 +88,10 @@ public class ProjectController {
 
     @PostMapping("/upload")
     public ResponseEntity<ProjectStatusDto> uploadZipFile(@RequestParam("file") MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("Uploaded file cannot be empty");
+        }
+
         String projectId = "prj_" + UUID.randomUUID().toString().substring(0, 8);
         String fileName = file.getOriginalFilename() != null ? file.getOriginalFilename() : "uploaded-project.zip";
 
@@ -122,6 +124,9 @@ public class ProjectController {
 
     @GetMapping("/{projectId}/status")
     public ResponseEntity<ProjectStatusDto> getStatus(@PathVariable String projectId) {
+        if (projectId == null || !SAFE_PROJECT_ID.matcher(projectId).matches()) {
+            return ResponseEntity.badRequest().build();
+        }
         return projectRepository.findById(projectId)
                 .map(p -> ResponseEntity.ok(ProjectStatusDto.builder()
                         .projectId(p.getId())
@@ -135,6 +140,9 @@ public class ProjectController {
 
     @GetMapping("/{projectId}")
     public ResponseEntity<Project> getProjectDetails(@PathVariable String projectId) {
+        if (projectId == null || !SAFE_PROJECT_ID.matcher(projectId).matches()) {
+            return ResponseEntity.badRequest().build();
+        }
         return projectRepository.findById(projectId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -147,6 +155,41 @@ public class ProjectController {
 
     @GetMapping("/{projectId}/dependencies")
     public ResponseEntity<List<ProjectDependency>> getDependencies(@PathVariable String projectId) {
+        if (projectId == null || !SAFE_PROJECT_ID.matcher(projectId).matches()) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok(dependencyRepository.findByProjectId(projectId));
+    }
+
+    /**
+     * SSRF (Server-Side Request Forgery) Defense Validator (OWASP A10:2021).
+     * Rejects loopback, private IP ranges, link-local addresses, and cloud metadata APIs.
+     */
+    private void validateGithubUrlSecurity(String urlStr) {
+        try {
+            URI uri = new URI(urlStr);
+            String scheme = uri.getScheme();
+            if (scheme == null || (!scheme.equalsIgnoreCase("http") && !scheme.equalsIgnoreCase("https"))) {
+                throw new IllegalArgumentException("Invalid URL scheme: only http and https are allowed");
+            }
+            String host = uri.getHost();
+            if (host == null || host.trim().isEmpty()) {
+                throw new IllegalArgumentException("Repository URL must specify a valid host");
+            }
+
+            InetAddress addr = InetAddress.getByName(host);
+            if (addr.isLoopbackAddress() || addr.isSiteLocalAddress() || addr.isLinkLocalAddress() || addr.isAnyLocalAddress()) {
+                throw new IllegalArgumentException("Security violation: Access to internal/loopback network addresses is blocked");
+            }
+
+            String ip = addr.getHostAddress();
+            if (ip.startsWith("169.254.") || ip.startsWith("127.") || ip.equals("0.0.0.0") || ip.startsWith("10.") || ip.startsWith("192.168.")) {
+                throw new IllegalArgumentException("Security violation: Access to restricted network addresses is blocked");
+            }
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid repository URL format: " + e.getMessage());
+        }
     }
 }

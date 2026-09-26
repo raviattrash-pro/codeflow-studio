@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(originPatterns = "*")
 public class AiAssistantController {
 
     private final ProjectRepository projectRepository;

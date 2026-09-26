@@ -1,6 +1,5 @@
 package com.codeflow.studio.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +18,10 @@ import org.slf4j.LoggerFactory;
 public class IngestionService {
 
     private static final Logger log = LoggerFactory.getLogger(IngestionService.class);
+
+    // Zip Bomb (DoS) Protection thresholds
+    private static final int MAX_ENTRIES = 15000;
+    private static final long MAX_TOTAL_SIZE = 500 * 1024 * 1024L; // 500 MB max uncompressed
 
     private final String ephemeralDirBase;
 
@@ -29,7 +31,14 @@ public class IngestionService {
     }
 
     public File cloneGithubRepository(String githubUrl, String projectId) throws Exception {
-        File targetDir = new File(ephemeralDirBase, projectId);
+        File baseDir = new File(ephemeralDirBase);
+        File targetDir = new File(baseDir, projectId);
+
+        // Path boundary check on project directory
+        if (!targetDir.getCanonicalPath().startsWith(baseDir.getCanonicalPath())) {
+            throw new SecurityException("Illegal project destination directory");
+        }
+
         if (targetDir.exists()) {
             deleteDirectory(targetDir);
         }
@@ -49,23 +58,43 @@ public class IngestionService {
     }
 
     public File extractZipArchive(InputStream zipStream, String projectId) throws Exception {
-        File targetDir = new File(ephemeralDirBase, projectId);
+        File baseDir = new File(ephemeralDirBase);
+        File targetDir = new File(baseDir, projectId);
+
+        String canonicalTargetDir = targetDir.getCanonicalPath();
+        if (!canonicalTargetDir.startsWith(baseDir.getCanonicalPath())) {
+            throw new SecurityException("Illegal project destination directory");
+        }
+
         if (targetDir.exists()) {
             deleteDirectory(targetDir);
         }
         targetDir.mkdirs();
 
-        log.info("Extracting ZIP archive into ephemeral directory {}", targetDir.getAbsolutePath());
+        log.info("Extracting ZIP archive into ephemeral directory {}", canonicalTargetDir);
 
         byte[] buffer = new byte[8192];
+        int entriesCount = 0;
+        long totalSize = 0;
+
         try (ZipInputStream zis = new ZipInputStream(zipStream)) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
-                // Prevent Zip Slip vulnerability
-                String name = entry.getName();
-                if (name.contains("..")) continue;
+                entriesCount++;
+                if (entriesCount > MAX_ENTRIES) {
+                    throw new SecurityException("ZIP archive contains too many files (max: " + MAX_ENTRIES + ")");
+                }
 
-                File newFile = new File(targetDir, name);
+                File newFile = new File(targetDir, entry.getName());
+                String canonicalDest = newFile.getCanonicalPath();
+
+                // Industry standard Zip Slip prevention (CWE-22)
+                if (!canonicalDest.startsWith(canonicalTargetDir + File.separator) && !canonicalDest.equals(canonicalTargetDir)) {
+                    log.warn("Blocked Zip Slip entry: {}", entry.getName());
+                    zis.closeEntry();
+                    continue;
+                }
+
                 if (entry.isDirectory()) {
                     newFile.mkdirs();
                 } else {
@@ -73,6 +102,10 @@ public class IngestionService {
                     try (FileOutputStream fos = new FileOutputStream(newFile)) {
                         int len;
                         while ((len = zis.read(buffer)) > 0) {
+                            totalSize += len;
+                            if (totalSize > MAX_TOTAL_SIZE) {
+                                throw new SecurityException("ZIP archive exceeds maximum decompressed size (500MB)");
+                            }
                             fos.write(buffer, 0, len);
                         }
                     }
@@ -81,7 +114,7 @@ public class IngestionService {
             }
         }
 
-        log.info("ZIP extraction completed successfully for project {}", projectId);
+        log.info("ZIP extraction completed successfully for project {} ({} files, {} bytes)", projectId, entriesCount, totalSize);
         return targetDir;
     }
 
@@ -98,7 +131,7 @@ public class IngestionService {
                     .map(Path::toFile)
                     .forEach(File::delete);
         } catch (Exception e) {
-            log.warn("Failed to completely delete scratch directory {}", dir.getAbsolutePath(), e);
+            log.warn("Could not completely delete directory {}: {}", dir.getAbsolutePath(), e.getMessage());
         }
     }
 }
