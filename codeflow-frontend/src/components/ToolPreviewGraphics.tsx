@@ -717,3 +717,38 @@ export const ArchGateGraphic: React.FC<GraphicProps> = ({ isLight }) => (
     <text x="185" y="40" textAnchor="middle" fill="#22c55e" fontSize="8" fontFamily="monospace">83% ✓</text>
   </svg>
 );
+
+// ─── 31. AUTONOMOUS SELF-HEALING SWARM ───
+export const SelfHealingGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <defs>
+      <style>{`
+        @keyframes swarmOrbit { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes swarmPulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.15); opacity: 1; } }
+        @keyframes healFlow { to { stroke-dashoffset: -16; } }
+        @keyframes sparkFlicker { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+      `}</style>
+    </defs>
+    <rect x="18" y="14" width="56" height="32" rx="6" fill={isLight ? '#fef2f2' : '#450a0a'} stroke="#ef4444" strokeWidth="1" />
+    <text x="46" y="27" textAnchor="middle" fill="#f87171" fontSize="7" fontWeight="bold" fontFamily="monospace">AST Drift</text>
+    <text x="46" y="38" textAnchor="middle" fill="#ef4444" fontSize="6.5" fontFamily="monospace">⚠️ 4 Issues</text>
+
+    <line x1="74" y1="30" x2="108" y2="30" stroke="#f59e0b" strokeWidth="1.5" strokeDasharray="3 3" style={{ animation: 'healFlow 1.2s linear infinite' }} />
+
+    <g transform="translate(124, 30)">
+      <circle cx="0" cy="0" r="16" fill={isLight ? '#f5f3ff' : '#2e1065'} stroke="#8b5cf6" strokeWidth="1.5" style={{ animation: 'swarmPulse 2s ease-in-out infinite' }} />
+      <text x="0" y="4" textAnchor="middle" fill="#c084fc" fontSize="11">✨</text>
+      <circle cx="0" cy="-14" r="2.5" fill="#38bdf8" style={{ animation: 'sparkFlicker 1.4s ease-in-out infinite' }} />
+      <circle cx="14" cy="0" r="2.5" fill="#10b981" style={{ animation: 'sparkFlicker 1.8s ease-in-out infinite' }} />
+      <circle cx="0" cy="14" r="2.5" fill="#f59e0b" style={{ animation: 'sparkFlicker 1.2s ease-in-out infinite' }} />
+      <circle cx="-14" cy="0" r="2.5" fill="#ec4899" style={{ animation: 'sparkFlicker 1.6s ease-in-out infinite' }} />
+    </g>
+
+    <line x1="140" y1="30" x2="174" y2="30" stroke="#10b981" strokeWidth="1.5" strokeDasharray="3 3" style={{ animation: 'healFlow 1.2s linear infinite' }} />
+
+    <rect x="174" y="14" width="54" height="32" rx="6" fill={isLight ? '#ecfdf5' : '#064e3b'} stroke="#10b981" strokeWidth="1" />
+    <text x="201" y="27" textAnchor="middle" fill="#34d399" fontSize="7" fontWeight="bold" fontFamily="monospace">Auto-Healed</text>
+    <text x="201" y="38" textAnchor="middle" fill="#10b981" fontSize="6.5" fontFamily="monospace">Diff Clean ✓</text>
+  </svg>
+);
+

@@ -46,6 +46,7 @@ const ComplianceMatrixModal = lazy(() => import('./components/ComplianceMatrixMo
 const GraphqlGrpcModal = lazy(() => import('./components/GraphqlGrpcModal').then(m => ({ default: m.GraphqlGrpcModal })));
 const ServiceMeshModal = lazy(() => import('./components/ServiceMeshModal').then(m => ({ default: m.ServiceMeshModal })));
 const ArchGateModal = lazy(() => import('./components/ArchGateModal'));
+const SelfHealingSwarmModal = lazy(() => import('./components/SelfHealingSwarmModal'));
 import { DesktopProvider } from './providers/DesktopProvider';
 import OfflineStatusBar from './components/OfflineStatusBar';
 import {
@@ -55,7 +56,7 @@ import {
   ScorecardGraphic, SandboxGraphic, TsGenGraphic, ChaosGraphic, BlueprintGraphic,
   DriftGraphic, TestGenGraphic, CloudInfraGraphic, EventStreamGraphic, VoiceCopilotGraphic, DistributedTracingGraphic,
   VsCodeGraphic, ChromeExtGraphic, LiveCollabGraphic, ComplianceGraphic, GraphqlGrpcGraphic, ServiceMeshGraphic,
-  ArchGateGraphic
+  ArchGateGraphic, SelfHealingGraphic
 } from './components/ToolPreviewGraphics';
 import { Project, GraphData, NodeDetail, ProjectNode, AiAnalysisType } from './types';
 import { useToast } from './components/ToastNotification';
@@ -619,6 +620,7 @@ export default function App() {
   const [isGraphqlGrpcOpen, setIsGraphqlGrpcOpen] = useState(false);
   const [isServiceMeshOpen, setIsServiceMeshOpen] = useState(false);
   const [isArchGateOpen, setIsArchGateOpen] = useState(false);
+  const [isSelfHealingOpen, setIsSelfHealingOpen] = useState(false);
   const [viewingFilePath, setViewingFilePath] = useState<string | null>(null);
   const [aiInitialPrompt, setAiInitialPrompt] = useState<string | undefined>(undefined);
   const [aiInitialAnalysisType, setAiInitialAnalysisType] = useState<AiAnalysisType | undefined>(undefined);
@@ -655,6 +657,7 @@ export default function App() {
     setIsGraphqlGrpcOpen(false);
     setIsServiceMeshOpen(false);
     setIsArchGateOpen(false);
+    setIsSelfHealingOpen(false);
     setViewingFilePath(null);
   };
 
@@ -704,7 +707,7 @@ export default function App() {
     isRuntimeTracingOpen || isApiMetricsOpen || isSequenceDiagramOpen || isLatencyHeatmapOpen ||
     isReactRuntimeOpen || isCommandPaletteOpen || isScorecardOpen || isApiSandboxOpen ||
     isTsGeneratorOpen || isChaosOpen || isBlueprintOpen || isDriftOpen || isTestGenOpen ||
-    isCloudInfraOpen || isEventStreamOpen || isVoiceCopilotOpen || isDistTracingOpen || isVsCodeOpen || isChromeExtOpen || isLiveCollabOpen || isComplianceOpen || isGraphqlGrpcOpen || isServiceMeshOpen || isArchGateOpen || viewingFilePath !== null;
+    isCloudInfraOpen || isEventStreamOpen || isVoiceCopilotOpen || isDistTracingOpen || isVsCodeOpen || isChromeExtOpen || isLiveCollabOpen || isComplianceOpen || isGraphqlGrpcOpen || isServiceMeshOpen || isArchGateOpen || isSelfHealingOpen || viewingFilePath !== null;
 
   // Body Scroll Lock when modal is active (prevents background jumping)
   useEffect(() => {
@@ -796,6 +799,7 @@ export default function App() {
     else if (toolKey === 'graphql-grpc' || toolKey === 'graphql' || toolKey === 'grpc') setIsGraphqlGrpcOpen(true);
     else if (toolKey === 'service-mesh' || toolKey === 'mesh' || toolKey === 'istio') setIsServiceMeshOpen(true);
     else if (toolKey === 'arch-gate' || toolKey === 'gate' || toolKey === 'cicd') setIsArchGateOpen(true);
+    else if (toolKey === 'self-heal' || toolKey === 'swarm' || toolKey === 'healing') setIsSelfHealingOpen(true);
     else if (toolKey === 'cmd' || toolKey === 'command') setIsCommandPaletteOpen(true);
   };
 
@@ -1834,6 +1838,16 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     badge: 'v10.0 NEW',
                     graphic: ArchGateGraphic,
                     preview: '🛡️ 6 Rules • 0 Violations • Gate PASSED (100%)'
+                  },
+                  {
+                    title: 'Autonomous Self-Healing Swarm',
+                    desc: 'Multi-agent AI refactoring swarm automatically repairing architecture drift, JPA N+1 queries, layer breaches & CVEs.',
+                    icon: Sparkles,
+                    col: 'text-purple-400',
+                    key: 'self-heal',
+                    badge: 'v11.0 NEW',
+                    graphic: SelfHealingGraphic,
+                    preview: '✨ 4 Swarm Agents Active • AST Self-Healing Ready'
                   }
                 ].map((f, i) => {
                   const Icon = f.icon;
@@ -2170,6 +2184,13 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
         <ArchGateModal
           isOpen={isArchGateOpen}
           onClose={() => setIsArchGateOpen(false)}
+          projectId={currentProjectId}
+          isLight={isLight}
+        />
+
+        <SelfHealingSwarmModal
+          isOpen={isSelfHealingOpen}
+          onClose={() => setIsSelfHealingOpen(false)}
           projectId={currentProjectId}
           isLight={isLight}
         />

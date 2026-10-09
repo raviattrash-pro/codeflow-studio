@@ -54,6 +54,17 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
 
   const allCommands: CommandItem[] = useMemo(() => [
     // Tools
+    // v11.0 Suite
+    {
+      id: 'tool-self-heal',
+      title: 'Autonomous Architecture Self-Healing Swarm',
+      subtitle: 'Multi-agent AST refactoring swarm repairing drift, JPA N+1 queries, layer breaches & CVEs',
+      category: 'Tools',
+      icon: <Sparkles className="w-4 h-4 text-purple-400" />,
+      shortcut: 'H',
+      action: () => { onClose(); onSelectTool('self-heal'); },
+      badge: 'v11.0',
+    },
     // v10.0 Suite
     {
       id: 'tool-arch-gate',
