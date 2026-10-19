@@ -66,15 +66,15 @@ public class AiService {
         List<ProjectEdge> edges = edgeRepository.findByProjectId(projectId);
         sb.append("\nEdges:\n");
         for (ProjectEdge edge : edges) {
-            sb.append("- ").append(edge.getSourceId()).append(" -> ")
-              .append(edge.getTargetId()).append(" (")
-              .append(edge.getRelationType()).append(")\n");
+            sb.append("- ").append(edge.getSourceNodeId()).append(" -> ")
+              .append(edge.getTargetNodeId()).append(" (")
+              .append(edge.getCallType() != null ? edge.getCallType() : "CALLS").append(")\n");
         }
 
         List<SqlQueryLog> logs = sqlQueryLogRepository.findByProjectId(projectId);
         sb.append("\nSQL Logs:\n");
         for (SqlQueryLog log : logs) {
-            sb.append("- ").append(log.getQueryString()).append(" (")
+            sb.append("- ").append(log.getSqlQuery()).append(" (")
               .append(log.getExecutionTimeMs()).append("ms)\n");
         }
 

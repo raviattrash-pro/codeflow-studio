@@ -5,10 +5,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/v1/projects")
 public class ArchGateController {
+
+    private static final Pattern SAFE_PROJECT_ID = Pattern.compile("^[a-zA-Z0-9_-]+$");
 
     private final ArchGateService archGateService;
 
@@ -21,6 +24,9 @@ public class ArchGateController {
      */
     @PostMapping("/{projectId}/arch-gate/validate")
     public ResponseEntity<Map<String, Object>> validateArchitecture(@PathVariable String projectId) {
+        if (projectId == null || !SAFE_PROJECT_ID.matcher(projectId).matches()) {
+            return ResponseEntity.badRequest().body(Map.of("status", "ERROR", "message", "Invalid project identifier"));
+        }
         try {
             Map<String, Object> report = archGateService.validateArchitecture(projectId);
             return ResponseEntity.ok(report);
@@ -37,6 +43,9 @@ public class ArchGateController {
      */
     @GetMapping("/{projectId}/arch-gate/report")
     public ResponseEntity<Map<String, Object>> getMarkdownReport(@PathVariable String projectId) {
+        if (projectId == null || !SAFE_PROJECT_ID.matcher(projectId).matches()) {
+            return ResponseEntity.badRequest().body(Map.of("status", "ERROR", "message", "Invalid project identifier"));
+        }
         try {
             String markdown = archGateService.generateMarkdownReport(projectId);
             return ResponseEntity.ok(Map.of(
@@ -56,6 +65,9 @@ public class ArchGateController {
      */
     @GetMapping("/{projectId}/arch-gate/rules")
     public ResponseEntity<Map<String, Object>> getRules(@PathVariable String projectId) {
+        if (projectId == null || !SAFE_PROJECT_ID.matcher(projectId).matches()) {
+            return ResponseEntity.badRequest().body(Map.of("status", "ERROR", "message", "Invalid project identifier"));
+        }
         // Return the rule definitions without running validation
         Map<String, Object> rules = Map.of(
                 "rules", java.util.List.of(

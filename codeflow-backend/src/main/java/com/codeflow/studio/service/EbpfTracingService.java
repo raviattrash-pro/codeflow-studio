@@ -82,58 +82,10 @@ public class EbpfTracingService {
         );
 
         List<Map<String, Object>> liveTraces = List.of(
-                Map.of(
-                        "traceId", "ebpf-tr-9021",
-                        "timestamp", Instant.now().minusSeconds(1).toString(),
-                        "protocol", "HTTP/2 (gRPC)",
-                        "srcCluster", "aws-eks-us-east-1",
-                        "dstCluster", "gcp-gke-europe-west1",
-                        "endpoint", "/order.v1.OrderService/ProcessPayment",
-                        "kernelLatencyUs", 14.2,
-                        "tcpRttMs", 81.4,
-                        "retransmits", 0,
-                        "bytesTransferred", 4096,
-                        "verdict", "FORWARD_OK"
-                ),
-                Map.of(
-                        "traceId", "ebpf-tr-9022",
-                        "timestamp", Instant.now().minusSeconds(2).toString(),
-                        "protocol", "HTTP/1.1",
-                        "srcCluster", "azure-aks-eastus2",
-                        "dstCluster", "aws-eks-us-east-1",
-                        "endpoint", "/api/v1/users/auth/verify",
-                        "kernelLatencyUs", 8.6,
-                        "tcpRttMs", 22.1,
-                        "retransmits", 0,
-                        "bytesTransferred", 1024,
-                        "verdict", "FORWARD_OK"
-                ),
-                Map.of(
-                        "traceId", "ebpf-tr-9023",
-                        "timestamp", Instant.now().minusSeconds(3).toString(),
-                        "protocol", "Postgres Wire (TCP)",
-                        "srcCluster", "baremetal-onprem-dc1",
-                        "dstCluster", "baremetal-onprem-dc1",
-                        "endpoint", "SELECT * FROM orders WHERE user_id = ?",
-                        "kernelLatencyUs", 3.1,
-                        "tcpRttMs", 0.42,
-                        "retransmits", 0,
-                        "bytesTransferred", 16384,
-                        "verdict", "ZERO_COPY_READ"
-                ),
-                Map.of(
-                        "traceId", "ebpf-tr-9024",
-                        "timestamp", Instant.now().minusSeconds(4).toString(),
-                        "protocol", "Kafka Native (TCP)",
-                        "srcCluster", "aws-eks-us-east-1",
-                        "dstCluster", "baremetal-onprem-dc1",
-                        "endpoint", "PRODUCE orders.created [p:0, o:1428]",
-                        "kernelLatencyUs", 12.8,
-                        "tcpRttMs", 14.6,
-                        "retransmits", 1,
-                        "bytesTransferred", 8192,
-                        "verdict", "WARN_RETRANSMIT"
-                )
+                createLiveTrace("ebpf-tr-9021", Instant.now().minusSeconds(1).toString(), "HTTP/2 (gRPC)", "aws-eks-us-east-1", "gcp-gke-europe-west1", "/order.v1.OrderService/ProcessPayment", 14.2, 81.4, 0, 4096, "FORWARD_OK"),
+                createLiveTrace("ebpf-tr-9022", Instant.now().minusSeconds(2).toString(), "HTTP/1.1", "azure-aks-eastus2", "aws-eks-us-east-1", "/api/v1/users/auth/verify", 8.6, 22.1, 0, 1024, "FORWARD_OK"),
+                createLiveTrace("ebpf-tr-9023", Instant.now().minusSeconds(3).toString(), "Postgres Wire (TCP)", "baremetal-onprem-dc1", "baremetal-onprem-dc1", "SELECT * FROM orders WHERE user_id = ?", 3.1, 0.42, 0, 16384, "ZERO_COPY_READ"),
+                createLiveTrace("ebpf-tr-9024", Instant.now().minusSeconds(4).toString(), "Kafka Native (TCP)", "aws-eks-us-east-1", "baremetal-onprem-dc1", "PRODUCE orders.created [p:0, o:1428]", 12.8, 14.6, 1, 8192, "WARN_RETRANSMIT")
         );
 
         Map<String, Object> resp = new LinkedHashMap<>();
@@ -327,5 +279,24 @@ public class EbpfTracingService {
         result.put("effectiveTimestamp", Instant.now().toString());
         result.put("message", "eBPF kernel packet regulator successfully reconfigured for " + serviceId + " (" + action + ")");
         return result;
+    }
+
+    private static Map<String, Object> createLiveTrace(String traceId, String timestamp, String protocol,
+                                                       String srcCluster, String dstCluster, String endpoint,
+                                                       double kernelLatencyUs, double tcpRttMs, int retransmits,
+                                                       int bytesTransferred, String verdict) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("traceId", traceId);
+        m.put("timestamp", timestamp);
+        m.put("protocol", protocol);
+        m.put("srcCluster", srcCluster);
+        m.put("dstCluster", dstCluster);
+        m.put("endpoint", endpoint);
+        m.put("kernelLatencyUs", kernelLatencyUs);
+        m.put("tcpRttMs", tcpRttMs);
+        m.put("retransmits", retransmits);
+        m.put("bytesTransferred", bytesTransferred);
+        m.put("verdict", verdict);
+        return m;
     }
 }
