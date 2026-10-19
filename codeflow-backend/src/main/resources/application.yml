@@ -1,9 +1,12 @@
 server:
   port: 8080
+  server-header: ""
   servlet:
     context-path: /
 
 spring:
+  main:
+    banner-mode: "off"
   application:
     name: codeflow-backend
   datasource:
@@ -40,6 +43,15 @@ codeflow:
     ollama-url: http://localhost:11434
     max-context-tokens: 2000
     temperature: 0.3
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
 
 logging:
   level:
