@@ -47,6 +47,7 @@ const GraphqlGrpcModal = lazy(() => import('./components/GraphqlGrpcModal').then
 const ServiceMeshModal = lazy(() => import('./components/ServiceMeshModal').then(m => ({ default: m.ServiceMeshModal })));
 const ArchGateModal = lazy(() => import('./components/ArchGateModal'));
 const SelfHealingSwarmModal = lazy(() => import('./components/SelfHealingSwarmModal'));
+const EbpfMeshTracingModal = lazy(() => import('./components/EbpfMeshTracingModal'));
 import { DesktopProvider } from './providers/DesktopProvider';
 import OfflineStatusBar from './components/OfflineStatusBar';
 import {
@@ -56,7 +57,7 @@ import {
   ScorecardGraphic, SandboxGraphic, TsGenGraphic, ChaosGraphic, BlueprintGraphic,
   DriftGraphic, TestGenGraphic, CloudInfraGraphic, EventStreamGraphic, VoiceCopilotGraphic, DistributedTracingGraphic,
   VsCodeGraphic, ChromeExtGraphic, LiveCollabGraphic, ComplianceGraphic, GraphqlGrpcGraphic, ServiceMeshGraphic,
-  ArchGateGraphic, SelfHealingGraphic
+  ArchGateGraphic, SelfHealingGraphic, EbpfMeshGraphic
 } from './components/ToolPreviewGraphics';
 import { Project, GraphData, NodeDetail, ProjectNode, AiAnalysisType } from './types';
 import { useToast } from './components/ToastNotification';
@@ -621,6 +622,7 @@ export default function App() {
   const [isServiceMeshOpen, setIsServiceMeshOpen] = useState(false);
   const [isArchGateOpen, setIsArchGateOpen] = useState(false);
   const [isSelfHealingOpen, setIsSelfHealingOpen] = useState(false);
+  const [isEbpfMeshOpen, setIsEbpfMeshOpen] = useState(false);
   const [viewingFilePath, setViewingFilePath] = useState<string | null>(null);
   const [aiInitialPrompt, setAiInitialPrompt] = useState<string | undefined>(undefined);
   const [aiInitialAnalysisType, setAiInitialAnalysisType] = useState<AiAnalysisType | undefined>(undefined);
@@ -658,6 +660,7 @@ export default function App() {
     setIsServiceMeshOpen(false);
     setIsArchGateOpen(false);
     setIsSelfHealingOpen(false);
+    setIsEbpfMeshOpen(false);
     setViewingFilePath(null);
   };
 
@@ -707,7 +710,7 @@ export default function App() {
     isRuntimeTracingOpen || isApiMetricsOpen || isSequenceDiagramOpen || isLatencyHeatmapOpen ||
     isReactRuntimeOpen || isCommandPaletteOpen || isScorecardOpen || isApiSandboxOpen ||
     isTsGeneratorOpen || isChaosOpen || isBlueprintOpen || isDriftOpen || isTestGenOpen ||
-    isCloudInfraOpen || isEventStreamOpen || isVoiceCopilotOpen || isDistTracingOpen || isVsCodeOpen || isChromeExtOpen || isLiveCollabOpen || isComplianceOpen || isGraphqlGrpcOpen || isServiceMeshOpen || isArchGateOpen || isSelfHealingOpen || viewingFilePath !== null;
+    isCloudInfraOpen || isEventStreamOpen || isVoiceCopilotOpen || isDistTracingOpen || isVsCodeOpen || isChromeExtOpen || isLiveCollabOpen || isComplianceOpen || isGraphqlGrpcOpen || isServiceMeshOpen || isArchGateOpen || isSelfHealingOpen || isEbpfMeshOpen || viewingFilePath !== null;
 
   // Body Scroll Lock when modal is active (prevents background jumping)
   useEffect(() => {
@@ -800,6 +803,7 @@ export default function App() {
     else if (toolKey === 'service-mesh' || toolKey === 'mesh' || toolKey === 'istio') setIsServiceMeshOpen(true);
     else if (toolKey === 'arch-gate' || toolKey === 'gate' || toolKey === 'cicd') setIsArchGateOpen(true);
     else if (toolKey === 'self-heal' || toolKey === 'swarm' || toolKey === 'healing') setIsSelfHealingOpen(true);
+    else if (toolKey === 'ebpf' || toolKey === 'mesh-tracing' || toolKey === 'kernel') setIsEbpfMeshOpen(true);
     else if (toolKey === 'cmd' || toolKey === 'command') setIsCommandPaletteOpen(true);
   };
 
@@ -1848,6 +1852,16 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
                     badge: 'v11.0 NEW',
                     graphic: SelfHealingGraphic,
                     preview: '✨ 4 Swarm Agents Active • AST Self-Healing Ready'
+                  },
+                  {
+                    title: 'Distributed Mesh & eBPF Kernel Tracing',
+                    desc: 'Zero-overhead Linux kernel socket hooks, cross-cloud WireGuard mesh topology & autonomous SLO error budget guards.',
+                    icon: Cpu,
+                    col: 'text-emerald-400',
+                    key: 'ebpf',
+                    badge: 'v12.0 NEW',
+                    graphic: EbpfMeshGraphic,
+                    preview: '⚡ 45ns Kernel Hooks • WireGuard Mesh • SLO 99.99%'
                   }
                 ].map((f, i) => {
                   const Icon = f.icon;
@@ -2191,6 +2205,13 @@ ${(Array.isArray(graphData.nodes) ? graphData.nodes : []).map((n) => `- **${n.da
         <SelfHealingSwarmModal
           isOpen={isSelfHealingOpen}
           onClose={() => setIsSelfHealingOpen(false)}
+          projectId={currentProjectId}
+          isLight={isLight}
+        />
+
+        <EbpfMeshTracingModal
+          isOpen={isEbpfMeshOpen}
+          onClose={() => setIsEbpfMeshOpen(false)}
           projectId={currentProjectId}
           isLight={isLight}
         />

@@ -54,6 +54,17 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
 
   const allCommands: CommandItem[] = useMemo(() => [
     // Tools
+    // v12.0 Suite
+    {
+      id: 'tool-ebpf',
+      title: 'Distributed Mesh & eBPF Kernel Tracing',
+      subtitle: 'Zero-overhead socket hooks, cross-cloud WireGuard mesh topology & autonomous SLO error budget guards',
+      category: 'Tools',
+      icon: <Cpu className="w-4 h-4 text-emerald-400" />,
+      shortcut: 'K',
+      action: () => { onClose(); onSelectTool('ebpf'); },
+      badge: 'v12.0',
+    },
     // v11.0 Suite
     {
       id: 'tool-self-heal',

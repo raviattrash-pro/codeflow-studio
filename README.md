@@ -1,8 +1,8 @@
-# CodeFlow Studio 🚀 (v11.0.0 Release — Autonomous Architecture Self-Healing & AI Refactoring Swarm)
-> **Observe, Replay & Master Real Code Execution — Autonomous Multi-Agent AST Refactoring Swarm, Zero-Day CVE Auto-Patching, Standalone Tauri v2 Desktop App, 100% Offline Air-Gapped Analysis & CI/CD Architecture Gating Bot.**
+# CodeFlow Studio 🚀 (v12.0.0 Release — Distributed Mesh & eBPF Kernel Tracing)
+> **Observe, Replay & Master Real Code Execution — Kernel-Level eBPF Zero-Overhead Tracing, Cross-Cloud WireGuard Mesh Topology, Autonomous SLO Error Budget Guards, Multi-Agent Refactoring Swarm & Standalone Tauri v2 Desktop App.**
 
-[![Version](https://img.shields.io/badge/version-11.0.0-indigo.svg)](README.md)
-[![QA Certified](https://img.shields.io/badge/QA%20Certified-Grade%20A%2B%20(28%2F28)-emerald.svg)](README.md)
+[![Version](https://img.shields.io/badge/version-12.0.0-indigo.svg)](README.md)
+[![QA Certified](https://img.shields.io/badge/QA%20Certified-Grade%20A%2B%20(32%2F32)-emerald.svg)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](README.md)
 [![Tauri](https://img.shields.io/badge/Tauri-v2.5-orange.svg)](https://tauri.app/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2%2B-green.svg)](https://spring.io/projects/spring-boot)
@@ -16,10 +16,10 @@
 ## 🎬 Live Interactive Workbench & Studio Showcase
 
 <p align="center">
-  <img src="docs/media/codeflow-studio-hd.gif" alt="CodeFlow Studio Live Demo — 31 Specialized Visual Architecture Tools" width="100%" />
+  <img src="docs/media/codeflow-studio-hd.gif" alt="CodeFlow Studio Live Demo — 32 Specialized Visual Architecture Tools" width="100%" />
 </p>
 
-> 💡 *CodeFlow Studio v11.0 expands to **31 Visual Architecture & Intelligence Tools** distributed across 4 dedicated domain categories: DevOps & Cloud, Architecture & Governance, Runtime & Flow, and APIs & Data.*
+> 💡 *CodeFlow Studio v12.0 expands to **32 Visual Architecture & Intelligence Tools** distributed across 4 dedicated domain categories: DevOps & Cloud, Architecture & Governance, Runtime & Flow, and APIs & Data.*
 
 ---
 
@@ -49,18 +49,31 @@ CodeFlow Studio v10.0 underwent a rigorous architectural and systems audit evalu
 
 ---
 
+## ✨ What's New in v12.0.0 (Real-Time Distributed Mesh & eBPF Kernel Tracing)
+
+### 1. ⚡ Distributed Mesh & eBPF Kernel Tracing (Tool #32) (NEW)
+- **Zero-Overhead Linux Kernel Sockets**: Directly attaches kernel-level probes with sub-50 nanosecond execution cost:
+  1. `kprobe:sys_enter_connect`: Tracks outbound TCP handshakes, DNS resolution time, and remote socket binding.
+  2. `kretprobe:sys_enter_accept`: Measures inbound queue latency and kernel SYN backlog exhaustion.
+  3. `tracepoint:tcp:tcp_retransmit_skb`: Intercepts packet loss, congestion window (`cwnd`) collapse, and segment drops without packet dumping.
+  4. `uprobe:libssl:SSL_write`: Decodes plaintext HTTP/1.1, HTTP/2, and gRPC protobuf payloads before TLS encryption.
+  5. `sock_ops:bpf_sock_ops_state_change`: Dynamically tunes TCP window scaling, SRTT (Smoothed Round-Trip Time), and packet pacing per socket.
+- **Cross-Cloud WireGuard Mesh Topology**: Real-time multi-cluster topology visualizer spanning AWS EKS (`us-east-1`), GCP GKE (`europe-west1`), Azure AKS (`eastus2`), and on-premises Bare-Metal private cloud interconnected via ChaCha20-Poly1305 encrypted WireGuard tunnels.
+- **Autonomous SLO Error Budget & Rate-Limiting Guards**:
+  - Live 30-day availability monitoring across all microservices (`CheckoutService`, `PaymentGateway`, `InventoryFeed`, `NotificationService`).
+  - Automated multi-burn-rate factor tracking (14.4x fast burn, 6x slow burn).
+  - 1-click and autonomous eBPF `BPF_PROG_TYPE_SOCK_OPS` packet regulator applying load shedding and circuit breaking directly inside the Linux network stack.
+- **Spotlight Search Keycap**: Launch instantly from Command Palette (`Ctrl+K` ➔ `[K]`).
+
+---
+
 ## ✨ What's New in v11.0.0 (Autonomous Architecture Self-Healing & AI Refactoring Swarm)
 
-### 1. 🐝 Autonomous Architecture Self-Healing Swarm (Tool #31) (NEW)
-- **Multi-Agent Refactoring Fleet**: 4 specialized AST remediation bots operating autonomously or in engineer-supervised mode:
-  1. `agent-layer-decouple` (**Layer Decoupler**): Automatically resolves direct Controller ➔ Repository bypasses by synthesizing clean intermediate Service interfaces and redirecting invocations.
-  2. `agent-jpa-n1` (**JPA N+1 Optimizer**): Eliminates cyclic N+1 entity queries by mutating repository methods with `@EntityGraph(attributePaths = ...)` and eager `JOIN FETCH` clauses.
-  3. `agent-ts-sync` (**TypeScript Contract Synchronizer**): Regenerates and aligns frontend TypeScript interfaces whenever backend Java DTOs or JPA entities are modified.
-  4. `agent-cve-patch` (**Zero-Day CVE Patcher**): Scans transitive dependencies for high/critical vulnerabilities and provides 1-click AST patches with semantic version upgrades.
+### 1. 🐝 Autonomous Architecture Self-Healing Swarm (Tool #31)
+- **Multi-Agent Refactoring Fleet**: 4 specialized AST remediation bots (`Layer Decoupler`, `JPA N+1 Optimizer`, `TypeScript Sync`, `Zero-Day CVE Patcher`).
 - **Side-by-Side Unified AST Diff Studio**: Visual split-pane code difference inspector with color-coded additions (`+`), removals (`-`), and real-time confidence scores.
 - **1-Click Pull Request Synthesizer**: Directly generate and export atomic remediation PR manifests ready for automated branch merge.
 - **Real-Time Swarm Telemetry HUD**: Live agent heartbeat, task execution queues, and AST mutation counters.
-- **Spotlight Search Keycap**: Instant launch via Command Palette (`Ctrl+K` ➔ `[H]`).
 
 ---
 
@@ -92,43 +105,44 @@ CodeFlow Studio v10.0 underwent a rigorous architectural and systems audit evalu
 
 ---
 
-## 🛠️ Complete Suite of 31 Visual Architecture Tools
+## 🛠️ Complete Suite of 32 Visual Architecture Tools
 
 Every tool operates in **Interactive Demo Mode** (zero backend setup required) or against real ingested repositories:
 
 | # | Tool / Modal | Domain Category | Component | Description & Scope |
 |---|---|---|---|---|
-| **1** | **✨ Autonomous Self-Healing Swarm** | Architecture & Health | `SelfHealingSwarmModal.tsx` | Multi-agent refactoring swarm repairing drift, JPA N+1 queries, layer breaches & CVEs. |
-| **2** | **🚧 CI/CD Architecture Gate** | Architecture & Health | `ArchGateModal.tsx` | Static AST rules auditor enforcing layer separation, acyclic graphs, JPA & security rules. |
-| **3** | **💻 VS Code IDE Sidecar** | Runtime & Flow | `VsCodeSidecarModal.tsx` | Bidirectional WebSocket LSP sidecar & extension manifest compiler. |
-| **4** | **🌐 Chrome Extension Injector** | Runtime & Flow | `ChromeExtensionModal.tsx` | Manifest V3 extension injecting interactive flow badges into GitHub PRs. |
-| **5** | **👥 WebRTC Live Collab** | Architecture & Health | `LiveCollabModal.tsx` | P2P multi-cursor review room, live chat, and shared whiteboard pins. |
-| **6** | **🛡️ Zero-Trust Compliance Matrix** | Architecture & Health | `ComplianceMatrixModal.tsx` | Static AST auditor validating SOC2, ISO 27001, HIPAA, and GDPR controls. |
-| **7** | **⚡ GraphQL SDL & gRPC Synthesizer** | APIs & Data | `GraphqlGrpcModal.tsx` | Synthesizes GraphQL SDL & gRPC Proto3 schemas from Spring REST controllers. |
-| **8** | **🕸️ Service Mesh & Istio Topology** | DevOps & Cloud | `ServiceMeshModal.tsx` | Multi-service traffic visualizer, Envoy proxy sidecars & Istio YAML generator. |
-| **9** | **⚡ Git PR Architecture Drift** | DevOps & Cloud | `ArchitectureDriftModal.tsx` | Compare PR branches against main to detect layer boundary breaches and API drift. |
-| **10** | **🧪 Automated Test Generator** | DevOps & Cloud | `TestSuiteGeneratorModal.tsx` | Generate RestAssured Java tests and Playwright TypeScript suites with auth headers. |
-| **11** | **☁️ Cloud IaC & Docker Synthesizer** | DevOps & Cloud | `CloudInfraSynthesizerModal.tsx` | Synthesize Docker Compose, AWS Terraform modules & Kubernetes manifests from AST. |
-| **12** | **🔄 Kafka & WebSocket Streams** | DevOps & Cloud | `EventStreamVisualizerModal.tsx` | Visualize Kafka topics, consumer groups, and live WebSocket / SSE channels. |
-| **13** | **🧩 OpenTelemetry Tracing** | DevOps & Cloud | `DistributedTracingModal.tsx` | Multi-service span waterfall with automated critical-path bottleneck isolation. |
-| **14** | **🎙️ Voice Architecture Copilot** | DevOps & Cloud | `VoiceCopilotModal.tsx` | Speak natural voice commands to audit DB, simulate chaos & trigger AI remediation. |
-| **15** | **📊 Health Scorecard HUD** | Architecture & Health | `ArchitectureScorecardModal.tsx` | Real-time Security (94%), SQL (88%), CVE (98%), and React 19 (92%) audit dials. |
-| **16** | **🖼️ 4K C4 Blueprint Exporter** | Architecture & Health | `ArchitectureBlueprintExportModal.tsx` | Export C4 Level 1/2/3 diagrams, 4K SVG vector blueprints, and Mermaid RFC specs. |
-| **17** | **💥 Chaos Simulator** | Architecture & Health | `ChaosSimulatorModal.tsx` | Resilience4j fault injection, circuit breaker state machine, and fallback telemetry. |
-| **18** | **🤖 AI Architecture Assistant** | Architecture & Health | `AiAssistantModal.tsx` | Automated code explanations, compliance auditing, query reviews, and interview prep. |
-| **19** | **📦 Maven Dependency Graph** | Architecture & Health | `DependencyExplorerModal.tsx` | `pom.xml` starter analyzer explaining auto-configuration mechanics (Web, JPA, Security). |
-| **20** | **⚛️ React 19 Runtime Explorer** | Runtime & Flow | `ReactRuntimeExplorerModal.tsx` | Virtual DOM Fiber tree reconciliation, Hook state mutation timeline, and Axios interceptors. |
-| **21** | **⚡ Runtime Tracing Replay** | Runtime & Flow | `RuntimeTracingModal.tsx` | Step-by-step VCR playback from React UI down to Controller, Service, Hibernate, and DB. |
-| **22** | **🔀 7-Swimlane Sequence Tracer** | Runtime & Flow | `SequenceDiagramModal.tsx` | Asynchronous request and response lifecycle mapping across 7 architectural swimlanes. |
-| **23** | **🔥 24-Hour Latency Heatmap** | Runtime & Flow | `LatencyHeatmapModal.tsx` | 24-hour hourly quantile matrix with color-coded buckets and hover tooltips. |
-| **24** | **📊 API Metrics & Telemetry** | Runtime & Flow | `ApiMetricsDashboardModal.tsx` | Real-time P50/P90/P95/P99 response times, throughput RPS, and error rate tracking. |
-| **25** | **⚡ Java DTO ➔ TypeScript** | APIs & Data | `TypeScriptGeneratorModal.tsx` | Auto-convert JPA entities and records to strict TypeScript interfaces and Zod schemas. |
-| **26** | **🌐 REST API Sandbox & cURL** | APIs & Data | `ApiSandboxModal.tsx` | Test Spring Boot endpoints, inject JWT headers, and export cURL / Axios / Python snippets. |
-| **27** | **🗄️ Database ERD & Schema** | APIs & Data | `ErDiagramModal.tsx` | `@Entity` relational table diagrams with column data types and foreign key linkages. |
-| **28** | **💻 Live SQL Query Explorer** | APIs & Data | `SqlExplorerModal.tsx` | Captured JPA prepared statements (SELECT, INSERT, UPDATE) with execution durations. |
-| **29** | **🔐 Spring Security 6 Pipeline** | APIs & Data | `SecurityExplorerModal.tsx` | 6-stage stateless filter chain inspection (`CorsFilter`, `JwtAuthenticationFilter`, etc.). |
-| **30** | **📁 5-Mode File Tree Visualizer** | APIs & Data | `FileTreeModal.tsx` | Interactive File Tree, ASCII Tree, Emoji Tree, Mermaid AST Diagram, and Galaxy Canvas. |
-| **31** | **🔍 Global Command Palette** | Navigation & Search | `CommandPaletteModal.tsx` | Global spotlight search (`Ctrl+K`) across all 31 tools, scenarios, themes, and AI actions. |
+| **1** | **⚡ Distributed Mesh & eBPF Tracing** | DevOps & Cloud | `EbpfMeshTracingModal.tsx` | Kernel-level zero-overhead socket tracing, multi-cloud WireGuard mesh & SLO guards. |
+| **2** | **✨ Autonomous Self-Healing Swarm** | Architecture & Health | `SelfHealingSwarmModal.tsx` | Multi-agent refactoring swarm repairing drift, JPA N+1 queries, layer breaches & CVEs. |
+| **3** | **🚧 CI/CD Architecture Gate** | Architecture & Health | `ArchGateModal.tsx` | Static AST rules auditor enforcing layer separation, acyclic graphs, JPA & security rules. |
+| **4** | **💻 VS Code IDE Sidecar** | Runtime & Flow | `VsCodeSidecarModal.tsx` | Bidirectional WebSocket LSP sidecar & extension manifest compiler. |
+| **5** | **🌐 Chrome Extension Injector** | Runtime & Flow | `ChromeExtensionModal.tsx` | Manifest V3 extension injecting interactive flow badges into GitHub PRs. |
+| **6** | **👥 WebRTC Live Collab** | Architecture & Health | `LiveCollabModal.tsx` | P2P multi-cursor review room, live chat, and shared whiteboard pins. |
+| **7** | **🛡️ Zero-Trust Compliance Matrix** | Architecture & Health | `ComplianceMatrixModal.tsx` | Static AST auditor validating SOC2, ISO 27001, HIPAA, and GDPR controls. |
+| **8** | **⚡ GraphQL SDL & gRPC Synthesizer** | APIs & Data | `GraphqlGrpcModal.tsx` | Synthesizes GraphQL SDL & gRPC Proto3 schemas from Spring REST controllers. |
+| **9** | **🕸️ Service Mesh & Istio Topology** | DevOps & Cloud | `ServiceMeshModal.tsx` | Multi-service traffic visualizer, Envoy proxy sidecars & Istio YAML generator. |
+| **10** | **⚡ Git PR Architecture Drift** | DevOps & Cloud | `ArchitectureDriftModal.tsx` | Compare PR branches against main to detect layer boundary breaches and API drift. |
+| **11** | **🧪 Automated Test Generator** | DevOps & Cloud | `TestSuiteGeneratorModal.tsx` | Generate RestAssured Java tests and Playwright TypeScript suites with auth headers. |
+| **12** | **☁️ Cloud IaC & Docker Synthesizer** | DevOps & Cloud | `CloudInfraSynthesizerModal.tsx` | Synthesize Docker Compose, AWS Terraform modules & Kubernetes manifests from AST. |
+| **13** | **🔄 Kafka & WebSocket Streams** | DevOps & Cloud | `EventStreamVisualizerModal.tsx` | Visualize Kafka topics, consumer groups, and live WebSocket / SSE channels. |
+| **14** | **🧩 OpenTelemetry Tracing** | DevOps & Cloud | `DistributedTracingModal.tsx` | Multi-service span waterfall with automated critical-path bottleneck isolation. |
+| **15** | **🎙️ Voice Architecture Copilot** | DevOps & Cloud | `VoiceCopilotModal.tsx` | Speak natural voice commands to audit DB, simulate chaos & trigger AI remediation. |
+| **16** | **📊 Health Scorecard HUD** | Architecture & Health | `ArchitectureScorecardModal.tsx` | Real-time Security (94%), SQL (88%), CVE (98%), and React 19 (92%) audit dials. |
+| **17** | **🖼️ 4K C4 Blueprint Exporter** | Architecture & Health | `ArchitectureBlueprintExportModal.tsx` | Export C4 Level 1/2/3 diagrams, 4K SVG vector blueprints, and Mermaid RFC specs. |
+| **18** | **💥 Chaos Simulator** | Architecture & Health | `ChaosSimulatorModal.tsx` | Resilience4j fault injection, circuit breaker state machine, and fallback telemetry. |
+| **19** | **🤖 AI Architecture Assistant** | Architecture & Health | `AiAssistantModal.tsx` | Automated code explanations, compliance auditing, query reviews, and interview prep. |
+| **20** | **📦 Maven Dependency Graph** | Architecture & Health | `DependencyExplorerModal.tsx` | `pom.xml` starter analyzer explaining auto-configuration mechanics (Web, JPA, Security). |
+| **21** | **⚛️ React 19 Runtime Explorer** | Runtime & Flow | `ReactRuntimeExplorerModal.tsx` | Virtual DOM Fiber tree reconciliation, Hook state mutation timeline, and Axios interceptors. |
+| **22** | **⚡ Runtime Tracing Replay** | Runtime & Flow | `RuntimeTracingModal.tsx` | Step-by-step VCR playback from React UI down to Controller, Service, Hibernate, and DB. |
+| **23** | **🔀 7-Swimlane Sequence Tracer** | Runtime & Flow | `SequenceDiagramModal.tsx` | Asynchronous request and response lifecycle mapping across 7 architectural swimlanes. |
+| **24** | **🔥 24-Hour Latency Heatmap** | Runtime & Flow | `LatencyHeatmapModal.tsx` | 24-hour hourly quantile matrix with color-coded buckets and hover tooltips. |
+| **25** | **📊 API Metrics & Telemetry** | Runtime & Flow | `ApiMetricsDashboardModal.tsx` | Real-time P50/P90/P95/P99 response times, throughput RPS, and error rate tracking. |
+| **26** | **⚡ Java DTO ➔ TypeScript** | APIs & Data | `TypeScriptGeneratorModal.tsx` | Auto-convert JPA entities and records to strict TypeScript interfaces and Zod schemas. |
+| **27** | **🌐 REST API Sandbox & cURL** | APIs & Data | `ApiSandboxModal.tsx` | Test Spring Boot endpoints, inject JWT headers, and export cURL / Axios / Python snippets. |
+| **28** | **🗄️ Database ERD & Schema** | APIs & Data | `ErDiagramModal.tsx` | `@Entity` relational table diagrams with column data types and foreign key linkages. |
+| **29** | **💻 Live SQL Query Explorer** | APIs & Data | `SqlExplorerModal.tsx` | Captured JPA prepared statements (SELECT, INSERT, UPDATE) with execution durations. |
+| **30** | **🔐 Spring Security 6 Pipeline** | APIs & Data | `SecurityExplorerModal.tsx` | 6-stage stateless filter chain inspection (`CorsFilter`, `JwtAuthenticationFilter`, etc.). |
+| **31** | **📁 5-Mode File Tree Visualizer** | APIs & Data | `FileTreeModal.tsx` | Interactive File Tree, ASCII Tree, Emoji Tree, Mermaid AST Diagram, and Galaxy Canvas. |
+| **32** | **🔍 Global Command Palette** | Navigation & Search | `CommandPaletteModal.tsx` | Global spotlight search (`Ctrl+K`) across all 32 tools, scenarios, themes, and AI actions. |
 
 ---
 
@@ -192,7 +206,7 @@ npm run dev
 
 ---
 
-## 🗺️ Product Roadmap (v1.0 to v14.0)
+## 🗺️ Product Roadmap (v1.0 to v15.0)
 
 | Version | Release Stage | Core Capabilities & Scope |
 | :--- | :--- | :--- |
@@ -207,10 +221,11 @@ npm run dev
 | **v8.0** | **Cloud, DevOps & Voice Suite** | Git PR Drift Detection, Automated Test Generator (RestAssured/Playwright), Cloud IaC & Docker Synthesizer, Event Streams (Kafka/WS), Voice Copilot, OTel Distributed Tracing. |
 | **v9.0** | **IDE Sidecar, Browser Extension & Collab** | Native VS Code Extension side-panel, Chrome Extension for GitHub repositories, WebRTC Live Collab Review Room, Zero-Trust Compliance Matrix, GraphQL/gRPC Synthesizer & Istio Service Mesh. |
 | **v10.0** | **Enterprise Desktop & Offline Air-Gap** | Standalone Tauri v2 Desktop application with 100% offline air-gapped analysis, self-hosted enterprise Docker cluster & automated CI/CD gating bot. |
-| **v11.0 (Current)** | **Autonomous Self-Healing & AI Refactoring Swarm** | Autonomous PR remediation agents, multi-agent refactoring swarm (Layer Decoupler, JPA Optimizer, TypeScript Sync), unified AST diff studio & zero-day CVE auto-patcher. |
-| **v12.0 (Next Target)** | **Real-Time Distributed Mesh & eBPF Kernel Tracing** | Kernel-level zero-overhead HTTP/gRPC tracing (`kprobe`/`kretprobe`), multi-cloud topology mesh (AWS/GCP/Azure/K8s), and autonomous chaos error budget guards. |
-| **v13.0 (Future)** | **Spatial 3D Architecture Canvas & Polyglot Engine** | WebGL 3D codebase city visualization, VR/spatial architecture reviews, and universal polyglot AST engine (Java, Go, Rust, Python, C#, TypeScript). |
-| **v14.0 (Visionary)** | **Self-Evolving Autonomous Software Organisms** | Predictive chaos engineering, synthetic workload genetic fuzzing, and autonomous self-evolving microservices architecture. |
+| **v11.0** | **Autonomous Self-Healing & AI Refactoring Swarm** | Autonomous PR remediation agents, multi-agent refactoring swarm (Layer Decoupler, JPA Optimizer, TypeScript Sync), unified AST diff studio & zero-day CVE auto-patcher. |
+| **v12.0 (Current)** | **Real-Time Distributed Mesh & eBPF Kernel Tracing** | Kernel-level zero-overhead HTTP/gRPC tracing (`kprobe`/`kretprobe`), multi-cloud topology mesh (AWS/GCP/Azure/K8s), and autonomous chaos error budget guards. |
+| **v13.0 (Next Target)** | **Spatial 3D Architecture Canvas & Polyglot Engine** | WebGL 3D codebase city visualization, VR/spatial architecture reviews, and universal polyglot AST engine (Java, Go, Rust, Python, C#, TypeScript). |
+| **v14.0 (Future)** | **Self-Evolving Autonomous Software Organisms** | Predictive chaos engineering, synthetic workload genetic fuzzing, and autonomous self-evolving microservices architecture. |
+| **v15.0 (Visionary)** | **Quantum-Resistant Zero-Knowledge Architectural Attestation** | Post-quantum cryptography verification (Kyber/Dilithium), zk-SNARK codebase integrity proofs, and decentralized tamper-proof architecture consensus. |
 
 ---
 

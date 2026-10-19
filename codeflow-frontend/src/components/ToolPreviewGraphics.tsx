@@ -752,3 +752,33 @@ export const SelfHealingGraphic: React.FC<GraphicProps> = ({ isLight }) => (
   </svg>
 );
 
+// ─── 32. DISTRIBUTED MESH & EBPF KERNEL TRACING ───
+export const EbpfMeshGraphic: React.FC<GraphicProps> = ({ isLight }) => (
+  <svg viewBox="0 0 240 60" className="w-full h-14 select-none">
+    <defs>
+      <style>{`
+        @keyframes ebpfWave { 0% { stroke-dashoffset: 24; } 100% { stroke-dashoffset: 0; } }
+        @keyframes kernelGlow { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; } }
+        @keyframes packetStream { 0% { cx: 70; opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { cx: 170; opacity: 0; } }
+      `}</style>
+    </defs>
+    <rect x="15" y="14" width="60" height="34" rx="6" fill={isLight ? '#ecfdf5' : '#064e3b'} stroke="#10b981" strokeWidth="1" />
+    <text x="45" y="27" textAnchor="middle" fill="#34d399" fontSize="7" fontWeight="bold" fontFamily="monospace">eBPF JIT</text>
+    <text x="45" y="39" textAnchor="middle" fill="#10b981" fontSize="6.5" fontFamily="monospace">45ns Hook</text>
+
+    <line x1="75" y1="24" x2="165" y2="24" stroke="#10b981" strokeWidth="1.5" strokeDasharray="4 3" style={{ animation: 'ebpfWave 1.2s linear infinite' }} />
+    <line x1="75" y1="38" x2="165" y2="38" stroke="#38bdf8" strokeWidth="1.5" strokeDasharray="4 3" style={{ animation: 'ebpfWave 1.6s linear infinite' }} />
+
+    <circle cy="24" r="3" fill="#34d399" style={{ animation: 'packetStream 1.8s linear infinite' }} />
+    <circle cy="38" r="3" fill="#38bdf8" style={{ animation: 'packetStream 2.2s linear infinite 0.5s' }} />
+
+    <rect x="100" y="8" width="40" height="12" rx="3" fill={isLight ? '#f0fdf4' : '#022c22'} stroke="#10b981" strokeWidth="0.8" />
+    <text x="120" y="17" textAnchor="middle" fill="#34d399" fontSize="6" fontFamily="monospace">WireGuard</text>
+
+    <rect x="165" y="14" width="62" height="34" rx="6" fill={isLight ? '#eff6ff' : '#082f49'} stroke="#0284c7" strokeWidth="1" />
+    <text x="196" y="27" textAnchor="middle" fill="#38bdf8" fontSize="7" fontWeight="bold" fontFamily="monospace">Multi-Cloud</text>
+    <text x="196" y="39" textAnchor="middle" fill="#0284c7" fontSize="6.5" fontFamily="monospace">SLO 99.99%</text>
+  </svg>
+);
+
+
